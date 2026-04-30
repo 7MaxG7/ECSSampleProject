@@ -12,18 +12,16 @@ namespace Dices
         private readonly EcsService _ecsService;
         private readonly TeamService _teamService;
         private readonly BattleLocationService _locationService;
-        private readonly DebugService _debug;
         private readonly BattleDeathService _battleDeathService;
 
         private readonly EcsPool<DiceComponent> _dicePool;
 
-        public BattleDiceService(EcsService ecsService, TeamService teamService, BattleLocationService locationService, DebugService debug,
-            BattleDeathService battleDeathService)
+        public BattleDiceService(EcsService ecsService, BattleLocationService locationService, BattleDeathService battleDeathService,
+            TeamService teamService)
         {
             _ecsService = ecsService;
             _teamService = teamService;
             _locationService = locationService;
-            _debug = debug;
             _battleDeathService = battleDeathService;
 
             _dicePool = ecsService.World.GetPool<DiceComponent>();
@@ -42,7 +40,7 @@ namespace Dices
             {
                 case DiceSideType.MeleeAttack:
                     return !_battleDeathService.IsDead(target) && TryGetUnit(dice, out var unit) &&
-                           !_locationService.IsObjectBetweenUnitsExists(target, unit, IsEnemy) && unit != target;
+                        !_locationService.IsObjectBetweenUnitsExists(target, unit, IsEnemy) && unit != target;
 
                 case DiceSideType.RangeAttack:
                     return !_battleDeathService.IsDead(target) && TryGetUnit(dice, out unit) && unit != target;
@@ -60,7 +58,7 @@ namespace Dices
             if (_ecsService.TryUnpack(diceComponent.Unit, out unit))
                 return true;
 
-            _debug.Log(DebugType.Warning, $"Cannot unpack unit for dice {dice}");
+            LogService.LogDebug(DebugType.Warning, $"Cannot unpack unit for dice {dice}");
             return false;
         }
 

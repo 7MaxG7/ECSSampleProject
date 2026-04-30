@@ -1,3 +1,4 @@
+using Abstractions.Infrastructure;
 using Cysharp.Threading.Tasks;
 using Infrastructure.Input;
 using Leopotam.EcsLite;
@@ -7,11 +8,8 @@ using Zenject;
 
 namespace Infrastructure.Bootstrap
 {
-    public class GameBootstrapper : IInitializable, ITickable, ILateDisposable
+    public class GameBootstrapper : IInitializable, ITickable, ILateDisposable, IDisposeCoordinated
     {
-        public bool CanBeDisposed { get; set; }
-        public bool MustDisposed { get; private set; }
-
         private readonly AssetsProvider _assetsProvider;
         private readonly SceneLoader _sceneLoader;
         private readonly EcsService _ecsService;
@@ -22,6 +20,7 @@ namespace Infrastructure.Bootstrap
         private readonly InputService _inputService;
         private readonly UiAnimationService _uiAnimationService;
         private readonly PermanentUIBuilder _permanentUIBuilder;
+        private readonly DisposeCoordinator _disposeCoordinator;
 
         private EcsSystems _editorSystems;
 
@@ -29,7 +28,8 @@ namespace Infrastructure.Bootstrap
 
         public GameBootstrapper(AssetsProvider assetsProvider, SceneLoader sceneLoader, EcsService ecsService, RandomService randomService,
             CancellationTokenProvider tokenProvider, GameEditorSystemsInitializer editorSystemsInitializer, StaticDataService dataService,
-            InputService inputService, UiAnimationService uiAnimationService, PermanentUIBuilder permanentUIBuilder)
+            UiAnimationService uiAnimationService, PermanentUIBuilder permanentUIBuilder, DisposeCoordinator disposeCoordinator,
+            InputService inputService)
         {
             _assetsProvider = assetsProvider;
             _sceneLoader = sceneLoader;
@@ -41,10 +41,14 @@ namespace Infrastructure.Bootstrap
             _inputService = inputService;
             _uiAnimationService = uiAnimationService;
             _permanentUIBuilder = permanentUIBuilder;
+            _disposeCoordinator = disposeCoordinator;
         }
 
         public void Initialize()
-            => InitInfrastructureAsync().Forget();
+        {
+            _disposeCoordinator.RegisterCoordinated(this);
+            InitInfrastructureAsync().Forget();
+        }
 
         public void Tick()
         {
@@ -56,12 +60,7 @@ namespace Infrastructure.Bootstrap
 
         public void LateDispose()
         {
-            _isInited = false;
-
-            if (CanBeDisposed)
-                OnDispose();
-            else
-                MustDisposed = true;
+            _disposeCoordinator.DisposeAll();
         }
 
         public void OnDispose()
@@ -78,7 +77,7 @@ namespace Infrastructure.Bootstrap
         {
             _tokenProvider.Init();
             using var localCts = _tokenProvider.CreateLocalCts();
-            
+
             _assetsProvider.Init();
             _ecsService.Init();
             _randomService.Init();

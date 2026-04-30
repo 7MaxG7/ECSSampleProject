@@ -7,41 +7,38 @@ using Zenject;
 
 namespace Infrastructure.Bootstrap
 {
-    public abstract class SceneRunner : IInitializable, ITickable, IFixedTickable, IDisposable
+    public abstract class SceneRunner : IInitializable, ITickable, IFixedTickable, IDisposable, IDisposeCoordinated
     {
-        private readonly GameBootstrapper _gameBootstrapper;
         private readonly EcsService _ecsService;
         private readonly AssetsProvider _assetsProvider;
         private readonly CancellationTokenProvider _tokenProvider;
+        private readonly DisposeCoordinator _disposeCoordinator;
 
         protected IUpdateSystemsInitializer UpdateSystemsInitializer;
         protected IUpdateSystemsInitializer FixedUpdateSystemsInitializer;
         private EcsSystems _updateSystems;
         private EcsSystems _fixedUpdateSystems;
+
         private bool _isInited;
 
-        protected SceneRunner(GameBootstrapper gameBootstrapper, EcsService ecsService, AssetsProvider assetsProvider,
-            CancellationTokenProvider tokenProvider)
+        protected SceneRunner(EcsService ecsService, AssetsProvider assetsProvider, CancellationTokenProvider tokenProvider,
+            DisposeCoordinator disposeCoordinator)
         {
-            _gameBootstrapper = gameBootstrapper;
             _ecsService = ecsService;
             _assetsProvider = assetsProvider;
             _tokenProvider = tokenProvider;
+            _disposeCoordinator = disposeCoordinator;
         }
 
         public void Initialize()
-            => InitAsync().Forget();
+        {
+            _disposeCoordinator.RegisterCoordinated(this);
+            InitAsync().Forget();
+        }
 
         public void Dispose()
         {
-            _isInited = false;
-
-            OnDispose();
-
-            _assetsProvider.ClearScene();
-            _ecsService.DestroySceneSystems();
-
-            DisposeInfrastructure();
+            _disposeCoordinator.DisposeCoordinated(this);
         }
 
         public void Tick()
@@ -60,22 +57,25 @@ namespace Infrastructure.Bootstrap
             _fixedUpdateSystems?.Run();
         }
 
-        protected abstract void OnDispose();
+        public virtual void OnDispose()
+        {
+            _isInited = false;
+
+            _assetsProvider.ClearScene();
+            _ecsService.DestroySceneSystems();
+        }
 
         protected abstract UniTask OnInitAsync(CancellationTokenSource cts);
 
         private async UniTaskVoid InitAsync()
         {
             using var localCts = _tokenProvider.CreateLocalCts();
-            
-            InitSystems();
 
-            await _assetsProvider.WarmUpCurrentSceneAsync();
+            InitSystems();
 
             await OnInitAsync(localCts);
 
             _isInited = true;
-            _gameBootstrapper.CanBeDisposed = false;
         }
 
         private void InitSystems()
@@ -85,14 +85,6 @@ namespace Infrastructure.Bootstrap
 
             UpdateSystemsInitializer.InitSystems(_updateSystems);
             FixedUpdateSystemsInitializer.InitSystems(_fixedUpdateSystems);
-        }
-
-        private void DisposeInfrastructure()
-        {
-            if (_gameBootstrapper.MustDisposed)
-                _gameBootstrapper.OnDispose();
-            else
-                _gameBootstrapper.CanBeDisposed = true;
         }
     }
 }

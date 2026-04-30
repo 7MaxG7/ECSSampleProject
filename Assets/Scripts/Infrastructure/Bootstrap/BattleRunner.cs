@@ -23,12 +23,12 @@ namespace Infrastructure.Bootstrap
         private readonly BattleSelectionService _battleSelectionService;
 
         [Inject]
-        public BattleRunner(GameBootstrapper gameBootstrapper, EcsService ecsService, BattleSelectionService battleSelectionService,
+        public BattleRunner(EcsService ecsService, BattleSelectionService battleSelectionService, DisposeCoordinator disposeCoordinator,
             BattleUpdateSystemsInitializer updateSystemsInitializer, BattleFixedUpdateSystemsInitializer fixedUpdateSystemsInitializer,
             BattleStateMachine battleStateMachine, AssetsProvider assetsProvider, BattlefieldBuilder battlefieldBuilder,
             UnitViewFactory unitViewFactory, BattleUIBuilder battleUIBuilder, BattleAnimatorService animatorService,
-            CurtainUIController curtainUIController, CancellationTokenProvider tokenProvider) : base(gameBootstrapper, ecsService,
-            assetsProvider, tokenProvider)
+            CurtainUIController curtainUIController, CancellationTokenProvider tokenProvider) : base(ecsService, assetsProvider,
+            tokenProvider, disposeCoordinator)
         {
             _battlefieldBuilder = battlefieldBuilder;
             _unitViewFactory = unitViewFactory;
@@ -53,8 +53,10 @@ namespace Infrastructure.Bootstrap
             await _curtainUIController.Hide(cts);
         }
 
-        protected override void OnDispose()
+        public override void OnDispose()
         {
+            base.OnDispose();
+
             _animatorService.Clear();
             _battleSelectionService.Clear();
             _battleUIBuilder.ClearBattleUI();

@@ -17,7 +17,6 @@ namespace UI.Battle
 {
     public class BattleUIController
     {
-        private readonly DebugService _debug;
         private BattleUIFactory _battleUIFactory;
         private readonly BattleDiceRollService _rollService;
 
@@ -34,14 +33,13 @@ namespace UI.Battle
         private readonly EcsPool<DiceViewComponent> _diceViewPool;
 
         [Inject]
-        public BattleUIController(DebugService debug, UnitsOverlayUIController unitsOverlayUIController, BattleEndUIController battleEndUIController,
-            BattleDicesUIController battleDicesUIController, BattleDiceRollService rollService)
+        public BattleUIController(UnitsOverlayUIController unitsOverlayUIController, BattleDicesUIController battleDicesUIController,
+            BattleEndUIController battleEndUIController, BattleDiceRollService rollService)
         {
             _unitsOverlayUIController = unitsOverlayUIController;
             _battleEndUIController = battleEndUIController;
             _battleDicesUIController = battleDicesUIController;
-            
-            _debug = debug;
+
             _rollService = rollService;
         }
 
@@ -87,7 +85,7 @@ namespace UI.Battle
                     _battleUIModel.EnemyRollsCount.Value = (team, rollsCount);
                     break;
                 default:
-                    _debug.Log(DebugType.Error, $"Cannot update rolls for team {team}");
+                    LogService.LogDebug(DebugType.Error, $"Cannot update rolls for team {team}");
                     return;
             }
         }

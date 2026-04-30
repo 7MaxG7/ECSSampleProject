@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
-using Infrastructure.Configs;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
@@ -10,21 +9,12 @@ namespace Infrastructure
 {
     public class AssetsProvider
     {
-        private readonly SceneLoader _sceneLoader;
-        private readonly AssetsProviderConfig _assetsProviderConfig;
-
         private readonly Dictionary<string, AsyncOperationHandle> _loadedAssets = new();
         private readonly Dictionary<string, AsyncOperationHandle> _loadedDontDestroyAssets = new();
         private readonly List<AsyncOperationHandle> _handles = new();
         private readonly List<AsyncOperationHandle> _dontDestroyHandles = new();
         private bool _isCleaned = true;
         private bool _isSceneCleaned = true;
-
-        public AssetsProvider(SceneLoader sceneLoader, AssetsProviderConfig assetsProviderConfig)
-        {
-            _sceneLoader = sceneLoader;
-            _assetsProviderConfig = assetsProviderConfig;
-        }
         
         public void Init()
         {
@@ -56,15 +46,6 @@ namespace Infrastructure
                 Addressables.Release(handle);
             _handles.Clear();
             _loadedAssets.Clear();
-        }
-
-        public async UniTask WarmUpCurrentSceneAsync()
-        {
-            var sceneName = _sceneLoader.GetCurrentSceneName();
-            var assetReferences = _assetsProviderConfig.GetAssetReferencesForScene(sceneName, out var isDontDestroy);
-         
-            foreach (var reference in assetReferences)
-                await LoadAsync(reference, isDontDestroy);
         }
 
         public async UniTask<T> CreateInstanceAsync<T>(AssetReference assetReference,

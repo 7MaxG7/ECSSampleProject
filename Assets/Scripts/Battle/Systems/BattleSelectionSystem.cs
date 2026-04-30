@@ -9,7 +9,6 @@ namespace Battle
 {
     public class BattleSelectionSystem : IEcsRunSystem
     {
-        private readonly DebugService _debug;
         private readonly BattleUnitSelectionService _unitSelectionService;
         
         private readonly EcsFilter _battleSelectEventFilter;
@@ -17,9 +16,8 @@ namespace Battle
         private readonly EcsPool<BattleSelectedComponent> _battleSelectedPool;
 
         [Inject]
-        public BattleSelectionSystem(EcsService ecsService, DebugService debug, BattleUnitSelectionService unitSelectionService)
+        public BattleSelectionSystem(EcsService ecsService, BattleUnitSelectionService unitSelectionService)
         {
-            _debug = debug;
             _unitSelectionService = unitSelectionService;
             
             _battleSelectEventFilter = ecsService.World.Filter<BattleSelectEventComponent>().End();
@@ -57,7 +55,7 @@ namespace Battle
                     _unitSelectionService.ToggleSelection(selected, mustSelected);
                     break;
                 default:
-                    _debug.Log(DebugType.Warning, $"Cannot get service to select {selected} of type {battleSelectedComponent.SelectionType}");
+                    LogService.LogDebug(DebugType.Warning, $"Cannot get service to select {selected} of type {battleSelectedComponent.SelectionType}");
                     return;
             }
         }

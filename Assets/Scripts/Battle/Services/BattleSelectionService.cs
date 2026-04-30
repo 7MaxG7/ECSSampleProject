@@ -6,6 +6,7 @@ using Infrastructure.Input;
 using Leopotam.EcsLite;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using Zenject;
 
 namespace Battle
 {
@@ -13,7 +14,6 @@ namespace Battle
     {
         private readonly EcsService _ecsService;
         private readonly InputConfig _inputConfig;
-        private readonly DebugService _debug;
         private readonly InputService _inputService;
 
         private readonly EcsFilter _selectedFilter;
@@ -23,12 +23,12 @@ namespace Battle
 
         private readonly RaycastHit[] _raycastHits;
 
-        public BattleSelectionService(EcsService ecsService, InputConfig inputConfig, InputService inputService, DebugService debug)
+        [Inject]
+        public BattleSelectionService(EcsService ecsService, InputConfig inputConfig, InputService inputService)
         {
             _ecsService = ecsService;
             _inputConfig = inputConfig;
             _inputService = inputService;
-            _debug = debug;
 
             _selectedFilter = ecsService.World.Filter<BattleSelectedComponent>().End();
             _battleSelectedPool = ecsService.World.GetPool<BattleSelectedComponent>();
@@ -91,13 +91,13 @@ namespace Battle
             var hit = _raycastHits[0].transform;
             if (!hit.TryGetComponent<BattleSelectView>(out var selectView))
             {
-                _debug.Log(DebugType.Warning, $"Cannot get select component for {hit.gameObject.name}");
+                LogService.LogDebug(DebugType.Warning, $"Cannot get select component for {hit.gameObject.name}");
                 return false;
             }
 
             if (!_ecsService.TryUnpack(selectView.Entity, out selected))
             {
-                _debug.Log(DebugType.Warning, $"Cannot unpack entity for {hit.gameObject.name}");
+                LogService.LogDebug(DebugType.Warning, $"Cannot unpack entity for {hit.gameObject.name}");
                 return false;
             }
 

@@ -10,8 +10,6 @@ namespace Battle
 {
     public class BattleStateMachine
     {
-        private readonly DebugService _debugService;
-
         private readonly EcsFilter _battleFilter;
 
         private readonly Dictionary<Type, IBattleState> _states;
@@ -19,9 +17,8 @@ namespace Battle
 
         [Inject]
         public BattleStateMachine(BattleDiceRollState battleDiceRollState, TargetSelectState targetSelectState,
-            DicesApplyState dicesApplyState, EndBattleState endBattleState, DebugService debugService)
+            DicesApplyState dicesApplyState, EndBattleState endBattleState)
         {
-            _debugService = debugService;
             _states = new Dictionary<Type, IBattleState>
             {
                 [typeof(BattleDiceRollState)] = battleDiceRollState,
@@ -36,7 +33,7 @@ namespace Battle
             _currentState?.Exit();
             if (!_states.TryGetValue(typeof(TState), out var newState))
             {
-                _debugService.Log(DebugType.Error, $"No state {typeof(TState)} in state machine");
+                LogService.LogDebug(DebugType.Error, $"No state {typeof(TState)} in state machine");
                 return;
             }
 

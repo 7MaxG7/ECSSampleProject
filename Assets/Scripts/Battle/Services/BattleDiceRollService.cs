@@ -13,7 +13,6 @@ namespace Battle
         private readonly RandomService _random;
         private readonly TeamService _teamService;
         private readonly DiceViewService _diceViewService;
-        private readonly DebugService _debug;
         private readonly BattleDiceLockService _lockService;
 
         private readonly EcsFilter _unlockedDiceFilter;
@@ -26,12 +25,11 @@ namespace Battle
 
         [Inject]
         public BattleDiceRollService(EcsService ecsService, RandomService random, TeamService teamService, DiceViewService diceViewService,
-            DebugService debug, BattleDiceLockService lockService)
+            BattleDiceLockService lockService)
         {
             _random = random;
             _teamService = teamService;
             _diceViewService = diceViewService;
-            _debug = debug;
             _lockService = lockService;
 
             _teamRollFilter = ecsService.World.Filter<TeamBattleDicesRollComponent>().End();
@@ -59,7 +57,7 @@ namespace Battle
             _diceViewService.ActivateCurrentTeamDices();
             _lockService.ToggleCurrentTeamDicesLock(false);
             RollCurrentTeamUnlockedMainDices();
-            _debug.Log(DebugType.Log, $"{team}'s turn");
+            LogService.LogDebug(DebugType.Log, $"{team}'s turn");
         }
 
         public void FinishDiceRolling()
@@ -116,7 +114,7 @@ namespace Battle
                     return true;
                 }
 
-            _debug.Log(DebugType.Warning, $"Cannot find team rolls for current team");
+            LogService.LogDebug(DebugType.Warning, $"Cannot find team rolls for current team");
             teamRolls = -1;
             return false;
         }

@@ -19,7 +19,6 @@ namespace Dices
 
         private readonly EcsService _ecsService;
         private readonly BattleDiceService _battleDiceService;
-        private readonly DebugService _debug;
         private readonly DiceAimingService _aimingService;
         private readonly BattleSelectionService _selectionService;
         private readonly DiceViewService _diceViewService;
@@ -37,12 +36,10 @@ namespace Dices
 
         [Inject]
         public DiceTargetSelectService(EcsService ecsService, BattleDiceService battleDiceService, BattleSelectionService selectionService,
-            TeamService teamService, DiceViewService diceViewService, UnitService unitService, DebugService debug,
-            DiceAimingService aimingService)
+            TeamService teamService, DiceViewService diceViewService, UnitService unitService, DiceAimingService aimingService)
         {
             _ecsService = ecsService;
             _battleDiceService = battleDiceService;
-            _debug = debug;
             _aimingService = aimingService;
             _selectionService = selectionService;
             _diceViewService = diceViewService;
@@ -70,7 +67,7 @@ namespace Dices
             _teamService.SetCurrentTeam(team);
             _diceViewService.ActivateCurrentTeamDices();
             TargetCurrentTeamMissedDices();
-            _debug.Log(DebugType.Log, $"{team}'s turn");
+            LogService.LogDebug(DebugType.Log, $"{team}'s turn");
         }
 
         public void FinishTargetSelection()
@@ -207,7 +204,7 @@ namespace Dices
                     _battleDiceService.TryGetUnit(dice, out var unit);
                     var side = _battleDiceService.GetCurrentSide(dice);
 
-                    _debug.Log(DebugType.Log, $"Unit {unit} targeted {targeted} with dice {dice}: {side.SideType},{side.Value}");
+                    LogService.LogDebug(DebugType.Log, $"Unit {unit} targeted {targeted} with dice {dice}: {side.SideType},{side.Value}");
                 }
             }
         }

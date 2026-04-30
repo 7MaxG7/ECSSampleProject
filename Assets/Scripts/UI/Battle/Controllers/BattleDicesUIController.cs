@@ -19,7 +19,6 @@ namespace UI.Battle
         private readonly EcsService _ecsService;
         private readonly UnitService _unitService;
         private readonly BattleUIFactory _battleUIFactory;
-        private readonly DebugService _debug;
         private readonly BattleDiceService _battleDiceService;
         private readonly DiceTargetSelectService _diceTargetSelectService;
         private readonly BattleDiceLockService _diceLockService;
@@ -33,14 +32,13 @@ namespace UI.Battle
         private IBattleDicesUIModel _dicesUIModel;
 
         [Inject]
-        public BattleDicesUIController(EcsService ecsService, UnitService unitService, BattleUIFactory battleUIFactory, DebugService debug,
-            BattleDiceService battleDiceService, DiceTargetSelectService diceTargetSelectService, BattleDiceLockService diceLockService,
-            HighlightService highlightService, DiceAimingService diceAimingService)
+        public BattleDicesUIController(EcsService ecsService, BattleUIFactory battleUIFactory, BattleDiceLockService diceLockService,
+            BattleDiceService battleDiceService, DiceTargetSelectService diceTargetSelectService, HighlightService highlightService,
+            UnitService unitService, DiceAimingService diceAimingService)
         {
             _ecsService = ecsService;
             _unitService = unitService;
             _battleUIFactory = battleUIFactory;
-            _debug = debug;
             _battleDiceService = battleDiceService;
             _diceTargetSelectService = diceTargetSelectService;
             _diceLockService = diceLockService;
@@ -96,7 +94,7 @@ namespace UI.Battle
                     _dicesUIModel.EnemyMainDices.Value = (team, dices);
                     break;
                 default:
-                    _debug.Log(DebugType.Error, $"Cannot show dices for team {team}");
+                    LogService.LogDebug(DebugType.Error, $"Cannot show dices for team {team}");
                     return;
             }
         }
@@ -140,7 +138,7 @@ namespace UI.Battle
         {
             if (!_diceTargetSelectService.IsTargetSelecting)
                 return;
-            
+
             _diceAimingService.StartDiceAiming(dicePacked);
         }
 

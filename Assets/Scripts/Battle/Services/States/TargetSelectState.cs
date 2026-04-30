@@ -8,17 +8,15 @@ namespace Battle
     public class TargetSelectState : IBattleState
     {
         private readonly DiceTargetSelectService _targetSelectService;
-        private readonly DebugService _debug;
 
-        public TargetSelectState(DiceTargetSelectService targetSelectService, DebugService debug)
+        public TargetSelectState(DiceTargetSelectService targetSelectService)
         {
             _targetSelectService = targetSelectService;
-            _debug = debug;
         }
         
         public void Enter()
         {
-            _debug.Log(DebugType.Log, $"{nameof(TargetSelectState)} started");
+            LogService.LogDebug(DebugType.Log, $"{nameof(TargetSelectState)} started");
             _targetSelectService.StartTargetSelection();
         }
 

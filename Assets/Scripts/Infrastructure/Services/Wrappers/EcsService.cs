@@ -15,16 +15,14 @@ namespace Infrastructure
         
         private readonly SceneLoader _sceneLoader;
         private readonly EcsWorldDebugSystem _ecsWorldDebugSystem;
-        private readonly DebugService _debug;
 
         private readonly Dictionary<string, EcsSystems> _systems = new();
 
         [Inject]
-        public EcsService(SceneLoader sceneLoader, EcsWorldDebugSystem ecsWorldDebugSystem, DebugService debug)
+        public EcsService(SceneLoader sceneLoader, EcsWorldDebugSystem ecsWorldDebugSystem)
         {
             _sceneLoader = sceneLoader;
             _ecsWorldDebugSystem = ecsWorldDebugSystem;
-            _debug = debug;
         }
 
         public void Init()
@@ -93,7 +91,7 @@ namespace Infrastructure
             if (entityPacked.TryUnpack(World, out entity))
                 return true;
             
-            _debug.Log(DebugType.Warning, "Cannot unpack entity");
+            LogService.LogDebug(DebugType.Warning, "Cannot unpack entity");
             return false;
         }
 
@@ -102,7 +100,7 @@ namespace Infrastructure
             if (entityPacked.Unpack(World, out entity))
                 return true;
             
-            _debug.Log(DebugType.Warning, "Cannot unpack entity");
+            LogService.LogDebug(DebugType.Warning, "Cannot unpack entity");
             return false;
         }
 

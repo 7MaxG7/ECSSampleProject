@@ -8,14 +8,12 @@ namespace Battle.Battlefield
 {
     public class BattleCellService
     {
-        private readonly DebugService _debugService;
         private readonly BattlefieldConfig _battlefieldConfig;
         private readonly EcsFilter _battlefieldFilter;
         private readonly EcsPool<BattlefieldComponent> _battlefieldPool;
 
-        public BattleCellService(EcsService ecsService, DebugService debugService, BattlefieldConfig battlefieldConfig)
+        public BattleCellService(EcsService ecsService, BattlefieldConfig battlefieldConfig)
         {
-            _debugService = debugService;
             _battlefieldConfig = battlefieldConfig;
             
             _battlefieldFilter = ecsService.World.Filter<BattlefieldComponent>().End();
@@ -35,7 +33,7 @@ namespace Battle.Battlefield
         {
             if (x < 0 || y < 0)
             {
-                _debugService.Log(DebugType.Error, $"Cannot get cell {x}:{y}");
+                LogService.LogDebug(DebugType.Error, $"Cannot get cell {x}:{y}");
                 return null;
             }
 
@@ -43,7 +41,7 @@ namespace Battle.Battlefield
             var cellIndex = y * _battlefieldConfig.BattlefieldSize + x;
             if (cellIndex >= cells.Length)
             {
-                _debugService.Log(DebugType.Error, $"Cell {x}:{y} is out of range");
+                LogService.LogDebug(DebugType.Error, $"Cell {x}:{y} is out of range");
                 return null;
             }
 

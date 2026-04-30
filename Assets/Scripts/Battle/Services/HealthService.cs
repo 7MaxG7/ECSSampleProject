@@ -10,16 +10,14 @@ namespace Battle
     public class HealthService
     {
         private readonly BattleDeathService _battleDeathService;
-        private readonly DebugService _debug;
 
         private readonly EcsPool<ArmorComponent> _armorPool;
         private readonly EcsPool<HealthComponent> _healthPool;
 
         [Inject]
-        public HealthService(EcsService ecsService, BattleDeathService battleDeathService, DebugService debug)
+        public HealthService(EcsService ecsService, BattleDeathService battleDeathService)
         {
             _battleDeathService = battleDeathService;
-            _debug = debug;
 
             _armorPool = ecsService.World.GetPool<ArmorComponent>();
             _healthPool = ecsService.World.GetPool<HealthComponent>();
@@ -60,7 +58,7 @@ namespace Battle
             if (healthComponent.Hp <= 0)
                 _battleDeathService.Die(entity);
             
-            _debug.Log(DebugType.Log, $"Unit {entity}: Hp {healthComponent.Hp}");
+            LogService.LogDebug(DebugType.Log, $"Unit {entity}: Hp {healthComponent.Hp}");
         }
 
         public float GetCurrentHp(int unit)

@@ -16,7 +16,6 @@ namespace Dices
         private readonly BattleDiceService _battleDiceService;
         private readonly DiceViewService _diceViewService;
         private readonly CancellationTokenProvider _tokenProvider;
-        private readonly DebugService _debug;
         private readonly DiceTargetSelectService _targetSelectService;
         private readonly DiceApplyService _diceApplyService;
         private readonly DiceApplyViewService _diceApplyViewService;
@@ -28,15 +27,14 @@ namespace Dices
 
         [Inject]
         public DiceApplySystem(EcsService ecsService, DiceApplyService diceApplyService, DiceApplyViewService diceApplyViewService,
-            TeamService teamService, BattleDiceService battleDiceService, DiceViewService diceViewService, DebugService debug,
-            CancellationTokenProvider tokenProvider, DiceTargetSelectService targetSelectService)
+            BattleDiceService battleDiceService, CancellationTokenProvider tokenProvider, DiceTargetSelectService targetSelectService,
+            TeamService teamService, DiceViewService diceViewService)
         {
             _ecsService = ecsService;
             _teamService = teamService;
             _battleDiceService = battleDiceService;
             _diceViewService = diceViewService;
             _tokenProvider = tokenProvider;
-            _debug = debug;
             _targetSelectService = targetSelectService;
             _diceApplyService = diceApplyService;
             _diceApplyViewService = diceApplyViewService;
@@ -79,7 +77,7 @@ namespace Dices
             ApplyDiceSide(target, dice, out var diceSide);
             await AnimateDiceApplyAsync(unit, target, dice, diceSide, localCts);
 
-            _debug.Log(DebugType.Log, $"Unit {unit}: {diceSide.SideType}-{diceSide.Value} to {target}");
+            LogService.LogDebug(DebugType.Log, $"Unit {unit}: {diceSide.SideType}-{diceSide.Value} to {target}");
             while (_diceApplyService.IsApplyInProgress(target, diceSide.SideType))
                 await UniTask.NextFrame(localCts.Token);
 

@@ -10,7 +10,6 @@ namespace Units
     public class UnitViewService
     {
         private readonly EcsService _ecsService;
-        private readonly DebugService _debug;
         private readonly UnitService _unitService;
         private readonly DiceViewService _diceViewService;
         private readonly HighlightService _highlightService;
@@ -19,10 +18,9 @@ namespace Units
 
         [Inject]
         public UnitViewService(EcsService ecsService, HighlightService highlightService, BattleAnimatorService battleAnimatorService,
-            DebugService debug, UnitService unitService, DiceViewService diceViewService)
+            UnitService unitService, DiceViewService diceViewService)
         {
             _ecsService = ecsService;
-            _debug = debug;
             _unitService = unitService;
             _diceViewService = diceViewService;
             _highlightService = highlightService;
@@ -35,7 +33,7 @@ namespace Units
             ref var unitComponent = ref _unitPool.Get(unit);
             if (!_ecsService.TryUnpack(unitComponent.MainDice, out var dice))
             {
-                _debug.Log(DebugType.Warning, $"Cannot unpack dice for unit {unit}");
+                LogService.LogDebug(DebugType.Warning, $"Cannot unpack dice for unit {unit}");
                 return;
             }
 

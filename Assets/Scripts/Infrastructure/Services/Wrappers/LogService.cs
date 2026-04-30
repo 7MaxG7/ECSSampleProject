@@ -3,9 +3,9 @@ using UnityEngine;
 
 namespace Infrastructure
 {
-    public sealed class DebugService
+    public sealed class LogService
     {
-        public void Log(DebugType debugType, string message)
+        public static void LogDebug(DebugType debugType, string message)
         {
 #if UNITY_EDITOR
             switch (debugType)

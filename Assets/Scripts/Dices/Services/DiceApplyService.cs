@@ -13,7 +13,6 @@ namespace Dices
     {
         public bool IsApplyingDice { get; private set; }
 
-        private readonly DebugService _debug;
         private readonly TeamService _teamService;
         private readonly DamageService _damageService;
         private readonly HealthService _healthService;
@@ -21,10 +20,8 @@ namespace Dices
         private readonly EcsFilter _targetedFilter;
 
         [Inject]
-        public DiceApplyService(EcsService ecsService, DebugService debug, TeamService teamService, DamageService damageService,
-            HealthService healthService)
+        public DiceApplyService(EcsService ecsService, TeamService teamService, DamageService damageService, HealthService healthService)
         {
-            _debug = debug;
             _teamService = teamService;
             _damageService = damageService;
             _healthService = healthService;
@@ -37,7 +34,7 @@ namespace Dices
             _teamService.SetCurrentTeam(TeamType.Player);
             IsApplyingDice = true;
 
-            _debug.Log(DebugType.Log, "Player's turn");
+            LogService.LogDebug(DebugType.Log, "Player's turn");
         }
 
         public void FinishDiceApplying()
