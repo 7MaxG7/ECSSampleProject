@@ -1,6 +1,6 @@
-﻿using System.Linq;
-using UnityEngine;
-using Random = System.Random;
+﻿using System;
+using System.Linq;
+using CustomTypes.Enums.Infrastructure;
 
 namespace Infrastructure
 {
@@ -21,9 +21,7 @@ namespace Infrastructure
             }
 
             _random = new Random(Seed);
-            
-            var message = $"{this}: current seed is: {Seed}";
-            Debug.Log(message);
+            LogService.LogDebug(DebugType.Log, $"{this}: current seed is: {Seed}");
         }
 
         /// <summary>
@@ -34,9 +32,6 @@ namespace Infrastructure
 
         public double GetToMax(float max) 
             => _random.NextDouble() * max;
-
-        public T GetOne<T>(params T[] values)
-            => values[GetInt(values.Length)];
 
         public T GetRandom<T>(T[] collection)
         {

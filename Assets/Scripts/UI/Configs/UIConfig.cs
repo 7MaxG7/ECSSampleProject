@@ -7,9 +7,9 @@ namespace UI
     {
         [SerializeField] private float _defaultAnimationDuration;
         [Tooltip("Продолжительность анимации изменения значения шкал здоровья")]
-        [SerializeField] private float _healthBarAnimationLength;
+        [SerializeField] private float _healthBarAnimationDuration = .25f;
 
         public float DefaultAnimationDuration => _defaultAnimationDuration;
-        public float HealthBarAnimationLength => _healthBarAnimationLength;
+        public float HealthBarAnimationDuration => _healthBarAnimationDuration;
     }
 }

@@ -18,7 +18,7 @@ namespace Infrastructure.Bootstrap
         private readonly GameEditorSystemsInitializer _editorSystemsInitializer;
         private readonly StaticDataService _dataService;
         private readonly InputService _inputService;
-        private readonly UiAnimationService _uiAnimationService;
+        private readonly UiAnimationUtility _uiAnimationUtility;
         private readonly PermanentUIBuilder _permanentUIBuilder;
         private readonly DisposeCoordinator _disposeCoordinator;
 
@@ -28,7 +28,7 @@ namespace Infrastructure.Bootstrap
 
         public GameBootstrapper(AssetsProvider assetsProvider, SceneLoader sceneLoader, EcsService ecsService, RandomService randomService,
             CancellationTokenProvider tokenProvider, GameEditorSystemsInitializer editorSystemsInitializer, StaticDataService dataService,
-            UiAnimationService uiAnimationService, PermanentUIBuilder permanentUIBuilder, DisposeCoordinator disposeCoordinator,
+            UiAnimationUtility uiAnimationUtility, PermanentUIBuilder permanentUIBuilder, DisposeCoordinator disposeCoordinator,
             InputService inputService)
         {
             _assetsProvider = assetsProvider;
@@ -39,7 +39,7 @@ namespace Infrastructure.Bootstrap
             _editorSystemsInitializer = editorSystemsInitializer;
             _dataService = dataService;
             _inputService = inputService;
-            _uiAnimationService = uiAnimationService;
+            _uiAnimationUtility = uiAnimationUtility;
             _permanentUIBuilder = permanentUIBuilder;
             _disposeCoordinator = disposeCoordinator;
         }
@@ -65,11 +65,11 @@ namespace Infrastructure.Bootstrap
 
         public void OnDispose()
         {
-            _permanentUIBuilder.Clear();
-            _uiAnimationService.Clear();
-            _inputService.Clear();
+            _permanentUIBuilder.OnDispose();
+            _uiAnimationUtility.OnDispose();
+            _inputService.OnDispose();
             _tokenProvider.OnDispose();
-            _assetsProvider.ClearAll();
+            _assetsProvider.OnDispose();
             _ecsService.DestroyAll();
         }
 
@@ -82,9 +82,8 @@ namespace Infrastructure.Bootstrap
             _ecsService.Init();
             _randomService.Init();
             _dataService.Init();
-            _uiAnimationService.Init();
-            await _permanentUIBuilder.InitAsync();
-            await _permanentUIBuilder.BuildUIAsync();
+            _uiAnimationUtility.Init();
+            _permanentUIBuilder.BuildUI();
 
             InitSystemsAsync();
 

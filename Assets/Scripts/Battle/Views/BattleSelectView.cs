@@ -9,7 +9,7 @@ namespace Battle
         [SerializeField] private BattleSelectionType _selectionType;
         
         public BattleSelectionType SelectionType => _selectionType;
-        public EcsPackedEntity? Entity { get; private set; }
+        public EcsPackedEntity Entity { get; private set; }
 
         public void Init(EcsPackedEntity packedEntity)
         {

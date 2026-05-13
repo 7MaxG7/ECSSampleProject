@@ -11,6 +11,8 @@ namespace Dices
 {
     public class DiceApplyService
     {
+        public TeamType ApplyStartTeam => TeamType.Player;
+        public TeamType ApplyEndTeam => TeamType.Enemy;
         public bool IsApplyingDice { get; private set; }
 
         private readonly TeamService _teamService;
@@ -31,7 +33,7 @@ namespace Dices
 
         public void StartDiceApplying()
         {
-            _teamService.SetCurrentTeam(TeamType.Player);
+            _teamService.SetCurrentTeam(ApplyStartTeam);
             IsApplyingDice = true;
 
             LogService.LogDebug(DebugType.Log, "Player's turn");

@@ -15,8 +15,9 @@ namespace Infrastructure.Installers
             Container.Bind<EcsService>().AsSingle();
             Container.Bind<RandomService>().AsSingle();
             Container.Bind<LogService>().AsSingle();
-            Container.Bind<PlayerPrefsService>().AsSingle();
             Container.Bind<StaticDataService>().AsSingle();
+            Container.Bind<DisposeCoordinator>().AsSingle();
+            Container.Bind<Instantiator>().AsSingle();
 
             // Debug
             Container.Bind<EcsWorldDebugSystem>().AsSingle().WithArguments(false);

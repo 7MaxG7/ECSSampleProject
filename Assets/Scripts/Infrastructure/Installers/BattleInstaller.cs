@@ -1,6 +1,5 @@
 using Battle;
 using Battle.Battlefield;
-using Battle.Temp;
 using Dices;
 using UI.Battle;
 using Units;
@@ -22,12 +21,11 @@ namespace Infrastructure.Installers
             Container.Bind<BattleDeathService>().AsSingle();
             Container.BindInterfacesAndSelfTo<DamageSystem>().AsSingle();
             Container.BindInterfacesAndSelfTo<DeathSystem>().AsSingle();
-            Container.BindInterfacesAndSelfTo<UnitAnimationLaunchSystem>().AsSingle();
+            Container.BindInterfacesAndSelfTo<UnitAnimationLaunchViewSystem>().AsSingle();
 
             // Selection
             Container.Bind<BattleSelectionService>().AsSingle();
-            Container.Bind<BattleUnitSelectionService>().AsSingle();
-            Container.BindInterfacesAndSelfTo<BattleSelectionSystem>().AsSingle();
+            Container.BindInterfacesAndSelfTo<BattleSelectionViewSystem>().AsSingle();
             
             // Dice
             Container.Bind<DiceApplyService>().AsSingle();
@@ -59,8 +57,7 @@ namespace Infrastructure.Installers
             Container.Bind<BattleAnimatorService>().AsSingle();
             Container.Bind<BattleAnimationConfig>().FromScriptableObjectResource(nameof(BattleAnimationConfig)).AsSingle();
             
-            // TODO. Remove service when teams initializing moves to appropriate state
-            Container.Bind<TeamsInitializer>().AsSingle();
+            Container.Bind<TeamBuilder>().AsSingle();
         }
     }
 }

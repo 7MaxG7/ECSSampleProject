@@ -57,10 +57,10 @@ namespace Infrastructure.Bootstrap
         {
             base.OnDispose();
 
-            _animatorService.Clear();
-            _battleSelectionService.Clear();
-            _battleUIBuilder.ClearBattleUI();
-            _battlefieldBuilder.Clear();
+            _animatorService.OnDispose();
+            _battleSelectionService.OnDispose();
+            _battleUIBuilder.OnDispose();
+            _battlefieldBuilder.OnDispose();
         }
     }
 }

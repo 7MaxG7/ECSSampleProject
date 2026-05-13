@@ -25,16 +25,11 @@ namespace Dices
             _lockedDiceFilter = ecsService.World.Filter<DiceComponent>().Inc<LockedComponent>().Exc<DeadComponent>().End();
             _unlockedDiceFilter = ecsService.World.Filter<DiceComponent>().Exc<LockedComponent>().Exc<DeadComponent>().End();
         }
-        
-        public void ToggleDiceLock(int dice, bool isLocked)
-        {
-            if (isLocked)
-                _lockedPool.Add(dice);
-            else
-                _lockedPool.Del(dice);
 
-            ref var diceLockEventComponent = ref _diceLockEventPool.Add(dice);
-            diceLockEventComponent.IsLocked = isLocked;
+        public void ToggleDiceLock(int dice)
+        {
+            var mustLocked = !IsLocked(dice);
+            SetDiceLock(dice, mustLocked);
         }
 
         public bool IsLocked(int dice)
@@ -52,10 +47,10 @@ namespace Dices
         public void UnlockAllDices()
         {
             foreach (var dice in _lockedDiceFilter)
-                ToggleDiceLock(dice, false);
+                SetDiceLock(dice, false);
         }
 
-        public void ToggleCurrentTeamDicesLock(bool mustLocked)
+        public void SetCurrentTeamDicesLock(bool mustLocked)
         {
             var diceFilter = mustLocked ? _unlockedDiceFilter : _lockedDiceFilter;
             foreach (var dice in diceFilter)
@@ -63,8 +58,19 @@ namespace Dices
                 if (!_teamService.IsCurrentTeamEntity(dice))
                     continue;
 
-                ToggleDiceLock(dice, mustLocked);
+                SetDiceLock(dice, mustLocked);
             }
+        }
+
+        private void SetDiceLock(int dice, bool isLocked)
+        {
+            if (isLocked)
+                _lockedPool.Add(dice);
+            else
+                _lockedPool.Del(dice);
+
+            ref var diceLockEventComponent = ref _diceLockEventPool.Add(dice);
+            diceLockEventComponent.IsLocked = isLocked;
         }
     }
 }

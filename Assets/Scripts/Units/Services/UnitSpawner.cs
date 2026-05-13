@@ -16,7 +16,7 @@ namespace Units
         private readonly UnitViewFactory _unitViewFactory;
         private readonly BattlefieldViewService _battlefieldViewService;
         private readonly HighlightService _highlightService;
-        private readonly UnitUIOverlayService _unitUIOverlayService;
+        private readonly UnitOverlayUIService _unitOverlayUIService;
 
         private readonly EcsPool<UnitComponent> _unitPool;
         private readonly EcsPool<BattleLocationComponent> _battleLocationPool;
@@ -24,12 +24,12 @@ namespace Units
         private readonly EcsPool<TeamComponent> _teamPool;
 
         public UnitSpawner(EcsService ecsService, UnitViewFactory unitViewFactory, BattlefieldViewService battlefieldViewService,
-            HighlightService highlightService, UnitUIOverlayService unitUIOverlayService)
+            HighlightService highlightService, UnitOverlayUIService unitOverlayUIService)
         {
             _unitViewFactory = unitViewFactory;
             _battlefieldViewService = battlefieldViewService;
             _highlightService = highlightService;
-            _unitUIOverlayService = unitUIOverlayService;
+            _unitOverlayUIService = unitOverlayUIService;
 
             _unitPool = ecsService.World.GetPool<UnitComponent>();
             _battleLocationPool = ecsService.World.GetPool<BattleLocationComponent>();
@@ -49,7 +49,7 @@ namespace Units
         {
             _unitViewPool.Del(unit);
             _highlightService.Clear(unit);
-            _unitUIOverlayService.Clear(unit);
+            _unitOverlayUIService.Clear(unit);
         }
 
         private (UnitSpecialization Specialization, BattleCell Cell, Quaternion Rotation, TeamType Team) GetSpawnParams(int unit)

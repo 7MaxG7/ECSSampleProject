@@ -14,7 +14,7 @@ namespace Infrastructure.Input
             UserInputControls = new InputControls();
         }
 
-        public void Clear()
+        public void OnDispose()
         {
             UserInputControls.Disable();
             UserInputControls?.Dispose();

@@ -19,7 +19,7 @@ namespace Infrastructure.Installers
 
             // Input
             Container.Bind<InputService>().AsSingle();
-            Container.Bind<InputConfig>().FromScriptableObjectResource(nameof(InputConfig)).AsSingle();
+            Container.Bind<SelectionConfig>().FromScriptableObjectResource(nameof(SelectionConfig)).AsSingle();
             
             // Factories
             Container.Bind<UnitFactory>().AsSingle();
@@ -33,9 +33,6 @@ namespace Infrastructure.Installers
             
             // Units
             Container.Bind<UnitService>().AsSingle();
-            
-            // Dices
-            Container.Bind<DiceService>().AsSingle();
         }
     }
 }

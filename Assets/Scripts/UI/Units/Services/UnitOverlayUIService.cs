@@ -9,16 +9,15 @@ using Zenject;
 
 namespace UI.Units
 {
-    public class UnitUIOverlayService
+    public class UnitOverlayUIService
     {
         private readonly BattleUIFactory _battleUIFactory;
 
         private readonly EcsPool<UnitUIOverlayComponent> _unitUIOverlayPool;
         private readonly EcsPool<UnitViewComponent> _unitViewPool;
 
-
         [Inject]
-        public UnitUIOverlayService(EcsService ecsService, BattleUIFactory battleUIFactory)
+        public UnitOverlayUIService(EcsService ecsService, BattleUIFactory battleUIFactory)
         {
             _battleUIFactory = battleUIFactory;
 
@@ -37,10 +36,10 @@ namespace UI.Units
             return await _battleUIFactory.CreateOverlayDiceFacetAsync(diceSide, content);
         }
 
-        public void InitComponents(int unit, UnitUIOverlayView uiOverlay)
+        public void InitComponents(int unit, UnitOverlayUIView unitOverlayUIView)
         {
             ref var unitUIOverlayComponent = ref _unitUIOverlayPool.Add(unit);
-            unitUIOverlayComponent.UIOverlayView = uiOverlay;
+            unitUIOverlayComponent.UnitOverlayUIView = unitOverlayUIView;
             unitUIOverlayComponent.OverlayAnchor = GetOverlayAnchor(unit);
         }
 
@@ -53,7 +52,7 @@ namespace UI.Units
         private Transform GetOverlayFacetsContent(int unit)
         {
             ref var unitUIOverlayComponent = ref _unitUIOverlayPool.Get(unit);
-            return unitUIOverlayComponent.UIOverlayView.FacetIconsContent;
+            return unitUIOverlayComponent.UnitOverlayUIView.FacetIconsContent;
         }
     }
 }

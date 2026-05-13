@@ -1,8 +1,12 @@
+using System.Collections.Generic;
+using System.Linq;
 using CustomTypes;
 using CustomTypes.Enums.Battle;
+using CustomTypes.Enums.Infrastructure;
 using Infrastructure;
 using Leopotam.EcsLite;
 using UnityEngine;
+using UnityEngine.Tilemaps;
 using Utils.Extensions;
 
 namespace Battle.Battlefield
@@ -11,25 +15,36 @@ namespace Battle.Battlefield
     {
         private readonly EcsFilter _battlefieldViewFilter;
         private readonly EcsPool<BattlefieldViewComponent> _battlefieldViewPool;
+        
+        private readonly Dictionary<TileState, TileBase> _stateTiles;
 
-        public BattlefieldViewService(EcsService ecsService)
+        public BattlefieldViewService(EcsService ecsService, BattlefieldViewConfig battlefieldViewConfig)
         {
             _battlefieldViewFilter = ecsService.World.Filter<BattlefieldViewComponent>().End();
             _battlefieldViewPool = ecsService.World.GetPool<BattlefieldViewComponent>();
+
+            _stateTiles = battlefieldViewConfig.StateTiles.ToDictionary(data => data.State, data => data.Tile);
         }
 
         public void SetTile(Vector3Int position, TileState state)
         {
-            var battlefieldViewEntity = _battlefieldViewFilter.GetSingle();
-            ref var battlefieldViewComponent = ref _battlefieldViewPool.Get(battlefieldViewEntity);
-            battlefieldViewComponent.BattlefieldView.SetTile(position, state);
+            if (!_stateTiles.TryGetValue(state, out var tile))
+            {
+                LogService.LogDebug(DebugType.Warning, $"No tile for state {state}");
+                return;
+            }
+            
+            GetBattlefieldView().SetTile(position, tile);
         }
 
         public Vector3 GetTilePosition(BattleCell cell)
+            => GetBattlefieldView().Grid.GetCellCenterWorld(cell.Location);
+
+        private BattlefieldView GetBattlefieldView()
         {
-            var battlefieldViewEntity = _battlefieldViewFilter.GetSingle();
-            ref var battlefieldViewComponent = ref _battlefieldViewPool.Get(battlefieldViewEntity);
-            return battlefieldViewComponent.BattlefieldView.Grid.GetCellCenterWorld(cell.Location);
+            var battlefieldView = _battlefieldViewFilter.GetSingle();
+            ref var battlefieldViewComponent = ref _battlefieldViewPool.Get(battlefieldView);
+            return battlefieldViewComponent.BattlefieldView;
         }
     }
 }

@@ -22,9 +22,9 @@ namespace Battle
             _battlefieldPool = _ecsService.World.GetPool<BattlefieldComponent>();
         }
 
-        public void CreateBattlefield()
+        public int CreateBattlefield()
         {
-            var battlefieldEntity = _ecsService.CreateEntity();
+            var battlefield = _ecsService.CreateEntity();
             
             var sideSize = _battlefieldConfig.BattlefieldSize;
             var cells = new BattleCell[sideSize * sideSize];
@@ -32,11 +32,16 @@ namespace Battle
             for (var x = 0; x < sideSize; x++)
                 cells[y * sideSize + x] = new BattleCell(x, y);
 
-            _battlefieldPool.Add(battlefieldEntity) = new BattlefieldComponent
-            {
-                Size = sideSize,
-                BattlefieldCells = cells,
-            };
+            InitComponents(battlefield, sideSize, cells);
+            
+            return battlefield;
+        }
+
+        private void InitComponents(int battlefield, int sideSize, BattleCell[] cells)
+        {
+            ref var battlefieldComponent = ref _battlefieldPool.Add(battlefield);
+            battlefieldComponent.Size = sideSize;
+            battlefieldComponent.BattlefieldCells = cells;
         }
     }
 }

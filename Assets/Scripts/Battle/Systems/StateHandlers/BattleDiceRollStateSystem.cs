@@ -1,4 +1,3 @@
-using CustomTypes.Enums.Team;
 using Leopotam.EcsLite;
 using Zenject;
 
@@ -30,13 +29,13 @@ namespace Battle
             }
 
             if (IsEnemyRollingComplete())
-                _rollService.StartTeamDiceRolling(TeamType.Player);
+                _rollService.StartTeamDiceRolling(_rollService.RollingEndTeam);
         }
 
         private bool IsRollingStateCompleted()
-            => _teamService.IsCurrentTeam(TeamType.Player) && _rollService.IsCurrentTeamRollingFinished();
+            => _teamService.IsCurrentTeam(_rollService.RollingEndTeam) && _rollService.IsCurrentTeamRollingFinished();
 
         private bool IsEnemyRollingComplete()
-            => _teamService.IsCurrentTeam(TeamType.Enemy) && _rollService.IsCurrentTeamRollingFinished();
+            => _teamService.IsCurrentTeam(_rollService.RollingStartTeam) && _rollService.IsCurrentTeamRollingFinished();
     }
 }

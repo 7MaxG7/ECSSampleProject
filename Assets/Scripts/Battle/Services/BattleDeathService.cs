@@ -39,7 +39,10 @@ namespace Battle
                 _deadPool.Add(dice);
             }
         }
-  
+
+        public bool IsDead(int target)
+            => _deadPool.Has(target);
+
         public bool IsAnyTeamDead()
         {
             var aliveTeams = new HashSet<TeamType>();
@@ -55,19 +58,12 @@ namespace Battle
             return true;
         }
 
-        public bool TryGetAnyAliveTeam(out TeamType team)
+        public TeamType GetAnyAliveTeam()
         {
             foreach (var unit in _aliveUnitFilter)
-            {
-                team = _teamService.GetTeam(unit);
-                return true;
-            }
+                return _teamService.GetTeam(unit);
 
-            team = TeamType.None;
-            return false;
+            return TeamType.None;
         }
-
-        public bool IsDead(int target)
-            => _deadPool.Has(target);
     }
 }

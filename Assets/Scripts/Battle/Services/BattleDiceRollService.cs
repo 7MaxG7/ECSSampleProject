@@ -10,6 +10,10 @@ namespace Battle
 {
     public class BattleDiceRollService
     {
+        public TeamType RollingStartTeam => TeamType.Enemy;
+        public TeamType RollingEndTeam => TeamType.Player;
+        public bool IsRollingState { get; private set; }
+        
         private readonly RandomService _random;
         private readonly TeamService _teamService;
         private readonly DiceViewService _diceViewService;
@@ -20,8 +24,6 @@ namespace Battle
         private readonly EcsPool<DiceComponent> _dicePool;
         private readonly EcsPool<TeamBattleDicesRollComponent> _teamBattleDicesRollPool;
         private readonly EcsPool<DicesRollEventComponent> _dicesRollEventPool;
-
-        public bool IsRollingState { get; private set; }
 
         [Inject]
         public BattleDiceRollService(EcsService ecsService, RandomService random, TeamService teamService, DiceViewService diceViewService,
@@ -47,7 +49,7 @@ namespace Battle
                 teamBattleDicesRollComponent.RollsLeft = teamBattleDicesRollComponent.StartRollsCount;
             }
 
-            StartTeamDiceRolling(TeamType.Enemy);
+            StartTeamDiceRolling(RollingStartTeam);
             IsRollingState = true;
         }
 
@@ -55,7 +57,7 @@ namespace Battle
         {
             _teamService.SetCurrentTeam(team);
             _diceViewService.ActivateCurrentTeamDices();
-            _lockService.ToggleCurrentTeamDicesLock(false);
+            _lockService.SetCurrentTeamDicesLock(false);
             RollCurrentTeamUnlockedMainDices();
             LogService.LogDebug(DebugType.Log, $"{team}'s turn");
         }
@@ -77,7 +79,7 @@ namespace Battle
                 diceComponent.CurrentSide = _random.GetRandom(diceComponent.Config.Sides);
             }
 
-            UpdateCurrentTeamRollsCount();
+            DecreaseCurrentTeamRollsCount();
         }
 
         public bool IsCurrentTeamRollingFinished()
@@ -89,7 +91,7 @@ namespace Battle
             return IsTeamRollingFinished(in teamBattleDicesRollComponent);
         }
 
-        private void UpdateCurrentTeamRollsCount()
+        private void DecreaseCurrentTeamRollsCount()
         {
             if (!TryGetCurrentTeamRoll(out var teamRoll))
                 return;
@@ -98,7 +100,7 @@ namespace Battle
             --teamBattleDicesRollComponent.RollsLeft;
 
             if (IsTeamRollingFinished(in teamBattleDicesRollComponent))
-                _lockService.ToggleCurrentTeamDicesLock(true);
+                _lockService.SetCurrentTeamDicesLock(true);
             else if (_lockService.AreCurrentTeamDicesLocked())
                 FinishTeamRolling(ref teamBattleDicesRollComponent);
 
@@ -114,7 +116,7 @@ namespace Battle
                     return true;
                 }
 
-            LogService.LogDebug(DebugType.Warning, $"Cannot find team rolls for current team");
+            LogService.LogDebug(DebugType.Warning, "Cannot find team rolls for current team");
             teamRolls = -1;
             return false;
         }

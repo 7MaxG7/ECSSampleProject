@@ -2,8 +2,8 @@ using UnityEngine;
 
 namespace Infrastructure.Configs
 {
-    [CreateAssetMenu(menuName = "Configs/" + nameof(InputConfig), fileName = nameof(InputConfig), order = 1)]
-    public class InputConfig : ScriptableObject
+    [CreateAssetMenu(menuName = "Configs/" + nameof(SelectionConfig), fileName = nameof(SelectionConfig), order = 1)]
+    public class SelectionConfig : ScriptableObject
     {
         [Header("Selection raycast")]
         [Tooltip("Число объектов, фиксируемых рейкастом при клике системой выбора")]

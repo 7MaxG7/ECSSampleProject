@@ -1,28 +1,28 @@
-using Cysharp.Threading.Tasks;
-
 namespace UI.Permanent
 {
     public class PermanentUIBuilder
     {
         private readonly CommonUIFactory _commonUIFactory;
         private readonly CurtainUIController _curtainUIController;
+        
+        private PermanentUIView _permanentUIView;
 
         public PermanentUIBuilder(CommonUIFactory commonUIFactory, CurtainUIController curtainUIController)
         {
             _commonUIFactory = commonUIFactory;
             _curtainUIController = curtainUIController;
         }
-        
-        public async UniTask InitAsync()
-            => await _commonUIFactory.PrepareCanvasAsync();
 
-        public async UniTask BuildUIAsync()
+        public void BuildUI()
         {
-            await _commonUIFactory.CreateCurtain();
+            _permanentUIView = _commonUIFactory.CreateRoot();
+            
+            var curtainView = _commonUIFactory.CreateCurtain(_permanentUIView.Content);
+            _curtainUIController.Init(curtainView);
             _curtainUIController.ShowInstantly();
         }
 
-        public void Clear()
+        public void OnDispose()
             => _curtainUIController.Clear();
     }
 }

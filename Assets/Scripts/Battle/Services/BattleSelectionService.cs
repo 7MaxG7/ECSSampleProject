@@ -13,7 +13,7 @@ namespace Battle
     public class BattleSelectionService
     {
         private readonly EcsService _ecsService;
-        private readonly InputConfig _inputConfig;
+        private readonly SelectionConfig _selectionConfig;
         private readonly InputService _inputService;
 
         private readonly EcsFilter _selectedFilter;
@@ -24,10 +24,10 @@ namespace Battle
         private readonly RaycastHit[] _raycastHits;
 
         [Inject]
-        public BattleSelectionService(EcsService ecsService, InputConfig inputConfig, InputService inputService)
+        public BattleSelectionService(EcsService ecsService, SelectionConfig selectionConfig, InputService inputService)
         {
             _ecsService = ecsService;
-            _inputConfig = inputConfig;
+            _selectionConfig = selectionConfig;
             _inputService = inputService;
 
             _selectedFilter = ecsService.World.Filter<BattleSelectedComponent>().End();
@@ -35,7 +35,7 @@ namespace Battle
             _battleSelectEventPool = ecsService.World.GetPool<BattleSelectEventComponent>();
             _battleDeselectEventPool = ecsService.World.GetPool<BattleDeselectEventComponent>();
             
-            _raycastHits = new RaycastHit[_inputConfig.SelectionRaycastHitsCount];
+            _raycastHits = new RaycastHit[_selectionConfig.SelectionRaycastHitsCount];
         }
 
         public void Init()
@@ -44,11 +44,10 @@ namespace Battle
             _inputService.UserInputControls.BattleSelection.Enable();
         }
 
-        public void Clear()
+        public void OnDispose()
         {
             _inputService.UserInputControls.BattleSelection.Disable();
             _inputService.UserInputControls.BattleSelection.InfoClick.performed -= ShowInfo;
-
         }
 
         public bool TryGetSelection(out int selected, out BattleSelectionType selectionType)
@@ -71,14 +70,19 @@ namespace Battle
         private void ClearSelection()
         {
             foreach (var selected in _selectedFilter)
-                _battleDeselectEventPool.Add(selected);
+            {
+                ref var battleDeselectEventComponent = ref _battleDeselectEventPool.Add(selected);
+                ref var battleSelectedComponent = ref _battleSelectedPool.Get(selected);
+                battleDeselectEventComponent.SelectionType = battleSelectedComponent.SelectionType;
+                _battleSelectedPool.Del(selected);
+            }
         }
 
         private bool TryRaycastSelection(out int hitsCount)
         {
             // ReSharper disable once PossibleNullReferenceException
             var ray = Camera.main.ScreenPointToRay(_inputService.MousePosition);
-            hitsCount = Physics.RaycastNonAlloc(ray, _raycastHits, _inputConfig.SelectionRaycastLength, _inputConfig.SelectionLayerMask);
+            hitsCount = Physics.RaycastNonAlloc(ray, _raycastHits, _selectionConfig.SelectionRaycastLength, _selectionConfig.SelectionLayerMask);
 
             return hitsCount != 0;
         }
@@ -110,9 +114,10 @@ namespace Battle
             if (_battleSelectedPool.Has(selected))
                 return;
             
-            _battleSelectEventPool.Add(selected);
             ref var selectedComponent = ref _battleSelectedPool.Add(selected);
+            ref var battleSelectEventComponent = ref _battleSelectEventPool.Add(selected);
             selectedComponent.SelectionType = selectionType;
+            battleSelectEventComponent.SelectionType = selectionType;
         }
     }
 }

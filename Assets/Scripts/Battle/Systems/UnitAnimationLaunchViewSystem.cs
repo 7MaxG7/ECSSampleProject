@@ -7,23 +7,23 @@ using Zenject;
 
 namespace Battle
 {
-    public class UnitAnimationLaunchSystem : IEcsRunSystem
+    public class UnitAnimationLaunchViewSystem : IEcsRunSystem
     {
         private readonly BattleDeathService _deathService;
         private readonly BattleAnimatorService _animatorService;
 
         private readonly EcsFilter _animationLaunchUnitsFilter;
         private readonly EcsFilter _diedDicesFilter;
-        private readonly EcsPool<AnimationLaunchComponent> _animationLaunchPool;
+        private readonly EcsPool<AnimationLaunchEventComponent> _animationLaunchPool;
 
         [Inject]
-        public UnitAnimationLaunchSystem(EcsService ecsService, BattleDeathService deathService, BattleAnimatorService animatorService)
+        public UnitAnimationLaunchViewSystem(EcsService ecsService, BattleDeathService deathService, BattleAnimatorService animatorService)
         {
             _deathService = deathService;
             _animatorService = animatorService;
 
-            _animationLaunchUnitsFilter = ecsService.World.Filter<AnimationLaunchComponent>().Inc<UnitViewComponent>().End();
-            _animationLaunchPool = ecsService.World.GetPool<AnimationLaunchComponent>();
+            _animationLaunchUnitsFilter = ecsService.World.Filter<AnimationLaunchEventComponent>().Inc<UnitViewComponent>().End();
+            _animationLaunchPool = ecsService.World.GetPool<AnimationLaunchEventComponent>();
         }
 
         public void Run(IEcsSystems systems)

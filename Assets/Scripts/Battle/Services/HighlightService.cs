@@ -28,7 +28,7 @@ namespace Battle
         public void Clear(int entity)
             => _viewHighlightPool.Del(entity);
 
-        public void ToggleHighlight(int entity, bool mustEnabled, HighlightType highlightType = HighlightType.Default)
+        public void SetHighlight(int entity, bool mustEnabled, HighlightType highlightType = HighlightType.Default)
         {
             if (!mustEnabled)
             {

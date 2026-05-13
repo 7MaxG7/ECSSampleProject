@@ -6,6 +6,6 @@ namespace Units
     public struct UnitComponent
     {
         public UnitSpecialization Specialization;
-        public EcsPackedEntity? MainDice;
+        public EcsPackedEntity MainDice;
     }
 }

@@ -1,4 +1,3 @@
-using Cysharp.Threading.Tasks;
 using Infrastructure;
 using UnityEngine;
 using Zenject;
@@ -7,39 +6,31 @@ namespace UI.Permanent
 {
     public class CommonUIFactory
     {
-        private readonly AssetsProvider _assetsProvider;
         private readonly UIAssetsDb _uiAssetsDb;
-        private readonly CurtainUIController _curtainUIController;
-        private readonly UiAnimationService _uiAnimationService;
         private readonly UIConfig _uiConfig;
-
-        private Transform _rootCanvas;
+        private readonly Instantiator _instantiator;
 
         [Inject]
-        public CommonUIFactory(AssetsProvider assetsProvider, UIAssetsDb uiAssetsDb, CurtainUIController curtainUIController,
-            UiAnimationService uiAnimationService, UIConfig uiConfig)
+        public CommonUIFactory(UIAssetsDb uiAssetsDb, UIConfig uiConfig, Instantiator instantiator)
         {
-            _assetsProvider = assetsProvider;
             _uiAssetsDb = uiAssetsDb;
-            _curtainUIController = curtainUIController;
-            _uiAnimationService = uiAnimationService;
             _uiConfig = uiConfig;
+            _instantiator = instantiator;
         }
 
-        public async UniTask PrepareCanvasAsync()
+        public PermanentUIView CreateRoot()
         {
-            var permanentUI =
-                await _assetsProvider.CreateInstanceAsync<PermanentUIView>(_uiAssetsDb.PermanentUIView, isDontDestroyAsset: true);
-            _rootCanvas = permanentUI.Content;
-            
+            var permanentUI = _instantiator.Create(_uiAssetsDb.PermanentUIView);
+
             Object.DontDestroyOnLoad(permanentUI.gameObject);
+            return permanentUI;
         }
 
-        public async UniTask CreateCurtain()
+        public CurtainUIView CreateCurtain(Transform parent)
         {
-            var curtainView = await _assetsProvider.CreateInstanceAsync<CurtainUIView>(_uiAssetsDb.CurtainView, _rootCanvas, true);
-            curtainView.Init(_uiAnimationService, _uiConfig);
-            _curtainUIController.Init(curtainView);
+            var curtainView = _instantiator.Create(_uiAssetsDb.CurtainView, parent);
+            curtainView.Init(_uiConfig.DefaultAnimationDuration);
+            return curtainView;
         }
     }
 }

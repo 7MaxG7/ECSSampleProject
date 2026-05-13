@@ -22,7 +22,7 @@ namespace Units
         private readonly EcsFilter _animatingUnitFilter;
         private readonly EcsPool<AnimatorViewComponent> _animatorViewPool;
         private readonly EcsPool<AnimatingViewComponent> _animatingViewPool;
-        private readonly EcsPool<AnimationActionReadyEventComponent> _animationActionReadyPool;
+        private readonly EcsPool<AnimationActionReadyEventComponent> _animationActionReadyEventPool;
 
         private readonly Dictionary<DiceSideType, int> _facetActionHashes;
         private readonly Dictionary<DiceSideType, int> _facetReactionHashes;
@@ -35,13 +35,13 @@ namespace Units
             _animationConfig = animationConfig;
 
             _animatorViewFilter = ecsService.World.Filter<AnimatorViewComponent>().End();
-            _animationLaunchFilter = ecsService.World.Filter<AnimationLaunchComponent>().End();
+            _animationLaunchFilter = ecsService.World.Filter<AnimationLaunchEventComponent>().End();
             _animatingUnitFilter = ecsService.World.Filter<AnimatingViewComponent>().
                 Inc<UnitComponent>().
                 Exc<DeadComponent>().End();
             _animatorViewPool = ecsService.World.GetPool<AnimatorViewComponent>();
             _animatingViewPool = ecsService.World.GetPool<AnimatingViewComponent>();
-            _animationActionReadyPool = ecsService.World.GetPool<AnimationActionReadyEventComponent>();
+            _animationActionReadyEventPool = ecsService.World.GetPool<AnimationActionReadyEventComponent>();
             
             _facetActionHashes = new Dictionary<DiceSideType, int>
             {
@@ -58,13 +58,13 @@ namespace Units
             _deathHash = Animator.StringToHash(_animationConfig.DeathParameterName);
         }
 
-        public void Clear()
+        public void OnDispose()
         {
             foreach (var animator in _animatorViewFilter)
             {
                 ref var animatorViewComponent = ref _animatorViewPool.Get(animator);
-                animatorViewComponent.AnimatorListener.OnStateEnter -= EnterFacetAnimation;
-                animatorViewComponent.AnimatorListener.OnStateExit -= ExitFacetAnimation;
+                animatorViewComponent.AnimatorListener.OnStateEnter -= EnterAnimation;
+                animatorViewComponent.AnimatorListener.OnStateExit -= ExitAnimation;
                 animatorViewComponent.AnimatorListener.OnActionAnimationEvent -= InvokeActionStart;
             }
         }
@@ -76,8 +76,8 @@ namespace Units
 
             var animatorListener = animator.gameObject.GetComponent<AnimatorListenerView>();
             animatorListener.Init(_ecsService.World.PackEntity(unit));
-            animatorListener.OnStateEnter += EnterFacetAnimation;
-            animatorListener.OnStateExit += ExitFacetAnimation;
+            animatorListener.OnStateEnter += EnterAnimation;
+            animatorListener.OnStateExit += ExitAnimation;
             animatorListener.OnActionAnimationEvent += InvokeActionStart;
             animatorComponent.AnimatorListener = animatorListener;
         }
@@ -105,7 +105,7 @@ namespace Units
         }
 
         public bool IsApplyActionReady(int unit)
-            => _animationActionReadyPool.Has(unit);
+            => _animationActionReadyEventPool.Has(unit);
 
         private void PlayAnimation(int unit, int hash)
         {
@@ -114,7 +114,7 @@ namespace Units
             animatorComponent.Animator.SetTrigger(hash);
         }
 
-        private void EnterFacetAnimation(EcsPackedEntity unitPacked, int facetHash)
+        private void EnterAnimation(EcsPackedEntity unitPacked, int facetHash)
         {
             if (!_ecsService.TryUnpackWithWarning(unitPacked, out var unit))
                 return;
@@ -129,7 +129,7 @@ namespace Units
             }
         }
 
-        private void ExitFacetAnimation(EcsPackedEntity unitPacked, int facetHash)
+        private void ExitAnimation(EcsPackedEntity unitPacked, int facetHash)
         {
             if (!_ecsService.TryUnpackWithWarning(unitPacked, out var unit))
                 return;
@@ -143,7 +143,7 @@ namespace Units
             if (!_ecsService.TryUnpackWithWarning(unitPacked, out var unit))
                 return;
 
-            _animationActionReadyPool.Add(unit);
+            _animationActionReadyEventPool.Add(unit);
         }
 
         private async UniTaskVoid ResetTransformPositionAsync(Transform transform)

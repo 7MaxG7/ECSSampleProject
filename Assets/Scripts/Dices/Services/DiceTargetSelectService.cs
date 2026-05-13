@@ -15,6 +15,8 @@ namespace Dices
 {
     public class DiceTargetSelectService
     {
+        public TeamType SelectionStartTeam => TeamType.Enemy;
+        public TeamType SelectionEndTeam => TeamType.Player;
         public bool IsTargetSelecting { get; private set; }
 
         private readonly EcsService _ecsService;
@@ -58,8 +60,15 @@ namespace Dices
 
         public void StartTargetSelection()
         {
-            StartTeamTargetSelection(TeamType.Enemy);
+            StartTeamTargetSelection(SelectionStartTeam);
             IsTargetSelecting = true;
+        }
+
+        public void FinishTargetSelection()
+        {
+            LogTargets();
+            _teamService.SetCurrentTeam(TeamType.None);
+            IsTargetSelecting = false;
         }
 
         public void StartTeamTargetSelection(TeamType team)
@@ -68,13 +77,6 @@ namespace Dices
             _diceViewService.ActivateCurrentTeamDices();
             TargetCurrentTeamMissedDices();
             LogService.LogDebug(DebugType.Log, $"{team}'s turn");
-        }
-
-        public void FinishTargetSelection()
-        {
-            LogTargets();
-            _teamService.SetCurrentTeam(TeamType.None);
-            IsTargetSelecting = false;
         }
 
         public void TrySetTarget(EcsPackedEntity? dicePacked)

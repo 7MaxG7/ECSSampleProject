@@ -5,7 +5,7 @@ namespace Units
 {
     public struct UnitUIOverlayComponent
     {
-        public UnitUIOverlayView UIOverlayView;
+        public UnitOverlayUIView UnitOverlayUIView;
         public Transform OverlayAnchor;
     }
 }

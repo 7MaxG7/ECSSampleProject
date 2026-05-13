@@ -16,7 +16,7 @@ namespace UI.Battle
         public GameButtonView RerollButton => _rerollButton;
 
 
-        public void UpdateTeamRolls((TeamType Team, int RollsCount) teamRolls)
+        public void SetTeamRolls((TeamType Team, int RollsCount) teamRolls)
         {
             switch (teamRolls.Team)
             {
@@ -28,5 +28,8 @@ namespace UI.Battle
                     break;
             }
         }
+
+        public void SetRollButtonLabel(string label)
+            => _rerollButton.Text = label;
     }
 }

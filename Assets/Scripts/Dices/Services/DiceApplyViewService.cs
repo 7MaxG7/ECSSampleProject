@@ -22,7 +22,7 @@ namespace Dices
         private readonly UnitViewService _unitViewService;
 
         private readonly EcsPool<ViewUpdateDelayComponent> _viewUpdateDelayPool;
-        private readonly EcsPool<AnimationLaunchComponent> _animationLaunchPool;
+        private readonly EcsPool<AnimationLaunchEventComponent> _animationLaunchPool;
 
         [Inject]
         public DiceApplyViewService(EcsService ecsService, BattleAnimatorService battleAnimatorService, BattleDeathService deathService,
@@ -34,7 +34,7 @@ namespace Dices
             _unitViewService = unitViewService;
 
             _viewUpdateDelayPool = ecsService.World.GetPool<ViewUpdateDelayComponent>();
-            _animationLaunchPool = ecsService.World.GetPool<AnimationLaunchComponent>();
+            _animationLaunchPool = ecsService.World.GetPool<AnimationLaunchEventComponent>();
         }
 
         public async UniTask AnimateDiceApplyAsync(int unit, int targeted, DiceSideType sideType, CancellationTokenSource cts)
@@ -44,14 +44,14 @@ namespace Dices
             await StartApplyAnimation(unit, targeted, sideType, cts);
             await EndApplyAnimation(targeted, sideType, cts);
 
-            await UniTask.Delay(TimeSpan.FromSeconds(_animationConfig.BetweenUnitsUpplyingDelay), cancellationToken: cts.Token);
+            await UniTask.Delay(TimeSpan.FromSeconds(_animationConfig.BetweenUnitsApplyingDelay), cancellationToken: cts.Token);
             IsInProgress = false;
         }
 
         private async UniTask StartApplyAnimation(int unit, int targeted, DiceSideType sideType, CancellationTokenSource cts)
         {
             _viewUpdateDelayPool.Add(targeted);
-            _animationLaunchPool.Add(unit) = new AnimationLaunchComponent
+            _animationLaunchPool.Add(unit) = new AnimationLaunchEventComponent
             {
                 AnimationType = BattleAnimationType.FacetApply,
                 DiceSideType = sideType,
@@ -71,7 +71,7 @@ namespace Dices
         private void AnimateTarget(int targeted, DiceSideType sideType)
         {
             _viewUpdateDelayPool.Del(targeted);
-            _animationLaunchPool.Add(targeted) = new AnimationLaunchComponent
+            _animationLaunchPool.Add(targeted) = new AnimationLaunchEventComponent
             {
                 AnimationType = BattleAnimationType.FacetReaction,
                 DiceSideType = sideType,

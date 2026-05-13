@@ -6,16 +6,15 @@ using UnityEngine;
 
 namespace UI
 {
-    public class UiAnimationService
+    public class UiAnimationUtility
     {
         public void Init()
             => DOTween.Init();
 
-        public void Clear()
+        public void OnDispose()
             => DOTween.Clear();
         
-        
-        public async UniTask ToggleCanvasGroupVisibilityAsync(CanvasGroup canvasGroup, bool mustVisible, float animationDuration,
+        public static async UniTask ToggleCanvasGroupVisibilityAsync(CanvasGroup canvasGroup, bool mustVisible, float animationDuration,
             CancellationTokenSource cts)
         {
             canvasGroup.DOKill();

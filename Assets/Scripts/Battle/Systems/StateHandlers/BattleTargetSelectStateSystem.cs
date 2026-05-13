@@ -1,4 +1,3 @@
-using CustomTypes.Enums.Team;
 using Cysharp.Threading.Tasks;
 using Dices;
 using Infrastructure;
@@ -36,20 +35,20 @@ namespace Battle
             }
 
             if (IsEnemyTargetingComplete())
-                _targetSelectService.StartTeamTargetSelection(TeamType.Player);
+                _targetSelectService.StartTeamTargetSelection(_targetSelectService.SelectionEndTeam);
         }
 
         private bool IsTargetingStateCompleted()
-            => _teamService.IsCurrentTeam(TeamType.Player) && _targetSelectService.IsCurrentTeamTargetingFinished();
+            => _teamService.IsCurrentTeam(_targetSelectService.SelectionEndTeam) && _targetSelectService.IsCurrentTeamTargetingFinished();
 
         private bool IsEnemyTargetingComplete()
-            => _teamService.IsCurrentTeam(TeamType.Enemy) && _targetSelectService.IsCurrentTeamTargetingFinished();
+            => _teamService.IsCurrentTeam(_targetSelectService.SelectionStartTeam) && _targetSelectService.IsCurrentTeamTargetingFinished();
 
         private async UniTaskVoid EnterApplyDiceStateAsync()
         {
             using var localCts = _tokenProvider.CreateLocalCts();
 
-            // TODO. Need another way to wait frame for ui update (asking ui if it's updated)
+            // TODO. Mb need another way to wait frame for ui update (asking ui if it's updated)
             await UniTask.NextFrame(localCts.Token);
             _battleStateMachine.Enter<DicesApplyState>();
         }

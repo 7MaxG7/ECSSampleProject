@@ -18,7 +18,7 @@ namespace Infrastructure.Installers
             Container.Bind<DiceAimingService>().AsSingle();
             Container.BindInterfacesAndSelfTo<BattleUIUpdateSystem>().AsSingle();
             Container.BindInterfacesAndSelfTo<UnitsHealthBarUpdateSystem>().AsSingle();
-            Container.Bind<UnitUIOverlayService>().AsSingle();
+            Container.Bind<UnitOverlayUIService>().AsSingle();
             Container.Bind<BattleUIAssetsDb>().FromScriptableObjectResource(nameof(BattleUIAssetsDb)).AsSingle();
         }
     }

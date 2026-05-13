@@ -8,7 +8,7 @@ namespace Infrastructure.Installers
     {
         public override void InstallBindings()
         {
-            Container.Bind<UiAnimationService>().AsSingle();
+            Container.Bind<UiAnimationUtility>().AsSingle();
             Container.Bind<UIAssetsDb>().FromScriptableObjectResource(nameof(UIAssetsDb)).AsSingle();
             Container.Bind<UIConfig>().FromScriptableObjectResource(nameof(UIConfig)).AsSingle();
             Container.Bind<CurtainUIController>().AsSingle();

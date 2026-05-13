@@ -3,8 +3,7 @@ using CustomTypes.Enums.Battle;
 using Cysharp.Threading.Tasks;
 using Infrastructure;
 using Leopotam.EcsLite;
-using UnityEngine;
-using Utils.Extensions;
+using Zenject;
 
 namespace Battle
 {
@@ -12,43 +11,36 @@ namespace Battle
     {
         private readonly AssetsProvider _assetsProvider;
         private readonly BattlefieldViewConfig _battlefieldViewConfig;
-        private readonly BattlefieldConfig _battlefieldConfig;
         private readonly BattleCellService _cellService;
+        private readonly BattlefieldViewService _battlefieldViewService;
 
-        private readonly EcsFilter _battlefieldFilter;
         private readonly EcsPool<BattlefieldViewComponent> _battlefieldViewPool;
 
+        [Inject]
         public BattlefieldViewFactory(EcsService ecsService, AssetsProvider assetsProvider, BattlefieldViewConfig battlefieldViewConfig,
-            BattlefieldConfig battlefieldConfig, BattleCellService cellService)
+            BattlefieldViewService battlefieldViewService, BattleCellService cellService)
         {
             _assetsProvider = assetsProvider;
             _battlefieldViewConfig = battlefieldViewConfig;
-            _battlefieldConfig = battlefieldConfig;
             _cellService = cellService;
+            _battlefieldViewService = battlefieldViewService;
 
-            _battlefieldFilter = ecsService.World.Filter<BattlefieldComponent>().End();
             _battlefieldViewPool = ecsService.World.GetPool<BattlefieldViewComponent>();
         }
         
-        public async UniTask CreateBattlefieldViewAsync()
+        public async UniTask CreateBattlefieldViewAsync(int battlefield)
         {
-            var battlefield = _battlefieldFilter.GetSingle();
-            
             var battlefieldView = await _assetsProvider.CreateInstanceAsync<BattlefieldView>(_battlefieldViewConfig.BattlefieldPref);
-            battlefieldView.Init(_battlefieldViewConfig.StateTiles);
-
-            var cellSize = battlefieldView.Grid.cellSize;
-            var sideSize = _battlefieldConfig.BattlefieldSize;
-            battlefieldView.Grid.transform.position =
-                -new Vector3(cellSize.x, 0, cellSize.y) * sideSize * .5f;
+            InitViewComponent(battlefield, battlefieldView);
 
             foreach (var cell in _cellService.GetCells(battlefield))
-                battlefieldView.SetTile(cell.Location, TileState.Inactive);
-
-            _battlefieldViewPool.Add(battlefield) = new BattlefieldViewComponent
-            {
-                BattlefieldView = battlefieldView,
-            };
+                _battlefieldViewService.SetTile(cell.Location, TileState.Inactive);
+        }
+  
+        private void InitViewComponent(int battlefield, BattlefieldView battlefieldView)
+        {
+            ref var battlefieldViewComponent = ref _battlefieldViewPool.Add(battlefield);
+            battlefieldViewComponent.BattlefieldView = battlefieldView;
         }
     }
 }

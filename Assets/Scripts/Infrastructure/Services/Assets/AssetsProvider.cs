@@ -21,7 +21,7 @@ namespace Infrastructure
             Addressables.InitializeAsync();
         }
                 
-        public void ClearAll()
+        public void OnDispose()
         {
             ClearScene();
             

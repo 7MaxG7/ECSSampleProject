@@ -7,8 +7,7 @@ namespace Units
     public class BattleAnimationConfig : ScriptableObject
     {
         [Tooltip("Задержка при переходе от окончания анимации применения кости юнита до старта применения кости второго предмета")]
-        [SerializeField] private float _betweenUnitsUpplyingDelay;
-
+        [SerializeField] private float _betweenUnitsApplyingDelay = .65f;
         [Tooltip("Название блока анимации стойки в аниматоре")] [FoldoutGroup("Animations tech names")]
         [SerializeField] private string _idleAnimationName;
         [Tooltip("Название блока анимации смерти в аниматоре")] [FoldoutGroup("Animations tech names")]
@@ -22,8 +21,7 @@ namespace Units
         [Tooltip("Название параметра смерти в аниматоре")] [FoldoutGroup("Animations tech names")]
         [SerializeField] private string _deathParameterName;
 
-        public float BetweenUnitsUpplyingDelay => _betweenUnitsUpplyingDelay;
-        
+        public float BetweenUnitsApplyingDelay => _betweenUnitsApplyingDelay;
         public string IdleAnimationName => _idleAnimationName;
         public string DeathAnimationName => _deathAnimationName;
         public string MeleeAttackParameterName => _meleeAttackParameterName;

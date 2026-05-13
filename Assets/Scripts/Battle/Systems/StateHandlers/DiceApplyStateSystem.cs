@@ -1,5 +1,4 @@
 using CustomTypes.Enums.Infrastructure;
-using CustomTypes.Enums.Team;
 using Dices;
 using Infrastructure;
 using Leopotam.EcsLite;
@@ -51,17 +50,17 @@ namespace Battle
 
             if (IsPlayerDiceApplyingComplete())
             {
-                _teamService.SetCurrentTeam(TeamType.Enemy);
+                _teamService.SetCurrentTeam(_diceApplyService.ApplyEndTeam);
                 LogService.LogDebug(DebugType.Log, "Enemy's turn");
             }
         }
 
         private bool IsDiceApplyStateCompleted()
-            => _teamService.IsCurrentTeam(TeamType.Enemy) && _diceApplyService.IsCurrentTeamDiceApplyingFinished() &&
+            => _teamService.IsCurrentTeam(_diceApplyService.ApplyEndTeam) && _diceApplyService.IsCurrentTeamDiceApplyingFinished() &&
                 !_diceApplyViewService.IsInProgress;
 
         private bool IsPlayerDiceApplyingComplete()
-            => _teamService.IsCurrentTeam(TeamType.Player) && _diceApplyService.IsCurrentTeamDiceApplyingFinished() &&
+            => _teamService.IsCurrentTeam(_diceApplyService.ApplyStartTeam) && _diceApplyService.IsCurrentTeamDiceApplyingFinished() &&
                 !_diceApplyViewService.IsInProgress;
     }
 }

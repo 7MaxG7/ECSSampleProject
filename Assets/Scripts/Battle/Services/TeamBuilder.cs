@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Battle.Battlefield;
 using CustomTypes;
 using CustomTypes.Enums.Team;
@@ -8,9 +9,9 @@ using Units.Factories;
 using UnityEngine;
 using Zenject;
 
-namespace Battle.Temp
+namespace Battle
 {
-    public class TeamsInitializer
+    public class TeamBuilder
     {
         private readonly EcsService _ecsService;
         private readonly UnitFactory _unitFactory;
@@ -21,8 +22,27 @@ namespace Battle.Temp
         private readonly EcsPool<TeamComponent> _teamPool;
         private readonly EcsPool<TeamBattleDicesRollComponent> _teamBattleDicesRollPool;
 
+        private UnitSpecialization SpawningUnit => new(UnitClass.None, UnitArchetype.None, 1);
+        private readonly Dictionary<TeamType, Vector2Int[]> _unitLocations = new()
+        {
+            [TeamType.Player] = new Vector2Int[]
+            {
+                new(1, 0),
+                new(2, 0),
+                new(1, 1),
+                new(2, 1),
+            },
+            [TeamType.Enemy] = new Vector2Int[]
+            {
+                new(1, 2),
+                new(2, 2),
+                new(1, 3),
+                new(2, 3),
+            },
+        };
+
         [Inject]
-        public TeamsInitializer(EcsService ecsService, UnitFactory unitFactory, BattleCellService cellService, DiceRollsConfig rollsConfig)
+        public TeamBuilder(EcsService ecsService, UnitFactory unitFactory, BattleCellService cellService, DiceRollsConfig rollsConfig)
         {
             _ecsService = ecsService;
             _unitFactory = unitFactory;
@@ -34,12 +54,17 @@ namespace Battle.Temp
             _battleLocationPool = ecsService.World.GetPool<BattleLocationComponent>();
         }
 
-        public void InitializeTeams()
+        public void BuildTeams()
         {
-            CreateTeamRolls(TeamType.Player);
-            CreateTeamRolls(TeamType.Enemy);
+            BuildTeam(TeamType.Player);
+            BuildTeam(TeamType.Enemy);
+        }
 
-            CreateUnits();
+        private void BuildTeam(TeamType team)
+        {
+            CreateTeamRolls(team);
+            foreach (var location in _unitLocations[team])
+                CreateUnit(location, team);
         }
 
         private void CreateTeamRolls(TeamType team)
@@ -53,24 +78,15 @@ namespace Battle.Temp
                 team == TeamType.Player ? _rollsConfig.PlayerDefaultRollsCount : _rollsConfig.EnemyDefaultRollsCount;
         }
 
-        private void CreateUnits()
+        private void CreateUnit(Vector2Int location, TeamType team)
         {
-            // TODO. Setup must be taken from config
-            var cells = _cellService.GetCells();
-            foreach (var cell in cells)
-            {
-                if (cell.Location.x is not 1 and not 2)
-                    continue;
+            var cell = _cellService.GetCell(location.x, location.y);
+            var unit = _unitFactory.CreateUnit(SpawningUnit, team);
 
-                var team = cell.Location.y < 2 ? TeamType.Player : TeamType.Enemy;
-
-                var unit = _unitFactory.CreateUnit(new UnitSpecialization(UnitClass.None, UnitArchetype.None, 1), team);
-
-                ref var battleLocationComponent = ref _battleLocationPool.Get(unit);
-                battleLocationComponent.Cell = cell;
-                battleLocationComponent.Rotation = Quaternion.Euler(team == TeamType.Player ? Vector3.zero : new Vector3(0, 180, 0));
-                cell.Occupier = _ecsService.World.PackEntity(unit);
-            }
+            ref var battleLocationComponent = ref _battleLocationPool.Get(unit);
+            battleLocationComponent.Cell = cell;
+            battleLocationComponent.Rotation = Quaternion.Euler(team == TeamType.Player ? Vector3.zero : new Vector3(0, 180, 0));
+            cell.Occupier = _ecsService.World.PackEntity(unit);
         }
     }
 }

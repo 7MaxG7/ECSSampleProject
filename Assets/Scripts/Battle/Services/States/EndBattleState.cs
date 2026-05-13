@@ -22,7 +22,7 @@ namespace Battle
         {
             LogService.LogDebug(DebugType.Log, $"{nameof(EndBattleState)} started");
 
-            _battleDeathService.TryGetAnyAliveTeam(out var winner);
+            var winner = _battleDeathService.GetAnyAliveTeam();
             _battleUIController.ShowBattleEndLabel(winner);
         }
 

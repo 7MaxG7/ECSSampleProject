@@ -8,26 +8,24 @@ namespace UI.Permanent
     public class CurtainUIView : MonoBehaviour
     {
 		[SerializeField] private CanvasGroup _canvasGroup;
-		
-		private UiAnimationService _uiAnimationService;
-		private UIConfig _uiConfig;
 
-		public virtual void Init(UiAnimationService uiAnimationService, UIConfig uiConfig)
+		private float _fadeDuration;
+
+		public void Init(float fadeDuration)
 		{
-			_uiConfig = uiConfig;
-			_uiAnimationService = uiAnimationService;
+			_fadeDuration = fadeDuration;
 
 			_canvasGroup.alpha = 0;
 			gameObject.SetActive(false);
 		}
 
-		public virtual void Clear()
+		public void Clear()
 		{
 			_canvasGroup.DOKill();
 		}
 
 		public async UniTask ToggleActiveAsync(bool isActive, CancellationTokenSource cts)
-			=> await _uiAnimationService.ToggleCanvasGroupVisibilityAsync(_canvasGroup, isActive, _uiConfig.DefaultAnimationDuration, cts);
+			=> await UiAnimationUtility.ToggleCanvasGroupVisibilityAsync(_canvasGroup, isActive, _fadeDuration, cts);
 
 		public void ShowInstantly()
 		{

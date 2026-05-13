@@ -7,7 +7,7 @@ namespace Units
     /// <summary>
     /// Invokes animation
     /// </summary>
-    public struct AnimationLaunchComponent : IFrameEvent
+    public struct AnimationLaunchEventComponent : IFrameEvent
     {
         public BattleAnimationType AnimationType;
         public DiceSideType DiceSideType;

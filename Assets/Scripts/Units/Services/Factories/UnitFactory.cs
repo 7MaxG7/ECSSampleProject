@@ -1,11 +1,11 @@
 using Battle;
 using Battle.Battlefield;
 using CustomTypes;
+using CustomTypes.Enums.Infrastructure;
 using CustomTypes.Enums.Team;
 using Dices;
 using Infrastructure;
 using Leopotam.EcsLite;
-using UnityEngine;
 
 namespace Units.Factories
 {
@@ -19,8 +19,6 @@ namespace Units.Factories
         private readonly EcsPool<BattleLocationComponent> _battleLocationPool;
         private readonly EcsPool<TeamComponent> _teamPool;
         private readonly EcsPool<HealthComponent> _healthPool;
-        
-        private Transform _unitsParent;
 
         public UnitFactory(EcsService ecsService, StaticDataService dataService, DiceFactory diceFactory)
         {
@@ -43,7 +41,12 @@ namespace Units.Factories
             ref var teamComponent = ref _teamPool.Add(unit);
             _battleLocationPool.Add(unit);
 
-            var config = _dataService.GetUnit(specialization.Id); 
+            var config = _dataService.GetAnyUnit(specialization);
+            if (config == null)
+            {
+                LogService.LogDebug(DebugType.Error, $"Cannot get unit config for specialization {specialization}");
+                return unit;
+            }
             
             unitComponent.Specialization = specialization;
             unitComponent.MainDice = _ecsService.World.PackEntity(CreateMainDice(unit, team, config));

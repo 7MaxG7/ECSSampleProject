@@ -17,8 +17,9 @@ namespace Dices
         private readonly HighlightService _highlightService;
         private readonly DiceTargetSelectService _diceTargetSelectService;
         private readonly DiceViewService _diceViewService;
-        private readonly UnitUIOverlayService _unitUIOverlayService;
+        private readonly UnitOverlayUIService _unitOverlayUIService;
         private readonly BattleDiceService _battleDiceService;
+        private readonly BattleStateMachine _battleStateMachine;
 
         private readonly EcsFilter _diceTargetingFilter;
         private readonly EcsFilter _aimedFilter;
@@ -33,16 +34,17 @@ namespace Dices
 
         [Inject]
         public DiceTargetSelectViewSystem(EcsService ecsService, InputService inputService, DiceTargetSelectService diceTargetSelectService,
-            HighlightService highlightService, DiceViewService diceViewService, UnitUIOverlayService unitUIOverlayService,
-            BattleDiceService battleDiceService)
+            HighlightService highlightService, DiceViewService diceViewService, UnitOverlayUIService unitOverlayUIService,
+            BattleDiceService battleDiceService, BattleStateMachine battleStateMachine)
         {
             _ecsService = ecsService;
             _inputService = inputService;
             _highlightService = highlightService;
             _diceTargetSelectService = diceTargetSelectService;
             _diceViewService = diceViewService;
-            _unitUIOverlayService = unitUIOverlayService;
+            _unitOverlayUIService = unitOverlayUIService;
             _battleDiceService = battleDiceService;
+            _battleStateMachine = battleStateMachine;
 
             _diceTargetingFilter = ecsService.World.Filter<DiceAimingViewComponent>().End();
             _aimedFilter = ecsService.World.Filter<AimedWithDiceComponent>().Exc<UnaimedWithDiceComponent>().End();
@@ -108,7 +110,7 @@ namespace Dices
             else
             {
                 _aimedWithDicePool.Add(target);
-                _highlightService.ToggleHighlight(target, true, HighlightType.Aiming);
+                _highlightService.SetHighlight(target, true, HighlightType.Aiming);
             }
         }
 
@@ -118,7 +120,7 @@ namespace Dices
             {
                 _aimedWithDicePool.Del(unaimed);
                 _unaimedWithDicePool.Del(unaimed);
-                _highlightService.ToggleHighlight(unaimed, false);
+                _highlightService.SetHighlight(unaimed, false);
             }
         }
 
@@ -137,7 +139,7 @@ namespace Dices
 
         private async UniTaskVoid AddOverlayDiceFacetAsync(int target, int dice)
         {
-            var facetIcon = await _unitUIOverlayService.AddOverlayDiceFacetAsync(target, _battleDiceService.GetCurrentSide(dice));
+            var facetIcon = await _unitOverlayUIService.AddOverlayDiceFacetAsync(target, _battleDiceService.GetCurrentSide(dice));
             _diceViewService.SetDiceFacetIcon(dice, facetIcon);
         }
     }

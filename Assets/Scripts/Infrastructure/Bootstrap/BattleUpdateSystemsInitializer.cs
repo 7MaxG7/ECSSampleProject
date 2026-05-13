@@ -17,11 +17,11 @@ namespace Infrastructure.Bootstrap
         private readonly BattleTargetSelectStateSystem _battleTargetSelectStateSystem;
         private readonly DiceApplyStateSystem _diceApplyStateSystem;
         private readonly BattleUIUpdateSystem _battleUIUpdateSystem;
-        private readonly BattleSelectionSystem _selectionSystem;
+        private readonly BattleSelectionViewSystem _selectionViewSystem;
         private readonly DiceApplySystem _diceApplySystem;
         private readonly DiceTargetSelectViewSystem _diceTargetSelectViewSystem;
         private readonly DamageSystem _damageSystem;
-        private readonly UnitAnimationLaunchSystem _unitAnimationLaunchSystem;
+        private readonly UnitAnimationLaunchViewSystem _unitAnimationLaunchViewSystem;
         private readonly UnitsHealthBarUpdateSystem _healthBarUpdateSystem;
         private readonly DeleteFrameEventSystem<DicesRollEventComponent> _deleteRollEventSystem;
         private readonly DeleteFrameEventSystem<DiceLockEventComponent> _diceLockEventSystem;
@@ -30,15 +30,15 @@ namespace Infrastructure.Bootstrap
         private readonly DeleteFrameEventSystem<DiceAimingEventComponent> _diceAimingEventSystem;
         private readonly DeleteFrameEventSystem<DiceUnaimingEventComponent> _diceUnaimingEventSystem;
         private readonly DeleteFrameEventSystem<DiceTargetedEventComponent> _diceTargetedEventSystem;
-        private readonly DeleteFrameEventSystem<AnimationLaunchComponent> _animationLaunchEventSystem;
+        private readonly DeleteFrameEventSystem<AnimationLaunchEventComponent> _animationLaunchEventSystem;
         private readonly DeleteFrameEventSystem<AnimationActionReadyEventComponent> _animationActionReadyEventSystem;
         private readonly DeleteFrameEventSystem<DeathEventComponent> _deathEventSystem;
 
         [Inject]
         public BattleUpdateSystemsInitializer(BattleDiceRollStateSystem battleDiceRollStateSystem, DeathSystem deathSystem,
             BattleTargetSelectStateSystem battleTargetSelectStateSystem, DiceApplyStateSystem diceApplyStateSystem,
-            BattleUIUpdateSystem battleUIUpdateSystem, BattleSelectionSystem selectionSystem, DiceApplySystem diceApplySystem,
-            DiceTargetSelectViewSystem diceTargetSelectViewSystem, DamageSystem damageSystem, UnitAnimationLaunchSystem unitAnimationLaunchSystem,
+            BattleUIUpdateSystem battleUIUpdateSystem, BattleSelectionViewSystem selectionViewSystem, DiceApplySystem diceApplySystem,
+            DiceTargetSelectViewSystem diceTargetSelectViewSystem, DamageSystem damageSystem, UnitAnimationLaunchViewSystem unitAnimationLaunchViewSystem,
             UnitsHealthBarUpdateSystem healthBarUpdateSystem,
             DeleteFrameEventSystem<DicesRollEventComponent> deleteRollEventSystem,
             DeleteFrameEventSystem<DiceLockEventComponent> diceLockEventSystem,
@@ -47,7 +47,7 @@ namespace Infrastructure.Bootstrap
             DeleteFrameEventSystem<DiceAimingEventComponent> diceAimingEventSystem,
             DeleteFrameEventSystem<DiceUnaimingEventComponent> diceUnaimingEventSystem,
             DeleteFrameEventSystem<DiceTargetedEventComponent> diceTargetedEventSystem,
-            DeleteFrameEventSystem<AnimationLaunchComponent> animationLaunchEventSystem,
+            DeleteFrameEventSystem<AnimationLaunchEventComponent> animationLaunchEventSystem,
             DeleteFrameEventSystem<AnimationActionReadyEventComponent> animationActionReadyEventSystem,
             DeleteFrameEventSystem<DeathEventComponent> deathEventSystem)
         {
@@ -56,11 +56,11 @@ namespace Infrastructure.Bootstrap
             _battleTargetSelectStateSystem = battleTargetSelectStateSystem;
             _diceApplyStateSystem = diceApplyStateSystem;
             _battleUIUpdateSystem = battleUIUpdateSystem;
-            _selectionSystem = selectionSystem;
+            _selectionViewSystem = selectionViewSystem;
             _diceApplySystem = diceApplySystem;
             _diceTargetSelectViewSystem = diceTargetSelectViewSystem;
             _damageSystem = damageSystem;
-            _unitAnimationLaunchSystem = unitAnimationLaunchSystem;
+            _unitAnimationLaunchViewSystem = unitAnimationLaunchViewSystem;
             _healthBarUpdateSystem = healthBarUpdateSystem;
             _deleteRollEventSystem = deleteRollEventSystem;
             _diceLockEventSystem = diceLockEventSystem;
@@ -80,12 +80,12 @@ namespace Infrastructure.Bootstrap
                 .Add(_battleDiceRollStateSystem)
                 .Add(_battleTargetSelectStateSystem)
                 .Add(_diceApplyStateSystem)
-                .Add(_selectionSystem)
+                .Add(_selectionViewSystem)
                 .Add(_diceTargetSelectViewSystem)
                 .Add(_diceApplySystem)
                 .Add(_damageSystem)
                 .Add(_deathSystem)
-                .Add(_unitAnimationLaunchSystem)
+                .Add(_unitAnimationLaunchViewSystem)
 
                 // Post update
                 .Add(_battleUIUpdateSystem)

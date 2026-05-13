@@ -13,20 +13,20 @@ namespace UI.Battle
 {
     public class UnitsOverlayUIController
     {
-        private readonly UnitUIOverlayService _unitUIOverlayService;
+        private readonly UnitOverlayUIService _unitOverlayUIService;
         private readonly BattleUIFactory _battleUIFactory;
         private readonly UIConfig _uiConfig;
         private readonly CancellationTokenProvider _tokenProvider;
         private readonly HealthService _healthService;
 
         private BattleUnitsOverlayUIView _unitsOverlayUIView;
-        private readonly Dictionary<int, UnitUIOverlayController> _unitUIOverlayControllers = new();
+        private readonly Dictionary<int, UnitOverlayUIController> _unitUIOverlayControllers = new();
 
         [Inject]
-        public UnitsOverlayUIController(UnitUIOverlayService unitUIOverlayService, BattleUIFactory battleUIFactory, UIConfig uiConfig,
+        public UnitsOverlayUIController(UnitOverlayUIService unitOverlayUIService, BattleUIFactory battleUIFactory, UIConfig uiConfig,
             CancellationTokenProvider tokenProvider, HealthService healthService)
         {
-            _unitUIOverlayService = unitUIOverlayService;
+            _unitOverlayUIService = unitOverlayUIService;
             _battleUIFactory = battleUIFactory;
             _uiConfig = uiConfig;
             _tokenProvider = tokenProvider;
@@ -59,15 +59,15 @@ namespace UI.Battle
 
         private async UniTask CreateUIOverlayAsync(int unit)
         {
-            var uiOverlayAnchor = _unitUIOverlayService.GetOverlayAnchor(unit);
+            var uiOverlayAnchor = _unitOverlayUIService.GetOverlayAnchor(unit);
             var position = Camera.main!.WorldToScreenPoint(uiOverlayAnchor.position);
 
             var uiOverlayView = await _battleUIFactory.CreateUnitOverlayViewAsync(position, _unitsOverlayUIView.OverlaysContent);
-            var unitUIOverlayController = new UnitUIOverlayController(uiOverlayView, _uiConfig, _tokenProvider);
+            var unitUIOverlayController = new UnitOverlayUIController(uiOverlayView, _uiConfig, _tokenProvider);
             unitUIOverlayController.Init();
             _unitUIOverlayControllers.Add(unit, unitUIOverlayController);
             
-            _unitUIOverlayService.InitComponents(unit, uiOverlayView);
+            _unitOverlayUIService.InitComponents(unit, uiOverlayView);
 
             UpdateHealthBar(unit);
             UpdateIncomingDamage(unit, 0);

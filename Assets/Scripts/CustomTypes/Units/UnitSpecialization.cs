@@ -5,7 +5,7 @@ using UnityEngine;
 namespace CustomTypes
 {
     [Serializable]
-    public struct UnitSpecialization
+    public struct UnitSpecialization : IEquatable<UnitSpecialization>
     {
         [SerializeField] private UnitClass _class;
         [SerializeField] private UnitArchetype _archetype;
@@ -22,9 +22,16 @@ namespace CustomTypes
         public UnitArchetype Archetype => _archetype;
         public int Level => _level;
 
-        public int Id => (int)_class * 10000 + (int)_archetype * 100 + _level;
-
         public override string ToString()
             => $"{Class} | {Archetype} | {Level}";
+
+        public bool Equals(UnitSpecialization other)
+            => _class == other._class && _archetype == other._archetype && _level == other._level;
+
+        public override bool Equals(object obj)
+            => obj is UnitSpecialization other && Equals(other);
+
+        public override int GetHashCode()
+            => HashCode.Combine((int)Class, (int)Archetype, Level);
     }
 }

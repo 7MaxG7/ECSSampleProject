@@ -29,21 +29,16 @@ namespace UI.Battle
 
         public async UniTask BuildBattleUIAsync()
         {
-            await CreateBattleUIAsync(new BattleUIModel());
+            var battleUIView = await _battleUIFactory.CreateBattleUIViewAsync();
+            await _battleUIController.InitAsync(new BattleUIModel(), battleUIView);
             await _battleUIController.CreateUnitsUI(GetUnits());
 
             _battleUIController.ToggleRollUIInteractable(false);
         }
 
-        public void ClearBattleUI()
+        public void OnDispose()
         {
-            _battleUIController.Clear();
-        }
-
-        private async UniTask CreateBattleUIAsync(BattleUIModel battleUIModel)
-        {
-            var battleUIView = await _battleUIFactory.CreateBattleUIViewAsync();
-            await _battleUIController.InitAsync(battleUIModel, battleUIView, _battleUIFactory);
+            _battleUIController.OnDispose();
         }
 
         private Dictionary<TeamType, List<int>> GetUnits()

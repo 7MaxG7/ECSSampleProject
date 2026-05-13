@@ -1,4 +1,3 @@
-using Battle.Temp;
 using Cysharp.Threading.Tasks;
 using Infrastructure;
 using Leopotam.EcsLite;
@@ -13,7 +12,7 @@ namespace Battle.Battlefield
         private readonly EcsService _ecsService;
         private readonly BattlefieldViewFactory _battlefieldViewFactory;
         private readonly UnitSpawner _unitSpawner;
-        private readonly TeamsInitializer _teamsInitializer;
+        private readonly TeamBuilder _teamBuilder;
         private readonly BattlefieldFactory _battlefieldFactory;
 
         private readonly EcsFilter _unitFilter;
@@ -21,12 +20,12 @@ namespace Battle.Battlefield
 
         [Inject]
         public BattlefieldBuilder(EcsService ecsService, BattlefieldViewFactory battlefieldViewFactory, UnitSpawner unitSpawner,
-            TeamsInitializer teamsInitializer, BattlefieldFactory battlefieldFactory)
+            TeamBuilder teamBuilder, BattlefieldFactory battlefieldFactory)
         {
             _ecsService = ecsService;
             _battlefieldViewFactory = battlefieldViewFactory;
             _unitSpawner = unitSpawner;
-            _teamsInitializer = teamsInitializer;
+            _teamBuilder = teamBuilder;
             _battlefieldFactory = battlefieldFactory;
 
             _unitFilter = ecsService.World.Filter<UnitComponent>().End();
@@ -35,14 +34,14 @@ namespace Battle.Battlefield
 
         public async UniTask BuildBattlefieldAsync()
         {
-            _battlefieldFactory.CreateBattlefield();
-            await _battlefieldViewFactory.CreateBattlefieldViewAsync();
-            _teamsInitializer.InitializeTeams();
+            var battlefield = _battlefieldFactory.CreateBattlefield();
+            await _battlefieldViewFactory.CreateBattlefieldViewAsync(battlefield);
+            _teamBuilder.BuildTeams();
             foreach (var unit in _unitFilter)
                 await _unitSpawner.SpawnUnitAsync(unit);
         }
 
-        public void Clear()
+        public void OnDispose()
         {
             if (_ecsService.IsInited())
                 _ecsService.DestroyEntity(_battlefieldFilter.GetSingle());

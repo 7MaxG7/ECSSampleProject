@@ -101,7 +101,7 @@ namespace UI.Battle
 
         private void SubscribeDiceView(DiceUIView diceView, int dice)
         {
-            diceView.LockButton.OnClick.AddListener(() => ToggleDiceLock(dice));
+            diceView.LockButton.OnClick.AddListener(() => _diceLockService.ToggleDiceLock(dice));
             diceView.OnDicePointed += EnableDiceUnitHighlight;
             diceView.OnDiceUnpointed += DisableDiceUnitHighlight;
             diceView.OnDiceDragBegin += StartDiceAiming;
@@ -122,17 +122,11 @@ namespace UI.Battle
             _diceViewPool.Del(dice);
         }
 
-        private void ToggleDiceLock(int dice)
-        {
-            var mustLocked = !_diceLockService.IsLocked(dice);
-            _diceLockService.ToggleDiceLock(dice, mustLocked);
-        }
-
         private void EnableDiceUnitHighlight(EcsPackedEntity? dicePacked)
-            => ToggleDiceUnitHighlight(dicePacked, true);
+            => SetDiceUnitHighlight(dicePacked, true);
 
         private void DisableDiceUnitHighlight(EcsPackedEntity? dicePacked)
-            => ToggleDiceUnitHighlight(dicePacked, false);
+            => SetDiceUnitHighlight(dicePacked, false);
 
         private void StartDiceAiming(EcsPackedEntity? dicePacked)
         {
@@ -142,15 +136,12 @@ namespace UI.Battle
             _diceAimingService.StartDiceAiming(dicePacked);
         }
 
-        private void ToggleDiceUnitHighlight(EcsPackedEntity? dicePacked, bool mustHighlighted)
+        private void SetDiceUnitHighlight(EcsPackedEntity? dicePacked, bool mustHighlighted)
         {
-            if (!_ecsService.TryUnpackWithWarning(dicePacked, out var dice))
+            if (!_ecsService.TryUnpackWithWarning(dicePacked, out var dice) || !_battleDiceService.TryGetUnit(dice, out var unit))
                 return;
 
-            if (!_battleDiceService.TryGetUnit(dice, out var unit))
-                return;
-
-            _highlightService.ToggleHighlight(unit, mustHighlighted);
+            _highlightService.SetHighlight(unit, mustHighlighted);
         }
     }
 }

@@ -31,13 +31,10 @@ namespace Units
         public void ToggleUnitDiceHighlight(int unit, bool mustHighlighted)
         {
             ref var unitComponent = ref _unitPool.Get(unit);
-            if (!_ecsService.TryUnpack(unitComponent.MainDice, out var dice))
-            {
-                LogService.LogDebug(DebugType.Warning, $"Cannot unpack dice for unit {unit}");
+            if (!_ecsService.TryUnpackWithWarning(unitComponent.MainDice, out var dice))
                 return;
-            }
 
-            _highlightService.ToggleHighlight(dice, mustHighlighted);
+            _highlightService.SetHighlight(dice, mustHighlighted);
         }
 
         public void Die(int unit)

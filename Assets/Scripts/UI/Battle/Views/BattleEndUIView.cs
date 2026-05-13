@@ -1,6 +1,5 @@
-using CustomTypes.Enums.Team;
+using System.Threading;
 using Cysharp.Threading.Tasks;
-using Infrastructure;
 using TMPro;
 using UnityEngine;
 
@@ -11,25 +10,17 @@ namespace UI.Battle
         [SerializeField] private CanvasGroup _canvasGroup;
         [SerializeField] private TMP_Text _lable;
 
-        private UiAnimationService _uiAnimationService;
-        private UIConfig _uiConfig;
-        private CancellationTokenProvider _tokenProvider;
+        private float _fadeDuration;
 
-        public void Init(UiAnimationService uiAnimationService, UIConfig uiConfig, CancellationTokenProvider tokenProvider)
+        public void Init(float fadeDuration)
         {
-            _tokenProvider = tokenProvider;
-            _uiAnimationService = uiAnimationService;
-            _uiConfig = uiConfig;
+            _fadeDuration = fadeDuration;
         }
 
-        public async UniTaskVoid ShowAsync()
-        {
-            using var localCts = _tokenProvider.CreateLocalCts();
-            await _uiAnimationService.ToggleCanvasGroupVisibilityAsync(_canvasGroup, true, _uiConfig.DefaultAnimationDuration,
-                localCts);
-        }
+        public async UniTask ShowAsync(CancellationTokenSource cts)
+            => await UiAnimationUtility.ToggleCanvasGroupVisibilityAsync(_canvasGroup, true, _fadeDuration, cts);
 
-        public void SetWinnerLabel(TeamType winner)
-            => _lable.text = winner == TeamType.Player ? Constants.WIN_END_BATTLE_LABLE : Constants.DEFEAT_END_BATTLE_LABLE;
+        public void SetWinnerLabel(string text)
+            => _lable.text = text;
     }
 }

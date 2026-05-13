@@ -33,7 +33,7 @@ namespace Infrastructure.Installers
             Container.BindInterfacesAndSelfTo<DeleteFrameEventSystem<DiceUnaimingEventComponent>>().AsSingle();
             Container.BindInterfacesAndSelfTo<DeleteFrameEventSystem<DiceTargetedEventComponent>>().AsSingle();
             Container.BindInterfacesAndSelfTo<DeleteFrameEventSystem<DeathEventComponent>>().AsSingle();
-            Container.BindInterfacesAndSelfTo<DeleteFrameEventSystem<AnimationLaunchComponent>>().AsSingle();
+            Container.BindInterfacesAndSelfTo<DeleteFrameEventSystem<AnimationLaunchEventComponent>>().AsSingle();
             Container.BindInterfacesAndSelfTo<DeleteFrameEventSystem<AnimationActionReadyEventComponent>>().AsSingle();
         }
     }

@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using Battle;
 using CustomTypes;
 using Cysharp.Threading.Tasks;
@@ -72,16 +71,14 @@ namespace UI.Battle
             return diceUIView;
         }
 
-        public async UniTask<UnitUIOverlayView> CreateUnitOverlayViewAsync(Vector3 position, Transform parent)
-        {
-            return await _assetsProvider.CreateInstanceAsync<UnitUIOverlayView>(_battleUIAssetsDb.UnitUIOverlayView, position,
+        public async UniTask<UnitOverlayUIView> CreateUnitOverlayViewAsync(Vector3 position, Transform parent)
+            => await _assetsProvider.CreateInstanceAsync<UnitOverlayUIView>(_battleUIAssetsDb.UnitUIOverlayView, position,
                 Quaternion.identity, parent);
-        }
 
         public async UniTask<GameObject> CreateOverlayDiceFacetAsync(DiceSide diceSide, Transform parent)
             => await _assetsProvider.CreateInstanceAsync(_battleUIAssetsDb.GetOverlayFacetIcon(diceSide), parent);
 
-        public async Task<BattleEndUIView> CreateEndBattleUIViewAsync(Transform parent)
+        public async UniTask<BattleEndUIView> CreateEndBattleUIViewAsync(Transform parent)
             => await _assetsProvider.CreateInstanceAsync<BattleEndUIView>(_battleUIAssetsDb.BattleEndUIView, parent);
 
         public async UniTask<BattleUnitsOverlayUIView> CreateUnitsOverlayUIViewAsync(Transform parent)

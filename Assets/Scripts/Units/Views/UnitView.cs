@@ -1,4 +1,5 @@
 using Battle;
+using CustomTypes.Enums.Team;
 using UnityEngine;
 
 namespace Units.Views
@@ -11,10 +12,12 @@ namespace Units.Views
         [SerializeField] private Transform _uiOverlayAnchor;
         [SerializeField] private Animator _animator;
 
-        public Renderer Renderer => _renderer;
         public HighlightView Highlight => _highlight;
         public BattleSelectView SelectView => _selectView;
         public Transform UIOverlayAnchor => _uiOverlayAnchor;
         public Animator Animator => _animator;
+
+        public void SetTeam(TeamType team)
+            => _renderer.material.color = team == TeamType.Player ? Color.cyan : Color.red;
     }
 }

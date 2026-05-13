@@ -11,13 +11,14 @@ using Dices.Events;
 using Infrastructure;
 using Leopotam.EcsLite;
 using UnityEngine;
+using Utils.Extensions;
 using Zenject;
 
 namespace UI.Battle
 {
     public class BattleUIController
     {
-        private BattleUIFactory _battleUIFactory;
+        private readonly BattleUIFactory _battleUIFactory;
         private readonly BattleDiceRollService _rollService;
 
         private readonly UnitsOverlayUIController _unitsOverlayUIController;
@@ -34,18 +35,18 @@ namespace UI.Battle
 
         [Inject]
         public BattleUIController(UnitsOverlayUIController unitsOverlayUIController, BattleDicesUIController battleDicesUIController,
-            BattleEndUIController battleEndUIController, BattleDiceRollService rollService)
+            BattleEndUIController battleEndUIController, BattleDiceRollService rollService, BattleUIFactory battleUIFactory)
         {
             _unitsOverlayUIController = unitsOverlayUIController;
             _battleEndUIController = battleEndUIController;
             _battleDicesUIController = battleDicesUIController;
 
             _rollService = rollService;
+            _battleUIFactory = battleUIFactory;
         }
 
-        public async UniTask InitAsync(BattleUIModel battleUIModel, BattleUIView battleUIView, BattleUIFactory battleUIFactory)
+        public async UniTask InitAsync(BattleUIModel battleUIModel, BattleUIView battleUIView)
         {
-            _battleUIFactory = battleUIFactory;
             _battleUIView = battleUIView;
             _battleUIModel = battleUIModel;
 
@@ -55,7 +56,7 @@ namespace UI.Battle
             await CreateBattleDicesUIAsync(battleUIModel, battleUIView.RootContent);
         }
 
-        public void Clear()
+        public void OnDispose()
         {
             _unitsOverlayUIController.Clear();
             _battleDicesUIController.Clear();
@@ -74,15 +75,15 @@ namespace UI.Battle
         public void ToggleRollUIInteractable(bool mustInteractable)
             => _battleUIView.RerollButton.Interactable = mustInteractable;
 
-        public void UpdateRollsCountLabel(TeamType team, int rollsCount)
+        public void SetRollsCountLabel(TeamType team, int rollsCount)
         {
             switch (team)
             {
                 case TeamType.Player:
-                    _battleUIModel.PlayerRollsCount.Value = (team, rollsCount);
+                    _battleUIModel.PlayerRollsCount.Update((team, rollsCount));
                     break;
                 case TeamType.Enemy:
-                    _battleUIModel.EnemyRollsCount.Value = (team, rollsCount);
+                    _battleUIModel.EnemyRollsCount.Update((team, rollsCount));
                     break;
                 default:
                     LogService.LogDebug(DebugType.Error, $"Cannot update rolls for team {team}");
@@ -91,7 +92,7 @@ namespace UI.Battle
         }
 
         public void UpdateRollButtonLabel(bool areDicesLocked)
-            => _battleUIView.RerollButton.Text = areDicesLocked ? TextKeys.FINISH_ROLLING_BUTTON : TextKeys.REROLL_BUTTON;
+            => _battleUIView.SetRollButtonLabel(areDicesLocked ? TextKeys.FINISH_ROLLING_BUTTON : TextKeys.REROLL_BUTTON);
 
         public void ShowCurrentDices(List<DiceData> dices, TeamType team)
             => _battleDicesUIController.ShowCurrentDices(dices, team);
@@ -107,13 +108,13 @@ namespace UI.Battle
 
         private void InitRollsUI()
         {
-            _battleUIModel.PlayerRollsCount.Subscribe(_battleUIView.UpdateTeamRolls);
-            _battleUIModel.EnemyRollsCount.Subscribe(_battleUIView.UpdateTeamRolls);
+            _battleUIModel.PlayerRollsCount.Subscribe(_battleUIView.SetTeamRolls);
+            _battleUIModel.EnemyRollsCount.Subscribe(_battleUIView.SetTeamRolls);
 
             _battleUIView.RerollButton.OnClick.AddListener(_rollService.RollCurrentTeamUnlockedMainDices);
 
-            UpdateRollsCountLabel(TeamType.Player, 0);
-            UpdateRollsCountLabel(TeamType.Enemy, 0);
+            _battleUIModel.PlayerRollsCount.Value = (TeamType.Player, 0);
+            _battleUIModel.PlayerRollsCount.Value = (TeamType.Enemy, 0);
         }
 
         private async UniTask CreateUnitsOverlayUIAsync(Transform parent)
