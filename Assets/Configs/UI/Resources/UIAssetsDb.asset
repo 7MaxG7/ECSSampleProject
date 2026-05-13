@@ -12,13 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 39bdf06bfe8c4969b065668a34c7c1e9, type: 3}
   m_Name: UIAssetsDb
   m_EditorClassIdentifier: 
-  _permanentUIView:
-    m_AssetGUID: f792a28310684c646ad0d95d7d05f2e2
-    m_SubObjectName: 
-    m_SubObjectType: 
-    m_EditorAssetChanged: 0
-  _curtainView:
-    m_AssetGUID: 3506d1de341657f4c82526fe906060df
-    m_SubObjectName: 
-    m_SubObjectType: 
-    m_EditorAssetChanged: 0
+  _permanentUIView: {fileID: 9071241368114869650, guid: f792a28310684c646ad0d95d7d05f2e2, type: 3}
+  _curtainView: {fileID: 4844376827772272552, guid: 3506d1de341657f4c82526fe906060df, type: 3}

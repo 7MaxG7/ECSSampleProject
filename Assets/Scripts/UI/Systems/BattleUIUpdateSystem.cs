@@ -18,7 +18,6 @@ namespace UI
         private readonly BattleUIController _battleUIController;
         private readonly BattleDiceLockService _diceLockService;
         private readonly BattleDiceService _battleDiceService;
-        private readonly BattleUIModel _battleUIModel;
 
         private readonly EcsFilter _mainDicesFilter;
         private readonly EcsFilter _dicesRollEventFilter;
@@ -29,13 +28,12 @@ namespace UI
 
         [Inject]
         public BattleUIUpdateSystem(EcsService ecsService, DiceViewService diceViewService, BattleUIController battleUIController,
-            BattleDiceLockService diceLockService, BattleDiceService battleDiceService, BattleUIModel battleUIModel)
+            BattleDiceLockService diceLockService, BattleDiceService battleDiceService)
         {
             _diceViewService = diceViewService;
             _battleUIController = battleUIController;
             _diceLockService = diceLockService;
             _battleDiceService = battleDiceService;
-            _battleUIModel = battleUIModel;
 
             _mainDicesFilter = ecsService.World.Filter<DiceComponent>().End();
             _dicesRollEventFilter = ecsService.World.Filter<DicesRollEventComponent>().End();
