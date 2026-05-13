@@ -1,7 +1,7 @@
-using Abstractions.Infrastructure;
+using Abstractions;
 using Leopotam.EcsLite;
 
-namespace Infrastructure.Bootstrap
+namespace Infrastructure
 {
     public class BattleFixedUpdateSystemsInitializer : IUpdateSystemsInitializer
     {

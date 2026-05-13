@@ -1,7 +1,6 @@
-using Infrastructure.Bootstrap;
 using Zenject;
 
-namespace Infrastructure.Installers
+namespace Infrastructure
 {
     public class GameLaunchInstaller : MonoInstaller
     {

@@ -1,7 +1,7 @@
-using Abstractions.Infrastructure;
+using Abstractions;
 using UnityEngine;
 
-namespace Units.Views
+namespace Units
 {
     public class AnimatorStateReporter : StateMachineBehaviour
     {

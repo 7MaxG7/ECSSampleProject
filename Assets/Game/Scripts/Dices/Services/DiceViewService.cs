@@ -11,6 +11,7 @@ namespace Dices
         private readonly TeamService _teamService;
 
         private readonly EcsFilter _diceFilter;
+        private readonly EcsFilter _diceViewFilter;
         private readonly EcsPool<DiceViewComponent> _diceViewPool;
 
         [Inject]
@@ -19,6 +20,7 @@ namespace Dices
             _teamService = teamService;
 
             _diceFilter = ecsService.World.Filter<DiceComponent>().Exc<DeadComponent>().End();
+            _diceViewFilter = ecsService.World.Filter<DiceViewComponent>().End();
             _diceViewPool = ecsService.World.GetPool<DiceViewComponent>();
         }
 
@@ -63,6 +65,22 @@ namespace Dices
             ref var diceViewComponent = ref _diceViewPool.Get(dice);
             Object.Destroy(diceViewComponent.FacetIcon);
             diceViewComponent.FacetIcon = null;
+        }
+
+        public bool TryGetDice(DiceUIView diceUIView, out int dice)
+        {
+            foreach (var diceView in _diceViewFilter)
+            {
+                ref var diceViewComponent = ref _diceViewPool.Get(diceView);
+                if (diceViewComponent.DiceView != diceUIView)
+                    continue;
+
+                dice = diceView;
+                return true;
+            }
+            
+            dice = -1;
+            return false;
         }
     }
 }

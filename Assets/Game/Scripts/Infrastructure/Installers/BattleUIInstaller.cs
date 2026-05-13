@@ -4,7 +4,7 @@ using UI.Battle;
 using UI.Units;
 using Zenject;
 
-namespace Infrastructure.Installers
+namespace Infrastructure
 {
     public class BattleUIInstaller : MonoInstaller
     {

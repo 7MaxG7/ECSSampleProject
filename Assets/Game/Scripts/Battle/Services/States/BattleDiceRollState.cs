@@ -1,4 +1,4 @@
-using Abstractions.Battle;
+using Abstractions;
 using UI.Battle;
 
 namespace Battle

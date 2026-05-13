@@ -1,4 +1,4 @@
-using CustomTypes.Enums.Battle;
+using CustomTypes;
 
 namespace Battle
 {

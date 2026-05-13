@@ -1,4 +1,4 @@
-using Abstractions.Infrastructure;
+using Abstractions;
 
 namespace Battle
 {

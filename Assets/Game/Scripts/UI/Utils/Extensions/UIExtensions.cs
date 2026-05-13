@@ -1,7 +1,7 @@
 using Infrastructure;
 using UnityEngine;
 
-namespace UI.Utils.Extensions
+namespace UI.Utils
 {
     public static class UIExtensions
     {

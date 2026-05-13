@@ -1,5 +1,4 @@
 using System;
-using CustomTypes.Enums.Units;
 using UnityEngine;
 
 namespace CustomTypes

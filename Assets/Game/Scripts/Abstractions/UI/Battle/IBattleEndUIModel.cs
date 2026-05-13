@@ -1,7 +1,7 @@
-using CustomTypes.Enums.Team;
+using CustomTypes;
 using Cysharp.Threading.Tasks;
 
-namespace Abstractions.UI.Battle
+namespace Abstractions
 {
     public interface IBattleEndUIModel
     {

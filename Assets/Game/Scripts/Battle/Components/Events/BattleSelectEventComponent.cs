@@ -1,5 +1,5 @@
-using Abstractions.Infrastructure;
-using CustomTypes.Enums.Battle;
+using Abstractions;
+using CustomTypes;
 
 namespace Battle
 {

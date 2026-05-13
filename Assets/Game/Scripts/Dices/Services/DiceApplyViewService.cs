@@ -1,13 +1,12 @@
 using System;
 using System.Threading;
 using Battle;
-using CustomTypes.Enums;
-using CustomTypes.Enums.Battle;
+using CustomTypes;
 using Cysharp.Threading.Tasks;
 using Infrastructure;
 using Leopotam.EcsLite;
 using Units;
-using Utils.Extensions;
+using Utils;
 using Zenject;
 
 namespace Dices

@@ -1,5 +1,4 @@
 using Battle;
-using CustomTypes.Enums.Infrastructure;
 using Dices;
 using Infrastructure;
 using Leopotam.EcsLite;

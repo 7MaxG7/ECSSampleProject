@@ -1,11 +1,11 @@
 using Battle;
-using CustomTypes.Enums;
+using CustomTypes;
 using Dices;
 using Infrastructure;
 using Leopotam.EcsLite;
 using UI.Battle;
 using Units;
-using Utils.Extensions;
+using Utils;
 using Zenject;
 
 namespace UI.Units

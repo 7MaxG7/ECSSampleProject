@@ -1,4 +1,4 @@
-using CustomTypes.Enums.Team;
+using CustomTypes;
 using Infrastructure;
 using TMPro;
 using UnityEngine;

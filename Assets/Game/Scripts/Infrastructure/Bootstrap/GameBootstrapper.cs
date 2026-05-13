@@ -1,12 +1,11 @@
-using Abstractions.Infrastructure;
+using Abstractions;
 using Cysharp.Threading.Tasks;
-using Infrastructure.Input;
 using Leopotam.EcsLite;
 using UI;
 using UI.Permanent;
 using Zenject;
 
-namespace Infrastructure.Bootstrap
+namespace Infrastructure
 {
     public class GameBootstrapper : IInitializable, ITickable, ILateDisposable, IDisposeCoordinated
     {

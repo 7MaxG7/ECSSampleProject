@@ -1,10 +1,9 @@
 using System.Collections.Generic;
 using Battle;
-using CustomTypes.Enums;
+using CustomTypes;
 using Cysharp.Threading.Tasks;
 using Infrastructure;
 using Leopotam.EcsLite;
-using Units.Views;
 using UnityEngine;
 
 namespace Units

@@ -1,6 +1,6 @@
 using Cysharp.Threading.Tasks;
 
-namespace Utils.Extensions
+namespace Utils
 {
     public static class UniTaskExtensions
     {

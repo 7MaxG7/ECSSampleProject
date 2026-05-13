@@ -1,4 +1,4 @@
-namespace Abstractions.Battle
+namespace Abstractions
 {
     public interface IBattleState
     {

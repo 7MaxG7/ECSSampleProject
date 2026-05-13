@@ -1,11 +1,9 @@
 using System.Collections.Generic;
 using Battle.Battlefield;
 using CustomTypes;
-using CustomTypes.Enums.Team;
-using CustomTypes.Enums.Units;
 using Infrastructure;
 using Leopotam.EcsLite;
-using Units.Factories;
+using Units;
 using UnityEngine;
 using Zenject;
 

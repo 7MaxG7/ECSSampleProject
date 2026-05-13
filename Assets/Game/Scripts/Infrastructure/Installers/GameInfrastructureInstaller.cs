@@ -1,8 +1,7 @@
-using Infrastructure.Bootstrap;
 using Leopotam.EcsLite.UnityEditor;
 using Zenject;
 
-namespace Infrastructure.Installers
+namespace Infrastructure
 {
     public class GameInfrastructureInstaller : MonoInstaller
     {

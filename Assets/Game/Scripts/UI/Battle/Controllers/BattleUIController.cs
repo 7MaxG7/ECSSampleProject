@@ -1,17 +1,14 @@
 using System.Collections.Generic;
-using Abstractions.UI.Battle;
+using Abstractions;
 using Battle;
 using CustomTypes;
-using CustomTypes.Enums.Infrastructure;
-using CustomTypes.Enums.Team;
 using Cysharp.Threading.Tasks;
 using Cysharp.Threading.Tasks.Linq;
 using Dices;
-using Dices.Events;
 using Infrastructure;
 using Leopotam.EcsLite;
 using UnityEngine;
-using Utils.Extensions;
+using Utils;
 using Zenject;
 
 namespace UI.Battle

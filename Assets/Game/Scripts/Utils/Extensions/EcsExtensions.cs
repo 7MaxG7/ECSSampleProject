@@ -1,7 +1,7 @@
 using Leopotam.EcsLite;
 using UnityEngine;
 
-namespace Utils.Extensions
+namespace Utils
 {
     public static class EcsExtensions
     {

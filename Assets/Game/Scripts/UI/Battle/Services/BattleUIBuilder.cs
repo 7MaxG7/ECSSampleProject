@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using Battle;
-using CustomTypes.Enums.Team;
+using CustomTypes;
 using Cysharp.Threading.Tasks;
 using Infrastructure;
 using Leopotam.EcsLite;

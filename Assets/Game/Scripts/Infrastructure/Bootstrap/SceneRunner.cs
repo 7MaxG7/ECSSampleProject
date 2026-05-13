@@ -1,11 +1,11 @@
 using System;
 using System.Threading;
-using Abstractions.Infrastructure;
+using Abstractions;
 using Cysharp.Threading.Tasks;
 using Leopotam.EcsLite;
 using Zenject;
 
-namespace Infrastructure.Bootstrap
+namespace Infrastructure
 {
     public abstract class SceneRunner : IInitializable, ITickable, IFixedTickable, IDisposable, IDisposeCoordinated
     {

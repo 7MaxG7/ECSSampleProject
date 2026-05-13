@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using CustomTypes.Enums.Team;
+using CustomTypes;
 using Infrastructure;
 using Leopotam.EcsLite;
 using Units;

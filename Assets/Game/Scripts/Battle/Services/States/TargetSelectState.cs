@@ -1,5 +1,5 @@
-using Abstractions.Battle;
-using CustomTypes.Enums.Infrastructure;
+using Abstractions;
+using CustomTypes;
 using Dices;
 using Infrastructure;
 

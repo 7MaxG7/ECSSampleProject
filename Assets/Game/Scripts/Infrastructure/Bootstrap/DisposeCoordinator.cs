@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
-using Abstractions.Infrastructure;
-using CustomTypes.Enums.Infrastructure;
+using Abstractions;
+using CustomTypes;
 
-namespace Infrastructure.Bootstrap
+namespace Infrastructure
 {
     public class DisposeCoordinator
     {

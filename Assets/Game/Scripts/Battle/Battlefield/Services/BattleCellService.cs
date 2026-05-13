@@ -1,8 +1,7 @@
 using CustomTypes;
-using CustomTypes.Enums.Infrastructure;
 using Infrastructure;
 using Leopotam.EcsLite;
-using Utils.Extensions;
+using Utils;
 
 namespace Battle.Battlefield
 {

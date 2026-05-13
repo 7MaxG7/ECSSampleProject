@@ -1,4 +1,4 @@
-namespace Abstractions.Infrastructure
+namespace Abstractions
 {
     public interface IAnimatorListener
     {

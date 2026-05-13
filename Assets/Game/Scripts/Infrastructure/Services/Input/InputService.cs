@@ -1,7 +1,7 @@
 using UnityEngine;
 using Zenject;
 
-namespace Infrastructure.Input
+namespace Infrastructure
 {
     public class InputService
     {

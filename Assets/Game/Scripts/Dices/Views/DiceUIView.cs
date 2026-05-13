@@ -15,29 +15,27 @@ namespace Dices
         [SerializeField] private GameObject _hideObj;
         [SerializeField] private HighlightView _highlight;
 
-        public event Action<EcsPackedEntity?> OnDicePointed;
-        public event Action<EcsPackedEntity?> OnDiceUnpointed;
-        public event Action<EcsPackedEntity?> OnDiceDragBegin;
-        public event Action<EcsPackedEntity?> OnDiceDragEnd;
+        public event Action<DiceUIView> OnDicePointed;
+        public event Action<DiceUIView> OnDiceUnpointed;
+        public event Action<DiceUIView> OnDiceDragBegin;
+        public event Action<DiceUIView> OnDiceDragEnd;
 
         public GameButtonView LockButton => _lockButton;
         public HighlightView Highlight => _highlight;
 
-        private EcsPackedEntity? _dice;
-
 #region Pointer events
         public void OnPointerEnter(PointerEventData _)
-            => OnDicePointed?.Invoke(_dice);
+            => OnDicePointed?.Invoke(this);
 
         public void OnPointerExit(PointerEventData _)
-            => OnDiceUnpointed?.Invoke(_dice);
+            => OnDiceUnpointed?.Invoke(this);
 
         public void OnBeginDrag(PointerEventData eventData)
         {
             if (eventData.button != PointerEventData.InputButton.Left)
                 return;
             
-            OnDiceDragBegin?.Invoke(_dice);
+            OnDiceDragBegin?.Invoke(this);
         }
 
         public void OnEndDrag(PointerEventData eventData)
@@ -45,18 +43,13 @@ namespace Dices
             if (eventData.button != PointerEventData.InputButton.Left)
                 return;
             
-            OnDiceDragEnd?.Invoke(_dice);
+            OnDiceDragEnd?.Invoke(this);
         }
 
         public void OnDrag(PointerEventData _)
         {
         }
 #endregion
-
-        public void Init(EcsPackedEntity dice)
-        {
-            _dice = dice;
-        }
 
         public void UpdateView(DiceData diceData)
         {

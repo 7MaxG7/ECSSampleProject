@@ -1,8 +1,8 @@
-using CustomTypes.Enums.Battle;
+using CustomTypes;
 using Infrastructure;
 using Leopotam.EcsLite;
 using Units;
-using Utils.Extensions;
+using Utils;
 using Zenject;
 
 namespace Battle

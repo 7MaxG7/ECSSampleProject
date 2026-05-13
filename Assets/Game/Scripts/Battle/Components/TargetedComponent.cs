@@ -5,11 +5,11 @@ namespace Battle
 {
     public struct TargetedComponent : IEcsAutoReset<TargetedComponent>
     {
-        public Stack<EcsPackedEntity?> TargetedDices;
+        public Stack<EcsPackedEntity> TargetedDices;
         
         public void AutoReset(ref TargetedComponent c)
         {
-            c.TargetedDices = new Stack<EcsPackedEntity?>();
+            c.TargetedDices = new Stack<EcsPackedEntity>();
         }
     }
 }

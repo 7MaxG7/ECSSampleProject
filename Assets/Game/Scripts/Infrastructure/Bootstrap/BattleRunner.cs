@@ -5,10 +5,9 @@ using Cysharp.Threading.Tasks;
 using UI;
 using UI.Battle;
 using Units;
-using Units.Factories;
 using Zenject;
 
-namespace Infrastructure.Bootstrap
+namespace Infrastructure
 {
     public class BattleRunner : SceneRunner
     {

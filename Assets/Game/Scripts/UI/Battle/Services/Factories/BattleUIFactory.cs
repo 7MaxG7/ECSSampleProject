@@ -48,7 +48,6 @@ namespace UI.Battle
         public async UniTask<DiceUIView> CreateDiceUIViewAsync(int dice, Transform parent)
         {
             var diceUIView = await _assetsProvider.CreateInstanceAsync<DiceUIView>(_battleUIAssetsDb.DiceUIView, parent);
-            diceUIView.Init(_ecsService.World.PackEntity(dice));
 
             _diceViewPool.Add(dice) = new DiceViewComponent
             {

@@ -1,4 +1,4 @@
-namespace CustomTypes.Enums.Team
+namespace CustomTypes
 {
     public enum TeamType
     {

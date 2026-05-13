@@ -1,4 +1,4 @@
-using CustomTypes.Enums.Infrastructure;
+using CustomTypes;
 using Dices;
 using Infrastructure;
 using Leopotam.EcsLite;

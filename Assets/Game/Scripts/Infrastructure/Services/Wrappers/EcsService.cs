@@ -1,10 +1,10 @@
 using System.Collections.Generic;
 using System.Linq;
-using CustomTypes.Enums.Infrastructure;
+using CustomTypes;
 using Leopotam.EcsLite;
 using Leopotam.EcsLite.UnityEditor;
 using UnityEngine;
-using Utils.Extensions;
+using Utils;
 using Zenject;
 
 namespace Infrastructure

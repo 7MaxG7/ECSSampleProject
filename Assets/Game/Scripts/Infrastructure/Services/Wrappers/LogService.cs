@@ -1,4 +1,4 @@
-﻿using CustomTypes.Enums.Infrastructure;
+﻿using CustomTypes;
 using UnityEngine;
 
 namespace Infrastructure

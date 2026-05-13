@@ -2,7 +2,7 @@ using Cysharp.Threading.Tasks;
 using Infrastructure;
 using Leopotam.EcsLite;
 using Units;
-using Utils.Extensions;
+using Utils;
 using Zenject;
 
 namespace Battle.Battlefield

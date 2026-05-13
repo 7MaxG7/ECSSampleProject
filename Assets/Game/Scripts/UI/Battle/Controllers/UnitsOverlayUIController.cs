@@ -1,12 +1,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using Battle;
-using CustomTypes.Enums.Team;
+using CustomTypes;
 using Cysharp.Threading.Tasks;
 using Infrastructure;
 using UI.Units;
 using UnityEngine;
-using Utils.Extensions;
+using Utils;
 using Zenject;
 
 namespace UI.Battle

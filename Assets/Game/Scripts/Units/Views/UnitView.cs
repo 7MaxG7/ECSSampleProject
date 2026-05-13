@@ -1,8 +1,8 @@
 using Battle;
-using CustomTypes.Enums.Team;
+using CustomTypes;
 using UnityEngine;
 
-namespace Units.Views
+namespace Units
 {
     public class UnitView : MonoBehaviour
     {

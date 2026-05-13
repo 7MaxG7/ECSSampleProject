@@ -1,13 +1,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using CustomTypes;
-using CustomTypes.Enums.Battle;
-using CustomTypes.Enums.Infrastructure;
 using Infrastructure;
 using Leopotam.EcsLite;
 using UnityEngine;
 using UnityEngine.Tilemaps;
-using Utils.Extensions;
+using Utils;
 
 namespace Battle.Battlefield
 {

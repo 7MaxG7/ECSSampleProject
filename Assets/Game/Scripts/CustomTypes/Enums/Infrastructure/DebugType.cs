@@ -1,4 +1,4 @@
-namespace CustomTypes.Enums.Infrastructure
+namespace CustomTypes
 {
     public enum DebugType
     {

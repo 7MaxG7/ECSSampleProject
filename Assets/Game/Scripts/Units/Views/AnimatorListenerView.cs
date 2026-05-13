@@ -1,9 +1,9 @@
 using System;
-using Abstractions.Infrastructure;
+using Abstractions;
 using Leopotam.EcsLite;
 using UnityEngine;
 
-namespace Units.Views
+namespace Units
 {
     public class AnimatorListenerView : MonoBehaviour, IAnimatorListener
     {

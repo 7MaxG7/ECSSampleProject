@@ -2,7 +2,7 @@ using UI;
 using UI.Permanent;
 using Zenject;
 
-namespace Infrastructure.Installers
+namespace Infrastructure
 {
     public class GameUIInstaller : MonoInstaller
     {

@@ -1,7 +1,6 @@
 using System.Threading;
 using Battle;
 using CustomTypes;
-using CustomTypes.Enums.Infrastructure;
 using Cysharp.Threading.Tasks;
 using Infrastructure;
 using Leopotam.EcsLite;

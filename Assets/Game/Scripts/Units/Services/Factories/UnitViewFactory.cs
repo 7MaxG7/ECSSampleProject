@@ -1,15 +1,12 @@
 using Battle;
 using CustomTypes;
-using CustomTypes.Enums.Infrastructure;
-using CustomTypes.Enums.Team;
 using Cysharp.Threading.Tasks;
 using Infrastructure;
 using Leopotam.EcsLite;
-using Units.Views;
 using UnityEngine;
 using Zenject;
 
-namespace Units.Factories
+namespace Units
 {
     public class UnitViewFactory
     {

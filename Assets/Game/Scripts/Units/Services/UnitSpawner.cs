@@ -1,12 +1,10 @@
 using Battle;
 using Battle.Battlefield;
 using CustomTypes;
-using CustomTypes.Enums.Team;
 using Cysharp.Threading.Tasks;
 using Infrastructure;
 using Leopotam.EcsLite;
 using UI.Units;
-using Units.Factories;
 using UnityEngine;
 
 namespace Units

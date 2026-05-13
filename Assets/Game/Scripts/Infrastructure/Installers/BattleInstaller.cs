@@ -3,10 +3,9 @@ using Battle.Battlefield;
 using Dices;
 using UI.Battle;
 using Units;
-using Units.Factories;
 using Zenject;
 
-namespace Infrastructure.Installers
+namespace Infrastructure
 {
     public class BattleInstaller : MonoInstaller
     {

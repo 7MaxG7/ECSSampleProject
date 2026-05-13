@@ -1,4 +1,4 @@
-using CustomTypes.Enums.Battle;
+using CustomTypes;
 using Infrastructure;
 using Leopotam.EcsLite;
 using UnityEngine;

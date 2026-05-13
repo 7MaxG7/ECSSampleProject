@@ -1,13 +1,11 @@
 using Battle;
 using Battle.Battlefield;
 using CustomTypes;
-using CustomTypes.Enums.Infrastructure;
-using CustomTypes.Enums.Team;
 using Dices;
 using Infrastructure;
 using Leopotam.EcsLite;
 
-namespace Units.Factories
+namespace Units
 {
     public class UnitFactory
     {

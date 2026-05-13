@@ -1,8 +1,5 @@
-using CustomTypes.Enums.Battle;
-using CustomTypes.Enums.Infrastructure;
+using CustomTypes;
 using Infrastructure;
-using Infrastructure.Configs;
-using Infrastructure.Input;
 using Leopotam.EcsLite;
 using UnityEngine;
 using UnityEngine.InputSystem;

@@ -1,5 +1,4 @@
 using Battle;
-using Dices.Events;
 using Infrastructure;
 using Leopotam.EcsLite;
 using Zenject;

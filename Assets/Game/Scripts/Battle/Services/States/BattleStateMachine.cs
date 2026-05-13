@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
-using Abstractions.Battle;
-using CustomTypes.Enums.Infrastructure;
+using Abstractions;
+using CustomTypes;
 using Infrastructure;
 using Leopotam.EcsLite;
 using Zenject;

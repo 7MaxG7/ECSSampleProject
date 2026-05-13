@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Infrastructure.Configs
+namespace Infrastructure
 {
     [CreateAssetMenu(menuName = "Configs/" + nameof(SelectionConfig), fileName = nameof(SelectionConfig), order = 1)]
     public class SelectionConfig : ScriptableObject

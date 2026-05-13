@@ -2,7 +2,7 @@ using System;
 using Cysharp.Threading.Tasks;
 using Cysharp.Threading.Tasks.Linq;
 using Infrastructure;
-using Utils.Extensions;
+using Utils;
 
 namespace UI.Units
 {

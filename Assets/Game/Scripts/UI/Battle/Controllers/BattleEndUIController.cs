@@ -1,5 +1,5 @@
-using Abstractions.UI.Battle;
-using CustomTypes.Enums.Team;
+using Abstractions;
+using CustomTypes;
 using Cysharp.Threading.Tasks;
 using Cysharp.Threading.Tasks.Linq;
 using Infrastructure;

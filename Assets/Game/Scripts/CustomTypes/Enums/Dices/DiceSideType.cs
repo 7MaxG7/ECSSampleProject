@@ -1,4 +1,4 @@
-namespace CustomTypes.Enums
+namespace CustomTypes
 {
     public enum DiceSideType
     {

@@ -1,5 +1,4 @@
-using CustomTypes.Enums.Battle;
-using CustomTypes.Enums.Infrastructure;
+using CustomTypes;
 using Infrastructure;
 using Leopotam.EcsLite;
 using Units;

@@ -1,6 +1,6 @@
-using Abstractions.Infrastructure;
+using Abstractions;
 
-namespace Dices.Events
+namespace Dices
 {
     public struct DiceAimingEventComponent : IFrameEvent
     {

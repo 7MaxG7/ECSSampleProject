@@ -1,6 +1,6 @@
 using System;
 
-namespace Utils.Extensions
+namespace Utils
 {
     public static class MathExtensions
     {

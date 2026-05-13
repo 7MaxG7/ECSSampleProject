@@ -1,10 +1,7 @@
 using System.Collections.Generic;
 using Battle;
 using CustomTypes;
-using CustomTypes.Enums.Infrastructure;
-using CustomTypes.Enums.Team;
 using Dices;
-using Dices.Events;
 using Infrastructure;
 using Leopotam.EcsLite;
 using UI.Battle;

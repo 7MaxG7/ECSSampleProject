@@ -1,9 +1,7 @@
 using Battle;
-using CustomTypes.Enums.Battle;
+using CustomTypes;
 using Cysharp.Threading.Tasks;
-using Dices.Events;
 using Infrastructure;
-using Infrastructure.Input;
 using Leopotam.EcsLite;
 using UI.Units;
 using Zenject;

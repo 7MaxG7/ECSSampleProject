@@ -1,4 +1,4 @@
-namespace CustomTypes.Enums.Units
+namespace CustomTypes
 {
     public enum UnitClass
     {

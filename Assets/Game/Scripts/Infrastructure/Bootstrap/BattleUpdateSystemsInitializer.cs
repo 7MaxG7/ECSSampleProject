@@ -1,14 +1,13 @@
-using Abstractions.Infrastructure;
+using Abstractions;
 using Battle;
 using Dices;
-using Dices.Events;
 using Leopotam.EcsLite;
 using UI;
 using UI.Units;
 using Units;
 using Zenject;
 
-namespace Infrastructure.Bootstrap
+namespace Infrastructure
 {
     public class BattleUpdateSystemsInitializer : IUpdateSystemsInitializer
     {

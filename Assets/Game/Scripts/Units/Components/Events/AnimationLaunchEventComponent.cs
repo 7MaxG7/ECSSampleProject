@@ -1,6 +1,5 @@
-using Abstractions.Infrastructure;
-using CustomTypes.Enums;
-using CustomTypes.Enums.Battle;
+using Abstractions;
+using CustomTypes;
 
 namespace Units
 {

@@ -1,7 +1,7 @@
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
-using UI.Utils.Extensions;
+using UI.Utils;
 using UnityEngine;
 
 namespace UI

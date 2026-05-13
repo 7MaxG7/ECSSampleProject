@@ -1,14 +1,10 @@
 using System.Collections.Generic;
 using Battle;
-using CustomTypes.Enums;
-using CustomTypes.Enums.Battle;
-using CustomTypes.Enums.Infrastructure;
-using CustomTypes.Enums.Team;
-using Dices.Events;
+using CustomTypes;
 using Infrastructure;
 using Leopotam.EcsLite;
 using Units;
-using Utils.Extensions;
+using Utils;
 using Zenject;
 
 namespace Dices
@@ -79,9 +75,9 @@ namespace Dices
             LogService.LogDebug(DebugType.Log, $"{team}'s turn");
         }
 
-        public void TrySetTarget(EcsPackedEntity? dicePacked)
+        public void TrySetTarget(int dice)
         {
-            if (!_ecsService.TryUnpack(dicePacked, out var dice) || !_aimingService.TryStopAiming(dice))
+            if (!_aimingService.TryStopAiming(dice))
                 return;
 
             if (!IsCurrentTargetValid(dice, out var target))
@@ -125,7 +121,7 @@ namespace Dices
             if (_ecsService.TryUnpack(targetSelectedComponent.Target, out var target))
             {
                 ref var targetedComponent = ref _targetedPool.Get(target);
-                var newDices = new Stack<EcsPackedEntity?>();
+                var newDices = new Stack<EcsPackedEntity>();
                 while (targetedComponent.TargetedDices.TryPop(out var dicePacked))
                     if (_ecsService.TryUnpackWithWarning(dicePacked, out var targetedDice) && dice != targetedDice)
                         newDices.Push(dicePacked);

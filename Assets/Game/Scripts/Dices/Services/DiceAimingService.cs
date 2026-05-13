@@ -1,9 +1,7 @@
 using Battle;
 using CustomTypes;
 using Cysharp.Threading.Tasks;
-using Dices.Events;
 using Infrastructure;
-using Infrastructure.Input;
 using Leopotam.EcsLite;
 using UI.Battle;
 using UnityEngine;
@@ -38,10 +36,9 @@ namespace Dices
             _diceAimingEventPool = ecsService.World.GetPool<DiceAimingEventComponent>();
         }
 
-        public void StartDiceAiming(EcsPackedEntity? dicePacked)
+        public void StartDiceAiming(int dice)
         {
-            if (!_ecsService.TryUnpack(dicePacked, out var dice) || _targetSelectedPool.Has(dice) ||
-                !_teamService.IsCurrentTeamEntity(dice))
+            if (_targetSelectedPool.Has(dice) || !_teamService.IsCurrentTeamEntity(dice))
                 return;
 
             CreateDiceAim(dice, _battleDiceService.GetCurrentSide(dice), _inputService.MousePosition).Forget();

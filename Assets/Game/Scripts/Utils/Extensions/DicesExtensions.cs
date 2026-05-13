@@ -1,6 +1,6 @@
-using CustomTypes.Enums;
+using CustomTypes;
 
-namespace Utils.Extensions
+namespace Utils
 {
     public static class DicesExtensions
     {

@@ -1,9 +1,7 @@
 using System.Collections.Generic;
-using Abstractions.UI.Battle;
+using Abstractions;
 using Battle;
 using CustomTypes;
-using CustomTypes.Enums.Infrastructure;
-using CustomTypes.Enums.Team;
 using Cysharp.Threading.Tasks;
 using Cysharp.Threading.Tasks.Linq;
 using Dices;
@@ -16,7 +14,6 @@ namespace UI.Battle
 {
     public class BattleDicesUIController
     {
-        private readonly EcsService _ecsService;
         private readonly UnitService _unitService;
         private readonly BattleUIFactory _battleUIFactory;
         private readonly BattleDiceService _battleDiceService;
@@ -24,19 +21,19 @@ namespace UI.Battle
         private readonly BattleDiceLockService _diceLockService;
         private readonly HighlightService _highlightService;
         private readonly DiceAimingService _diceAimingService;
+        private readonly DiceViewService _diceViewService;
 
-        private readonly EcsFilter _mainDicesFilter;
+        private readonly EcsFilter _diceFilter;
         private readonly EcsPool<DiceViewComponent> _diceViewPool;
 
         private BattleDicesUIView _battleDicesUIView;
         private IBattleDicesUIModel _dicesUIModel;
-
+        
         [Inject]
         public BattleDicesUIController(EcsService ecsService, BattleUIFactory battleUIFactory, BattleDiceLockService diceLockService,
             BattleDiceService battleDiceService, DiceTargetSelectService diceTargetSelectService, HighlightService highlightService,
-            UnitService unitService, DiceAimingService diceAimingService)
+            UnitService unitService, DiceAimingService diceAimingService, DiceViewService diceViewService)
         {
-            _ecsService = ecsService;
             _unitService = unitService;
             _battleUIFactory = battleUIFactory;
             _battleDiceService = battleDiceService;
@@ -44,8 +41,9 @@ namespace UI.Battle
             _diceLockService = diceLockService;
             _highlightService = highlightService;
             _diceAimingService = diceAimingService;
+            _diceViewService = diceViewService;
 
-            _mainDicesFilter = ecsService.World.Filter<DiceComponent>().End();
+            _diceFilter = ecsService.World.Filter<DiceComponent>().End();
             _diceViewPool = ecsService.World.GetPool<DiceViewComponent>();
         }
 
@@ -59,7 +57,7 @@ namespace UI.Battle
 
         public void Clear()
         {
-            foreach (var dice in _mainDicesFilter)
+            foreach (var dice in _diceFilter)
                 UnsubscribeDiceView(dice);
         }
 
@@ -105,7 +103,7 @@ namespace UI.Battle
             diceView.OnDicePointed += EnableDiceUnitHighlight;
             diceView.OnDiceUnpointed += DisableDiceUnitHighlight;
             diceView.OnDiceDragBegin += StartDiceAiming;
-            diceView.OnDiceDragEnd += _diceTargetSelectService.TrySetTarget;
+            diceView.OnDiceDragEnd += TrySetTarget;
         }
 
         private void UnsubscribeDiceView(int dice)
@@ -117,28 +115,34 @@ namespace UI.Battle
             diceView.OnDicePointed -= EnableDiceUnitHighlight;
             diceView.OnDiceUnpointed -= DisableDiceUnitHighlight;
             diceView.OnDiceDragBegin -= StartDiceAiming;
-            diceView.OnDiceDragEnd -= _diceTargetSelectService.TrySetTarget;
+            diceView.OnDiceDragEnd -= TrySetTarget;
 
             _diceViewPool.Del(dice);
         }
 
-        private void EnableDiceUnitHighlight(EcsPackedEntity? dicePacked)
-            => SetDiceUnitHighlight(dicePacked, true);
+        private void EnableDiceUnitHighlight(DiceUIView diceUIView)
+            => SetDiceUnitHighlight(diceUIView, true);
 
-        private void DisableDiceUnitHighlight(EcsPackedEntity? dicePacked)
-            => SetDiceUnitHighlight(dicePacked, false);
+        private void DisableDiceUnitHighlight(DiceUIView diceUIView)
+            => SetDiceUnitHighlight(diceUIView, false);
 
-        private void StartDiceAiming(EcsPackedEntity? dicePacked)
+        private void StartDiceAiming(DiceUIView diceUIView)
         {
-            if (!_diceTargetSelectService.IsTargetSelecting)
+            if (!_diceTargetSelectService.IsTargetSelecting || !_diceViewService.TryGetDice(diceUIView, out var dice))
                 return;
 
-            _diceAimingService.StartDiceAiming(dicePacked);
+            _diceAimingService.StartDiceAiming(dice);
         }
 
-        private void SetDiceUnitHighlight(EcsPackedEntity? dicePacked, bool mustHighlighted)
+        private void TrySetTarget(DiceUIView diceUIView)
         {
-            if (!_ecsService.TryUnpackWithWarning(dicePacked, out var dice) || !_battleDiceService.TryGetUnit(dice, out var unit))
+            if (_diceViewService.TryGetDice(diceUIView, out var owner)) 
+                _diceTargetSelectService.TrySetTarget(owner);
+        }
+
+        private void SetDiceUnitHighlight(DiceUIView diceUIView, bool mustHighlighted)
+        {
+            if (!_diceViewService.TryGetDice(diceUIView, out var dice) || !_battleDiceService.TryGetUnit(dice, out var unit))
                 return;
 
             _highlightService.SetHighlight(unit, mustHighlighted);

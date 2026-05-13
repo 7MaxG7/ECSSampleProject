@@ -1,10 +1,9 @@
 using Battle;
-using Dices.Events;
-using Infrastructure.Bootstrap;
+using Dices;
 using Units;
 using Zenject;
 
-namespace Infrastructure.Installers
+namespace Infrastructure
 {
     public class BattleInfrastructureInstaller : MonoInstaller
     {

@@ -1,14 +1,11 @@
 using Battle;
 using Battle.Battlefield;
 using Dices;
-using Infrastructure.Configs;
-using Infrastructure.Input;
 using UI.Permanent;
 using Units;
-using Units.Factories;
 using Zenject;
 
-namespace Infrastructure.Installers
+namespace Infrastructure
 {
     public class GameInstaller : MonoInstaller
     {

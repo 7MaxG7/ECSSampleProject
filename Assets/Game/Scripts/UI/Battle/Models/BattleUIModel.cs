@@ -1,7 +1,6 @@
 using System.Collections.Generic;
-using Abstractions.UI.Battle;
+using Abstractions;
 using CustomTypes;
-using CustomTypes.Enums.Team;
 using Cysharp.Threading.Tasks;
 
 namespace UI.Battle

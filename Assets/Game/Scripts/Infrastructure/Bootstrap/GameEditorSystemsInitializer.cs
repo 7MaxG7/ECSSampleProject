@@ -2,7 +2,7 @@ using Leopotam.EcsLite;
 using Leopotam.EcsLite.UnityEditor;
 using Zenject;
 
-namespace Infrastructure.Bootstrap
+namespace Infrastructure
 {
     public class GameEditorSystemsInitializer
     {

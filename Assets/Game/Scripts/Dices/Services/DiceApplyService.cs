@@ -1,8 +1,5 @@
 using Battle;
 using CustomTypes;
-using CustomTypes.Enums;
-using CustomTypes.Enums.Infrastructure;
-using CustomTypes.Enums.Team;
 using Infrastructure;
 using Leopotam.EcsLite;
 using Zenject;

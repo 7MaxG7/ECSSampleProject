@@ -1,4 +1,4 @@
-namespace CustomTypes.Enums.Battle
+namespace CustomTypes
 {
     public enum BattleAnimationType
     {

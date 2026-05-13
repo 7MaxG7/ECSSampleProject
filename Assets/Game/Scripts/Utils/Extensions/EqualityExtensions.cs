@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Utils.Extensions
+namespace Utils
 {
     public static class EqualityExtensions
     {

@@ -1,6 +1,6 @@
 using Leopotam.EcsLite;
 
-namespace Abstractions.Infrastructure
+namespace Abstractions
 {
     public interface IUpdateSystemsInitializer
     {

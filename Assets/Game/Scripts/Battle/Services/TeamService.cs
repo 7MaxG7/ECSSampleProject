@@ -1,4 +1,4 @@
-using CustomTypes.Enums.Team;
+using CustomTypes;
 using Infrastructure;
 using Leopotam.EcsLite;
 using Zenject;

@@ -1,5 +1,5 @@
 using Battle.Battlefield;
-using CustomTypes.Enums.Battle;
+using CustomTypes;
 using Cysharp.Threading.Tasks;
 using Infrastructure;
 using Leopotam.EcsLite;
