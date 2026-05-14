@@ -1,6 +1,4 @@
 using Battle;
-using Dices;
-using Units;
 using Zenject;
 
 namespace Infrastructure
@@ -22,18 +20,8 @@ namespace Infrastructure
             Container.BindInterfacesAndSelfTo<BattleDiceRollStateSystem>().AsSingle();
             Container.BindInterfacesAndSelfTo<BattleTargetSelectStateSystem>().AsSingle();
             Container.BindInterfacesAndSelfTo<DiceApplyStateSystem>().AsSingle();
-
-            // Frame event systems
-            Container.BindInterfacesAndSelfTo<DeleteFrameEventSystem<DicesRollEventComponent>>().AsSingle();
-            Container.BindInterfacesAndSelfTo<DeleteFrameEventSystem<DiceLockEventComponent>>().AsSingle();
-            Container.BindInterfacesAndSelfTo<DeleteFrameEventSystem<BattleSelectEventComponent>>().AsSingle();
-            Container.BindInterfacesAndSelfTo<DeleteFrameEventSystem<BattleDeselectEventComponent>>().AsSingle();
-            Container.BindInterfacesAndSelfTo<DeleteFrameEventSystem<DiceAimingEventComponent>>().AsSingle();
-            Container.BindInterfacesAndSelfTo<DeleteFrameEventSystem<DiceUnaimingEventComponent>>().AsSingle();
-            Container.BindInterfacesAndSelfTo<DeleteFrameEventSystem<DiceTargetedEventComponent>>().AsSingle();
-            Container.BindInterfacesAndSelfTo<DeleteFrameEventSystem<DeathEventComponent>>().AsSingle();
-            Container.BindInterfacesAndSelfTo<DeleteFrameEventSystem<AnimationLaunchEventComponent>>().AsSingle();
-            Container.BindInterfacesAndSelfTo<DeleteFrameEventSystem<AnimationActionReadyEventComponent>>().AsSingle();
+            
+            Container.BindInterfacesAndSelfTo<DeleteFrameEventSystem>().AsSingle();
         }
     }
 }

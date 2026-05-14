@@ -11,21 +11,21 @@ namespace Battle
         private readonly DiceTargetSelectService _diceTargetSelectService;
         private readonly BattleLocationService _battleLocationService;
 
-        private readonly EcsFilter _diedUnitsFilter;
+        private readonly EcsFilter _deadUnitAddedEventFilter;
 
         [Inject]
         public DeathSystem(EcsService ecsService, DiceTargetSelectService diceTargetSelectService,
-            BattleLocationService battleLocationService)
+            BattleLocationService battleLocationService, FrameComponentsService frameComponentsService)
         {
             _diceTargetSelectService = diceTargetSelectService;
             _battleLocationService = battleLocationService;
 
-            _diedUnitsFilter = ecsService.World.Filter<UnitComponent>().Inc<DeathEventComponent>().End();
+            _deadUnitAddedEventFilter = frameComponentsService.GetAddedEventMask<DeadComponent>().Inc<UnitComponent>().End();
         }
 
         public void Run(IEcsSystems systems)
         {
-            foreach (var unit in _diedUnitsFilter)
+            foreach (var unit in _deadUnitAddedEventFilter)
             {
                 _diceTargetSelectService.ClearUnitSelections(unit);
                 _battleLocationService.ClearUnitLocation(unit);

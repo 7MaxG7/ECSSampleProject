@@ -17,14 +17,13 @@ namespace Dices
         private readonly DiceViewService _diceViewService;
         private readonly UnitOverlayUIService _unitOverlayUIService;
         private readonly BattleDiceService _battleDiceService;
-        private readonly BattleStateMachine _battleStateMachine;
 
         private readonly EcsFilter _diceTargetingFilter;
         private readonly EcsFilter _aimedFilter;
         private readonly EcsFilter _unaimedFilter;
-        private readonly EcsFilter _aimingEventFilter;
+        private readonly EcsFilter _diceAimingEventFilter;
         private readonly EcsFilter _unaimingEventFilter;
-        private readonly EcsFilter _diceTargetedEventFilter;
+        private readonly EcsFilter _targetSelectedAddedEventFilter;
         private readonly EcsPool<DiceAimingViewComponent> _diceAimingViewPool;
         private readonly EcsPool<AimedWithDiceComponent> _aimedWithDicePool;
         private readonly EcsPool<UnaimedWithDiceComponent> _unaimedWithDicePool;
@@ -33,7 +32,7 @@ namespace Dices
         [Inject]
         public DiceTargetSelectViewSystem(EcsService ecsService, InputService inputService, DiceTargetSelectService diceTargetSelectService,
             HighlightService highlightService, DiceViewService diceViewService, UnitOverlayUIService unitOverlayUIService,
-            BattleDiceService battleDiceService, BattleStateMachine battleStateMachine)
+            BattleDiceService battleDiceService, FrameComponentsService frameComponentsService)
         {
             _ecsService = ecsService;
             _inputService = inputService;
@@ -42,14 +41,13 @@ namespace Dices
             _diceViewService = diceViewService;
             _unitOverlayUIService = unitOverlayUIService;
             _battleDiceService = battleDiceService;
-            _battleStateMachine = battleStateMachine;
 
+            _unaimingEventFilter = frameComponentsService.GetEventFilter<DiceUnaimingEventComponent>();
+            _diceAimingEventFilter = frameComponentsService.GetEventFilter<DiceAimingEventComponent>();
+            _targetSelectedAddedEventFilter = frameComponentsService.GetAddedEventFilter<TargetSelectedComponent>();
             _diceTargetingFilter = ecsService.World.Filter<DiceAimingViewComponent>().End();
             _aimedFilter = ecsService.World.Filter<AimedWithDiceComponent>().Exc<UnaimedWithDiceComponent>().End();
             _unaimedFilter = ecsService.World.Filter<UnaimedWithDiceComponent>().End();
-            _aimingEventFilter = ecsService.World.Filter<DiceAimingEventComponent>().End();
-            _unaimingEventFilter = ecsService.World.Filter<DiceUnaimingEventComponent>().End();
-            _diceTargetedEventFilter = ecsService.World.Filter<DiceTargetedEventComponent>().End();
             _diceAimingViewPool = ecsService.World.GetPool<DiceAimingViewComponent>();
             _aimedWithDicePool = ecsService.World.GetPool<AimedWithDiceComponent>();
             _unaimedWithDicePool = ecsService.World.GetPool<UnaimedWithDiceComponent>();
@@ -76,7 +74,7 @@ namespace Dices
 
         private void UpdateAimingDiceViews()
         {
-            foreach (var aimingEvent in _aimingEventFilter)
+            foreach (var aimingEvent in _diceAimingEventFilter)
                 _diceViewService.ToggleDiceHide(aimingEvent, true);
 
             foreach (var aimingEvent in _unaimingEventFilter)
@@ -124,7 +122,7 @@ namespace Dices
 
         private void AddOverlayDiceFacet()
         {
-            foreach (var diceTargetedEvent in _diceTargetedEventFilter)
+            foreach (var diceTargetedEvent in _targetSelectedAddedEventFilter)
             {
                 ref var targetSelectedComponent = ref _targetSelectedPool.Get(diceTargetedEvent);
                 if (!_ecsService.TryUnpack(targetSelectedComponent.Target, out var target))

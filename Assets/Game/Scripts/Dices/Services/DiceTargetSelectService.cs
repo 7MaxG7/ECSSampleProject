@@ -18,6 +18,7 @@ namespace Dices
         private readonly EcsService _ecsService;
         private readonly BattleDiceService _battleDiceService;
         private readonly DiceAimingService _aimingService;
+        private readonly FrameComponentsService _frameComponentsService;
         private readonly BattleSelectionService _selectionService;
         private readonly DiceViewService _diceViewService;
         private readonly UnitService _unitService;
@@ -28,17 +29,16 @@ namespace Dices
         private readonly EcsFilter _untargetedAliveDiceFilter;
         private readonly EcsPool<TargetSelectedComponent> _targetSelectedPool;
         private readonly EcsPool<TargetedComponent> _targetedPool;
-        private readonly EcsPool<DiceAimingEventComponent> _diceAimingEventPool;
-        private readonly EcsPool<DiceUnaimingEventComponent> _diceUnaimingEventPool;
-        private readonly EcsPool<DiceTargetedEventComponent> _diceTargetedEventPool;
 
         [Inject]
         public DiceTargetSelectService(EcsService ecsService, BattleDiceService battleDiceService, BattleSelectionService selectionService,
-            TeamService teamService, DiceViewService diceViewService, UnitService unitService, DiceAimingService aimingService)
+            TeamService teamService, DiceViewService diceViewService, UnitService unitService, DiceAimingService aimingService,
+            FrameComponentsService frameComponentsService)
         {
             _ecsService = ecsService;
             _battleDiceService = battleDiceService;
             _aimingService = aimingService;
+            _frameComponentsService = frameComponentsService;
             _selectionService = selectionService;
             _diceViewService = diceViewService;
             _unitService = unitService;
@@ -49,9 +49,6 @@ namespace Dices
             _untargetedAliveDiceFilter = ecsService.World.Filter<DiceComponent>().Exc<DeadComponent>().Exc<TargetSelectedComponent>().End();
             _targetSelectedPool = _ecsService.World.GetPool<TargetSelectedComponent>();
             _targetedPool = _ecsService.World.GetPool<TargetedComponent>();
-            _diceAimingEventPool = _ecsService.World.GetPool<DiceAimingEventComponent>();
-            _diceUnaimingEventPool = _ecsService.World.GetPool<DiceUnaimingEventComponent>();
-            _diceTargetedEventPool = _ecsService.World.GetPool<DiceTargetedEventComponent>();
         }
 
         public void StartTargetSelection()
@@ -82,7 +79,7 @@ namespace Dices
 
             if (!IsCurrentTargetValid(dice, out var target))
             {
-                _diceUnaimingEventPool.Add(dice);
+                _frameComponentsService.AddEvent<DiceUnaimingEventComponent>(dice);
                 return;
             }
 
@@ -101,7 +98,7 @@ namespace Dices
 
         public bool IsCurrentTargetValid(int dice, out int target)
             => _selectionService.TryGetSelection(out target, out var targetType) && targetType == BattleSelectionType.Unit &&
-               _battleDiceService.IsDiceUsableForTarget(dice, target);
+                _battleDiceService.IsDiceUsableForTarget(dice, target);
 
         public void ClearUnitSelections(int unit)
         {
@@ -144,15 +141,15 @@ namespace Dices
                     continue;
 
                 _targetSelectedPool.Add(dice);
-                _diceAimingEventPool.Add(dice);
+                _frameComponentsService.AddEvent<DiceAimingEventComponent>(dice);
             }
         }
 
         private void SetDiceTarget(int dice, int target)
         {
-            _diceTargetedEventPool.Add(dice);
             ref var targetSelectedComponent = ref _targetSelectedPool.Add(dice);
             targetSelectedComponent.Target = _ecsService.World.PackEntity(target);
+            _frameComponentsService.AddAddedEvent<TargetSelectedComponent>(dice);
         }
 
         private void AddDiceFacetToTarget(int target, int dice)

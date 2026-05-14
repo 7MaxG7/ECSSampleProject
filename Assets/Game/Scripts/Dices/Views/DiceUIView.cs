@@ -1,7 +1,6 @@
 using System;
 using Battle;
 using CustomTypes;
-using Leopotam.EcsLite;
 using UI;
 using UnityEngine;
 using UnityEngine.EventSystems;

@@ -19,21 +19,21 @@ namespace Dices
         private readonly BattleAnimationConfig _animationConfig;
         private readonly BattleDeathService _deathService;
         private readonly UnitViewService _unitViewService;
+        private readonly FrameComponentsService _frameComponentsService;
 
         private readonly EcsPool<ViewUpdateDelayComponent> _viewUpdateDelayPool;
-        private readonly EcsPool<AnimationLaunchEventComponent> _animationLaunchPool;
 
         [Inject]
         public DiceApplyViewService(EcsService ecsService, BattleAnimatorService battleAnimatorService, BattleDeathService deathService,
-            BattleAnimationConfig animationConfig, UnitViewService unitViewService)
+            BattleAnimationConfig animationConfig, UnitViewService unitViewService, FrameComponentsService frameComponentsService)
         {
             _battleAnimatorService = battleAnimatorService;
             _animationConfig = animationConfig;
             _deathService = deathService;
             _unitViewService = unitViewService;
+            _frameComponentsService = frameComponentsService;
 
             _viewUpdateDelayPool = ecsService.World.GetPool<ViewUpdateDelayComponent>();
-            _animationLaunchPool = ecsService.World.GetPool<AnimationLaunchEventComponent>();
         }
 
         public async UniTask AnimateDiceApplyAsync(int unit, int targeted, DiceSideType sideType, CancellationTokenSource cts)
@@ -50,11 +50,7 @@ namespace Dices
         private async UniTask StartApplyAnimation(int unit, int targeted, DiceSideType sideType, CancellationTokenSource cts)
         {
             _viewUpdateDelayPool.Add(targeted);
-            _animationLaunchPool.Add(unit) = new AnimationLaunchEventComponent
-            {
-                AnimationType = BattleAnimationType.FacetApply,
-                DiceSideType = sideType,
-            };
+            AddAnimationComponent(unit, sideType, BattleAnimationType.FacetApply);
 
             while (_battleAnimatorService.IsAnimationInProcess && !_battleAnimatorService.IsApplyActionReady(unit))
                 await UniTask.NextFrame(cts.Token);
@@ -70,11 +66,7 @@ namespace Dices
         private void AnimateTarget(int targeted, DiceSideType sideType)
         {
             _viewUpdateDelayPool.Del(targeted);
-            _animationLaunchPool.Add(targeted) = new AnimationLaunchEventComponent
-            {
-                AnimationType = BattleAnimationType.FacetReaction,
-                DiceSideType = sideType,
-            };
+            AddAnimationComponent(targeted, sideType, BattleAnimationType.FacetReaction);
 
             if (HasJustDied(targeted, sideType))
                 _unitViewService.Die(targeted);
@@ -82,5 +74,12 @@ namespace Dices
 
         private bool HasJustDied(int targeted, DiceSideType sideType)
             => _deathService.IsDead(targeted) && sideType.IsDamageSide();
+
+        private void AddAnimationComponent(int unit, DiceSideType sideType, BattleAnimationType animationType)
+        {
+            ref var animationLaunchEventComponent = ref _frameComponentsService.AddEvent<AnimationLaunchEventComponent>(unit);
+            animationLaunchEventComponent.AnimationType = animationType;
+            animationLaunchEventComponent.DiceSideType = sideType;
+        }
     }
 }

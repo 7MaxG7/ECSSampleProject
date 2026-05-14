@@ -18,14 +18,14 @@ namespace UI
 
         private readonly EcsFilter _mainDicesFilter;
         private readonly EcsFilter _dicesRollEventFilter;
-        private readonly EcsFilter _diceLockEventFilter;
+        private readonly EcsFilter _dicesRollAddedEventFilter;
+        private readonly EcsFilter _dicesRollDeletedEventFilter;
         private readonly EcsPool<TeamComponent> _teamPool;
         private readonly EcsPool<TeamBattleDicesRollComponent> _teamBattleDicesRollPool;
-        private readonly EcsPool<DiceLockEventComponent> _diceLockEventPool;
 
         [Inject]
         public BattleUIUpdateSystem(EcsService ecsService, DiceViewService diceViewService, BattleUIController battleUIController,
-            BattleDiceLockService diceLockService, BattleDiceService battleDiceService)
+            BattleDiceLockService diceLockService, BattleDiceService battleDiceService, FrameComponentsService frameComponentsService)
         {
             _diceViewService = diceViewService;
             _battleUIController = battleUIController;
@@ -33,11 +33,11 @@ namespace UI
             _battleDiceService = battleDiceService;
 
             _mainDicesFilter = ecsService.World.Filter<DiceComponent>().End();
-            _dicesRollEventFilter = ecsService.World.Filter<DicesRollEventComponent>().End();
-            _diceLockEventFilter = ecsService.World.Filter<DiceLockEventComponent>().End();
+            _dicesRollEventFilter = frameComponentsService.GetEventFilter<DicesRollEventComponent>();
+            _dicesRollAddedEventFilter = frameComponentsService.GetAddedEventFilter<LockedComponent>();
+            _dicesRollDeletedEventFilter = frameComponentsService.GetDeletedEventFilter<LockedComponent>();
             _teamPool = ecsService.World.GetPool<TeamComponent>();
             _teamBattleDicesRollPool = ecsService.World.GetPool<TeamBattleDicesRollComponent>();
-            _diceLockEventPool = ecsService.World.GetPool<DiceLockEventComponent>();
         }
 
         public void PostRun(IEcsSystems systems)
@@ -61,11 +61,10 @@ namespace UI
 
         private void UpdateDiceLockUI()
         {
-            foreach (var diceLockEvent in _diceLockEventFilter)
-            {
-                ref var diceLockEventComponent = ref _diceLockEventPool.Get(diceLockEvent);
-                _diceViewService.ToggleDiceUILock(diceLockEvent, diceLockEventComponent.IsLocked);
-            }
+            foreach (var diceLockEvent in _dicesRollAddedEventFilter)
+                _diceViewService.ToggleDiceUILock(diceLockEvent, true);
+            foreach (var diceLockEvent in _dicesRollDeletedEventFilter)
+                _diceViewService.ToggleDiceUILock(diceLockEvent, false);
 
             _battleUIController.UpdateRollButtonLabel(_diceLockService.AreCurrentTeamDicesLocked());
         }

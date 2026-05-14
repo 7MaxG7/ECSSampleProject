@@ -11,32 +11,32 @@ namespace Battle
     {
         private readonly UnitService _unitService;
         private readonly TeamService _teamService;
+        private readonly FrameComponentsService _frameComponentsService;
 
         private readonly EcsFilter _aliveUnitFilter;
         private readonly EcsPool<DeadComponent> _deadPool;
-        private readonly EcsPool<DeathEventComponent> _deathEventPool;
 
         [Inject]
-        public BattleDeathService(EcsService ecsService, UnitService unitService, TeamService teamService)
+        public BattleDeathService(EcsService ecsService, UnitService unitService, FrameComponentsService frameComponentsService,
+            TeamService teamService)
         {
             _unitService = unitService;
             _teamService = teamService;
+            _frameComponentsService = frameComponentsService;
 
-            _aliveUnitFilter = ecsService.World.Filter<UnitComponent>().
-                Exc<DeadComponent>().End();
+            _aliveUnitFilter = ecsService.World.Filter<UnitComponent>().Exc<DeadComponent>().End();
             _deadPool = ecsService.World.GetPool<DeadComponent>();
-            _deathEventPool = ecsService.World.GetPool<DeathEventComponent>();
         }
-        
+
         public void Die(int unit)
         {
-            _deathEventPool.Add(unit);
             _deadPool.Add(unit);
-            
+            _frameComponentsService.AddAddedEvent<DeadComponent>(unit);
+
             if (_unitService.TryGetMainDice(unit, out var dice))
             {
-                _deathEventPool.Add(dice);
                 _deadPool.Add(dice);
+                _frameComponentsService.AddAddedEvent<DeadComponent>(dice);
             }
         }
 

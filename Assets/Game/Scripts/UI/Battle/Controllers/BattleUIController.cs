@@ -27,7 +27,6 @@ namespace UI.Battle
         
         private readonly EcsFilter _mainDicesFilter;
         private readonly EcsFilter _dicesRollEventFilter;
-        private readonly EcsPool<DicesRollEventComponent> _dicesRollEventPool;
         private readonly EcsPool<DiceViewComponent> _diceViewPool;
 
         [Inject]

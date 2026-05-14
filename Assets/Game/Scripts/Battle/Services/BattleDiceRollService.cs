@@ -16,27 +16,27 @@ namespace Battle
         private readonly TeamService _teamService;
         private readonly DiceViewService _diceViewService;
         private readonly BattleDiceLockService _lockService;
+        private readonly FrameComponentsService _frameComponentsService;
 
         private readonly EcsFilter _unlockedDiceFilter;
         private readonly EcsFilter _teamRollFilter;
         private readonly EcsPool<DiceComponent> _dicePool;
         private readonly EcsPool<TeamBattleDicesRollComponent> _teamBattleDicesRollPool;
-        private readonly EcsPool<DicesRollEventComponent> _dicesRollEventPool;
 
         [Inject]
         public BattleDiceRollService(EcsService ecsService, RandomService random, TeamService teamService, DiceViewService diceViewService,
-            BattleDiceLockService lockService)
+            BattleDiceLockService lockService, FrameComponentsService frameComponentsService)
         {
             _random = random;
             _teamService = teamService;
             _diceViewService = diceViewService;
             _lockService = lockService;
+            _frameComponentsService = frameComponentsService;
 
             _teamRollFilter = ecsService.World.Filter<TeamBattleDicesRollComponent>().End();
             _unlockedDiceFilter = ecsService.World.Filter<DiceComponent>().Exc<LockedComponent>().Exc<DeadComponent>().End();
             _dicePool = ecsService.World.GetPool<DiceComponent>();
             _teamBattleDicesRollPool = ecsService.World.GetPool<TeamBattleDicesRollComponent>();
-            _dicesRollEventPool = ecsService.World.GetPool<DicesRollEventComponent>();
         }
 
         public void StartDiceRolling()
@@ -102,7 +102,7 @@ namespace Battle
             else if (_lockService.AreCurrentTeamDicesLocked())
                 FinishTeamRolling(ref teamBattleDicesRollComponent);
 
-            _dicesRollEventPool.Add(teamRoll);
+            _frameComponentsService.AddEvent<DicesRollEventComponent>(teamRoll);
         }
 
         private bool TryGetCurrentTeamRoll(out int teamRolls)

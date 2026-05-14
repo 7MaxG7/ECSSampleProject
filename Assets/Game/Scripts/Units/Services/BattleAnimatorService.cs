@@ -10,44 +10,44 @@ namespace Units
 {
     public class BattleAnimatorService
     {
-        public bool IsAnimationInProcess => _animatingUnitFilter.GetEntitiesCount() > 0 || _animationLaunchFilter.GetEntitiesCount() > 0;
+        public bool IsAnimationInProcess
+            => _animatingUnitFilter.GetEntitiesCount() > 0 || _animationLaunchEventFilter.GetEntitiesCount() > 0;
 
         private readonly EcsService _ecsService;
         private readonly CancellationTokenProvider _tokenProvider;
         private readonly BattleAnimationConfig _animationConfig;
+        private readonly FrameComponentsService _frameComponentsService;
 
         private readonly EcsFilter _animatorViewFilter;
-        private readonly EcsFilter _animationLaunchFilter;
+        private readonly EcsFilter _animationLaunchEventFilter;
         private readonly EcsFilter _animatingUnitFilter;
         private readonly EcsPool<AnimatorViewComponent> _animatorViewPool;
         private readonly EcsPool<AnimatingViewComponent> _animatingViewPool;
-        private readonly EcsPool<AnimationActionReadyEventComponent> _animationActionReadyEventPool;
 
         private readonly Dictionary<DiceSideType, int> _facetActionHashes;
         private readonly Dictionary<DiceSideType, int> _facetReactionHashes;
         private readonly int _deathHash;
 
-        public BattleAnimatorService(EcsService ecsService, CancellationTokenProvider tokenProvider, BattleAnimationConfig animationConfig)
+        public BattleAnimatorService(EcsService ecsService, CancellationTokenProvider tokenProvider, BattleAnimationConfig animationConfig,
+            FrameComponentsService frameComponentsService)
         {
             _ecsService = ecsService;
             _tokenProvider = tokenProvider;
             _animationConfig = animationConfig;
+            _frameComponentsService = frameComponentsService;
 
             _animatorViewFilter = ecsService.World.Filter<AnimatorViewComponent>().End();
-            _animationLaunchFilter = ecsService.World.Filter<AnimationLaunchEventComponent>().End();
-            _animatingUnitFilter = ecsService.World.Filter<AnimatingViewComponent>().
-                Inc<UnitComponent>().
-                Exc<DeadComponent>().End();
+            _animationLaunchEventFilter = frameComponentsService.GetEventFilter<AnimationLaunchEventComponent>();
+            _animatingUnitFilter = ecsService.World.Filter<AnimatingViewComponent>().Inc<UnitComponent>().Exc<DeadComponent>().End();
             _animatorViewPool = ecsService.World.GetPool<AnimatorViewComponent>();
             _animatingViewPool = ecsService.World.GetPool<AnimatingViewComponent>();
-            _animationActionReadyEventPool = ecsService.World.GetPool<AnimationActionReadyEventComponent>();
-            
+
             _facetActionHashes = new Dictionary<DiceSideType, int>
             {
                 [DiceSideType.MeleeAttack] = Animator.StringToHash(_animationConfig.MeleeAttackParameterName),
                 [DiceSideType.RangeAttack] = Animator.StringToHash(_animationConfig.RangeAttackParameterName),
             };
-            
+
             _facetReactionHashes = new Dictionary<DiceSideType, int>
             {
                 [DiceSideType.MeleeAttack] = Animator.StringToHash(_animationConfig.DamageReceiveParameterName),
@@ -104,7 +104,7 @@ namespace Units
         }
 
         public bool IsApplyActionReady(int unit)
-            => _animationActionReadyEventPool.Has(unit);
+            => _frameComponentsService.HasEvent<AnimationActionReadyEventComponent>(unit);
 
         private void PlayAnimation(int unit, int hash)
         {
@@ -117,7 +117,7 @@ namespace Units
         {
             if (!_ecsService.TryUnpackWithWarning(unitPacked, out var unit))
                 return;
-            
+
             if (Animator.StringToHash(_animationConfig.IdleAnimationName) == facetHash)
             {
                 ref var animatorComponent = ref _animatorViewPool.Get(unit);
@@ -142,7 +142,7 @@ namespace Units
             if (!_ecsService.TryUnpackWithWarning(unitPacked, out var unit))
                 return;
 
-            _animationActionReadyEventPool.Add(unit);
+            _frameComponentsService.AddEvent<AnimationActionReadyEventComponent>(unit);
         }
 
         private async UniTaskVoid ResetTransformPositionAsync(Transform transform)

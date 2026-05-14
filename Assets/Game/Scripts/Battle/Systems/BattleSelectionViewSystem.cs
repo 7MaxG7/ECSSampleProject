@@ -10,19 +10,19 @@ namespace Battle
     {
         private readonly UnitViewService _unitViewService;
 
-        private readonly EcsFilter _battleSelectEventFilter;
+        private readonly EcsFilter _battleSelectAddedEventFilter;
         private readonly EcsFilter _battleDeselectEventFilter;
-        private readonly EcsPool<BattleSelectEventComponent> _battleSelectEventPool;
+        private readonly EcsPool<BattleSelectedComponent> _battleSelectedPool;
         private readonly EcsPool<BattleDeselectEventComponent> _battleDeselectEventPool;
 
         [Inject]
-        public BattleSelectionViewSystem(EcsService ecsService, UnitViewService unitViewService)
+        public BattleSelectionViewSystem(EcsService ecsService, FrameComponentsService frameComponentsService, UnitViewService unitViewService)
         {
             _unitViewService = unitViewService;
 
-            _battleSelectEventFilter = ecsService.World.Filter<BattleSelectEventComponent>().End();
-            _battleDeselectEventFilter = ecsService.World.Filter<BattleDeselectEventComponent>().End();
-            _battleSelectEventPool = ecsService.World.GetPool<BattleSelectEventComponent>();
+            _battleSelectAddedEventFilter = frameComponentsService.GetAddedEventFilter<BattleSelectedComponent>();
+            _battleDeselectEventFilter = frameComponentsService.GetEventFilter<BattleDeselectEventComponent>();
+            _battleSelectedPool = ecsService.World.GetPool<BattleSelectedComponent>();
             _battleDeselectEventPool = ecsService.World.GetPool<BattleDeselectEventComponent>();
         }
         
@@ -43,10 +43,10 @@ namespace Battle
 
         private void Select()
         {
-            foreach (var selected in _battleSelectEventFilter)
+            foreach (var selected in _battleSelectAddedEventFilter)
             {
-                ref var battleSelectEventComponent = ref _battleSelectEventPool.Get(selected);
-                ToggleSelection(selected, battleSelectEventComponent.SelectionType, true);
+                ref var battleSelectedComponent = ref _battleSelectedPool.Get(selected);
+                ToggleSelection(selected, battleSelectedComponent.SelectionType, true);
             }
         }
 

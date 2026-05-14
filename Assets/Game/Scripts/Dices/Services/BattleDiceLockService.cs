@@ -8,21 +8,21 @@ namespace Dices
     public class BattleDiceLockService
     {
         private readonly TeamService _teamService;
-        private readonly EcsPool<LockedComponent> _lockedPool;
-        private readonly EcsPool<DiceLockEventComponent> _diceLockEventPool;
+        private readonly FrameComponentsService _frameComponentsService;
         
         private readonly EcsFilter _lockedDiceFilter;
         private readonly EcsFilter _unlockedDiceFilter;
+        private readonly EcsPool<LockedComponent> _lockedPool;
 
         [Inject]
-        public BattleDiceLockService(EcsService ecsService, TeamService teamService)
+        public BattleDiceLockService(EcsService ecsService, TeamService teamService, FrameComponentsService frameComponentsService)
         {
             _teamService = teamService;
-            _lockedPool = ecsService.World.GetPool<LockedComponent>();
-            _diceLockEventPool = ecsService.World.GetPool<DiceLockEventComponent>();
+            _frameComponentsService = frameComponentsService;
             
             _lockedDiceFilter = ecsService.World.Filter<DiceComponent>().Inc<LockedComponent>().Exc<DeadComponent>().End();
             _unlockedDiceFilter = ecsService.World.Filter<DiceComponent>().Exc<LockedComponent>().Exc<DeadComponent>().End();
+            _lockedPool = ecsService.World.GetPool<LockedComponent>();
         }
 
         public void ToggleDiceLock(int dice)
@@ -64,12 +64,15 @@ namespace Dices
         private void SetDiceLock(int dice, bool isLocked)
         {
             if (isLocked)
+            {
                 _lockedPool.Add(dice);
+                _frameComponentsService.AddAddedEvent<LockedComponent>(dice);
+            }
             else
+            {
                 _lockedPool.Del(dice);
-
-            ref var diceLockEventComponent = ref _diceLockEventPool.Add(dice);
-            diceLockEventComponent.IsLocked = isLocked;
+                _frameComponentsService.AddDeletedEvent<LockedComponent>(dice);
+            }
         }
     }
 }

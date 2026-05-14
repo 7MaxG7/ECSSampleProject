@@ -17,6 +17,7 @@ namespace Infrastructure
             Container.Bind<StaticDataService>().AsSingle();
             Container.Bind<DisposeCoordinator>().AsSingle();
             Container.Bind<Instantiator>().AsSingle();
+            Container.Bind<FrameComponentsService>().AsSingle();
 
             // Debug
             Container.Bind<EcsWorldDebugSystem>().AsSingle().WithArguments(false);
