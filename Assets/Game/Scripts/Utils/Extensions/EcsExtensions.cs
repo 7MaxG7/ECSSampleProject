@@ -33,5 +33,14 @@ namespace Utils
 
             return ref pool.Add(entity);
         }
+        
+        public static ref TComponent GetOrAdd<TComponent>(this EcsPool<TComponent> pool, int entity, out bool hadComponent) where TComponent : struct
+        {
+            hadComponent = pool.Has(entity);
+            if (hadComponent)
+                return ref pool.Get(entity);
+
+            return ref pool.Add(entity);
+        }
     }
 }

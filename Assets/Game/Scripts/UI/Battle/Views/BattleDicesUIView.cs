@@ -1,6 +1,3 @@
-using System.Collections.Generic;
-using CustomTypes;
-using Dices;
 using UnityEngine;
 
 namespace UI.Battle
@@ -12,24 +9,5 @@ namespace UI.Battle
         
         public Transform PlayerDicesContent => _playerDicesContent;
         public Transform EnemyDicesContent => _enemyDicesContent;
-
-        private readonly Dictionary<TeamType, Dictionary<int, DiceUIView>> _dices = new();
-        
-        public void ShowTeamDices((TeamType Team, List<DiceData> Dices) teamDices)
-        {
-            if (teamDices.Dices == null)
-                return;
-            
-            foreach (var diceData in teamDices.Dices)
-                _dices[teamDices.Team][diceData.Unit].UpdateView(diceData);
-        }
- 
-        public void AddDiceUI(TeamType team, int unit, DiceUIView dice)
-        {
-            if (!_dices.ContainsKey(team))
-                _dices.Add(team, new Dictionary<int, DiceUIView>());
-            
-            _dices[team][unit] = dice;
-        }
     }
 }

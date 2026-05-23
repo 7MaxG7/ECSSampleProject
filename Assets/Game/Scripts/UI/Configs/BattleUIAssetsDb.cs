@@ -1,5 +1,3 @@
-using System.Linq;
-using CustomTypes;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 
@@ -17,9 +15,9 @@ namespace UI
         [Header("Overlay")]
         [Tooltip("ЮИ для оверлеев юнитов")]
         [SerializeField] private AssetReference _battleUnitsOverlayUIView;
+        [SerializeField] private AssetReference _overlayDiceFacetUIView;
         [Tooltip("Оверлей юнита")]
         [SerializeField] private AssetReference _unitUIOverlayView;
-        [SerializeField] private DiceOverlayFacet[] _diceOverlayFacets;
 
         public AssetReference BattleUIView => _battleUIView;
         public AssetReference BattleEndUIView => _battleEndUIView;
@@ -27,10 +25,7 @@ namespace UI
         public AssetReference DiceAimUIView => _diceAimUIView;
         public AssetReference BattleUnitsOverlayUIView => _battleUnitsOverlayUIView;
         public AssetReference UnitUIOverlayView => _unitUIOverlayView;
-
+        public AssetReference OverlayDiceFacetUIView => _overlayDiceFacetUIView;
         public AssetReference BattleDicesUIView => _battleDicesUIView;
-
-        public AssetReference GetOverlayFacetIcon(DiceSide diceSide)
-            => _diceOverlayFacets.First(item => item.DiceSide == diceSide.SideType).OverlayFacetIcon;
     }
 }

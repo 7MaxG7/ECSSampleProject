@@ -5,6 +5,7 @@ namespace Abstractions
 {
     public interface IBattleEndUIModel
     {
+        AsyncReactiveProperty<bool> IsBattleEndUIVisible { get; }
         AsyncReactiveProperty<TeamType> Winner { get; }
     }
 }

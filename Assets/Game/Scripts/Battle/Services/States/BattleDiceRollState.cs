@@ -1,29 +1,26 @@
 using Abstractions;
-using UI.Battle;
+using Zenject;
 
 namespace Battle
 {
     public class BattleDiceRollState : IBattleState
     {
-        private readonly BattleDiceRollService _rollService;
-        private readonly BattleUIController _battleUIController;
+        private readonly BattleDiceRollService _battleDiceRollService;
 
-        public BattleDiceRollState(BattleDiceRollService rollService, BattleUIController battleUIController)
+        [Inject]
+        public BattleDiceRollState(BattleDiceRollService battleDiceRollService)
         {
-            _rollService = rollService;
-            _battleUIController = battleUIController;
+            _battleDiceRollService = battleDiceRollService;
         }
 
         public void Enter()
         {
-            _rollService.StartDiceRolling();
-            _battleUIController.ToggleRollUIInteractable(true);
+            _battleDiceRollService.StartDiceRolling();
         }
 
         public void Exit()
         {
-            _battleUIController.ToggleRollUIInteractable(false);
-            _rollService.FinishDiceRolling();
+            _battleDiceRollService.FinishDiceRolling();
         }
     }
 }

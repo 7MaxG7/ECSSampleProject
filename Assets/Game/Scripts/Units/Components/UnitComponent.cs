@@ -5,7 +5,8 @@ namespace Units
 {
     public struct UnitComponent
     {
+        public string Id;
         public UnitSpecialization Specialization;
-        public EcsPackedEntity MainDice;
+        public EcsPackedEntity Dice;
     }
 }

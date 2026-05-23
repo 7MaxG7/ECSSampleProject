@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading;
 using Abstractions;
 using Battle;
 using CustomTypes;
@@ -6,7 +7,6 @@ using Cysharp.Threading.Tasks;
 using Cysharp.Threading.Tasks.Linq;
 using Dices;
 using Infrastructure;
-using Leopotam.EcsLite;
 using Units;
 using Zenject;
 
@@ -16,84 +16,76 @@ namespace UI.Battle
     {
         private readonly UnitService _unitService;
         private readonly BattleUIFactory _battleUIFactory;
-        private readonly BattleDiceService _battleDiceService;
         private readonly DiceTargetSelectService _diceTargetSelectService;
         private readonly BattleDiceLockService _diceLockService;
         private readonly HighlightService _highlightService;
         private readonly DiceAimingService _diceAimingService;
-        private readonly DiceViewService _diceViewService;
-
-        private readonly EcsFilter _diceFilter;
-        private readonly EcsPool<DiceViewComponent> _diceViewPool;
+        private readonly CancellationTokenProvider _tokenProvider;
 
         private BattleDicesUIView _battleDicesUIView;
-        private IBattleDicesUIModel _dicesUIModel;
-        
+        private IBattleDicesUIModel _battleDicesUIModel;
+
+        private readonly Dictionary<string, DiceUIView> _diceViews = new();
+
         [Inject]
         public BattleDicesUIController(EcsService ecsService, BattleUIFactory battleUIFactory, BattleDiceLockService diceLockService,
-            BattleDiceService battleDiceService, DiceTargetSelectService diceTargetSelectService, HighlightService highlightService,
-            UnitService unitService, DiceAimingService diceAimingService, DiceViewService diceViewService)
+            DiceTargetSelectService diceTargetSelectService, HighlightService highlightService,
+            DiceAimingService diceAimingService, CancellationTokenProvider tokenProvider, UnitService unitService)
         {
             _unitService = unitService;
             _battleUIFactory = battleUIFactory;
-            _battleDiceService = battleDiceService;
             _diceTargetSelectService = diceTargetSelectService;
             _diceLockService = diceLockService;
             _highlightService = highlightService;
             _diceAimingService = diceAimingService;
-            _diceViewService = diceViewService;
-
-            _diceFilter = ecsService.World.Filter<DiceComponent>().End();
-            _diceViewPool = ecsService.World.GetPool<DiceViewComponent>();
+            _tokenProvider = tokenProvider;
         }
 
-        public void Init(IBattleDicesUIModel dicesUIModel, BattleDicesUIView battleDicesUIView)
+        public void Init(IBattleDicesUIModel battleDicesUIModel, BattleDicesUIView battleDicesUIView)
         {
-            _dicesUIModel = dicesUIModel;
+            _battleDicesUIModel = battleDicesUIModel;
             _battleDicesUIView = battleDicesUIView;
-            dicesUIModel.PlayerMainDices.Subscribe(battleDicesUIView.ShowTeamDices);
-            dicesUIModel.EnemyMainDices.Subscribe(battleDicesUIView.ShowTeamDices);
+
+            _battleDicesUIModel.AreDicesAdded.Subscribe(AddNewDices, _tokenProvider.CreateLocalCts().Token);
         }
 
         public void Clear()
         {
-            foreach (var dice in _diceFilter)
-                UnsubscribeDiceView(dice);
+            foreach (var diceView in _diceViews.Values)
+                UnsubscribeDiceView(diceView);
         }
 
-        public async UniTask AddDiceView(TeamType team, int unit)
+        private async UniTaskVoid AddNewDices(CancellationToken token)
         {
-            if (!_unitService.TryGetMainDice(unit, out var dice))
-                return;
-
-            var content = team switch
+            foreach (var (team, dices) in _battleDicesUIModel.DiceModels)
+            foreach (var (id, diceModel) in dices)
             {
-                TeamType.Player => _battleDicesUIView.PlayerDicesContent,
-                TeamType.Enemy => _battleDicesUIView.EnemyDicesContent,
-                _ => null,
-            };
+                if (_diceViews.ContainsKey(id))
+                    continue;
 
-            var diceView = await _battleUIFactory.CreateDiceUIViewAsync(dice, content);
-            SubscribeDiceView(diceView, dice);
+                if (!_unitService.TryGetUnit(id, out var unit) || !_unitService.TryGetDice(unit, out var dice))
+                {
+                    LogService.LogDebug(DebugType.Error, $"Cannot find unit with id {id} or dice");
+                    continue;
+                }
 
-            diceView.LockButton.Interactable = false;
-            diceView.SetCurrentSide(_battleDiceService.GetCurrentSide(dice));
-            _battleDicesUIView.AddDiceUI(team, unit, diceView);
-        }
+                var content = team switch
+                {
+                    TeamType.Player => _battleDicesUIView.PlayerDicesContent,
+                    TeamType.Enemy => _battleDicesUIView.EnemyDicesContent,
+                    _ => null,
+                };
 
-        public void ShowCurrentDices(List<DiceData> dices, TeamType team)
-        {
-            switch (team)
-            {
-                case TeamType.Player:
-                    _dicesUIModel.PlayerMainDices.Value = (team, dices);
-                    break;
-                case TeamType.Enemy:
-                    _dicesUIModel.EnemyMainDices.Value = (team, dices);
-                    break;
-                default:
-                    LogService.LogDebug(DebugType.Error, $"Cannot show dices for team {team}");
-                    return;
+                var diceView = await _battleUIFactory.CreateDiceUIViewAsync(dice, content);
+                diceModel.IsVisible.Subscribe(diceView.SetVisible, token);
+                diceModel.IsInteractable.Subscribe(diceView.SetInteractable, token);
+                diceModel.IsLocked.Subscribe(diceView.SetLocked, token);
+                diceModel.DiceSide.Subscribe(diceView.SetCurrentSide, token);
+                diceModel.IsDimmed.Subscribe(diceView.SetDimmed, token);
+                diceModel.IsLit.Subscribe(diceView.Highlight.SetHighlightEnabled, token);
+
+                SubscribeDiceView(diceView, dice);
+                _diceViews[id] = diceView;
             }
         }
 
@@ -106,18 +98,13 @@ namespace UI.Battle
             diceView.OnDiceDragEnd += TrySetTarget;
         }
 
-        private void UnsubscribeDiceView(int dice)
+        private void UnsubscribeDiceView(DiceUIView diceView)
         {
-            ref var diceViewComponent = ref _diceViewPool.Get(dice);
-            var diceView = diceViewComponent.DiceView;
-
             diceView.LockButton.OnClick.RemoveAllListeners();
             diceView.OnDicePointed -= EnableDiceUnitHighlight;
             diceView.OnDiceUnpointed -= DisableDiceUnitHighlight;
             diceView.OnDiceDragBegin -= StartDiceAiming;
             diceView.OnDiceDragEnd -= TrySetTarget;
-
-            _diceViewPool.Del(dice);
         }
 
         private void EnableDiceUnitHighlight(DiceUIView diceUIView)
@@ -128,24 +115,38 @@ namespace UI.Battle
 
         private void StartDiceAiming(DiceUIView diceUIView)
         {
-            if (!_diceTargetSelectService.IsTargetSelecting || !_diceViewService.TryGetDice(diceUIView, out var dice))
+            if (!_diceTargetSelectService.IsTargetSelecting || !TryGetDiceOwner(diceUIView, out var owner) ||
+                !_unitService.TryGetDice(owner, out var dice))
                 return;
-
+            
             _diceAimingService.StartDiceAiming(dice);
         }
 
         private void TrySetTarget(DiceUIView diceUIView)
         {
-            if (_diceViewService.TryGetDice(diceUIView, out var owner)) 
-                _diceTargetSelectService.TrySetTarget(owner);
+            if (TryGetDiceOwner(diceUIView, out var owner) && _unitService.TryGetDice(owner, out var dice))
+                _diceTargetSelectService.TrySetTarget(dice);
         }
 
-        private void SetDiceUnitHighlight(DiceUIView diceUIView, bool mustHighlighted)
+        private void SetDiceUnitHighlight(DiceUIView diceUIView, bool mustLit)
         {
-            if (!_diceViewService.TryGetDice(diceUIView, out var dice) || !_battleDiceService.TryGetUnit(dice, out var unit))
-                return;
+            diceUIView.Highlight.SetHighlightEnabled(mustLit);
+            if (TryGetDiceOwner(diceUIView, out var unit))
+                _highlightService.SetHighlight(unit, mustLit);
+        }
 
-            _highlightService.SetHighlight(unit, mustHighlighted);
+        private bool TryGetDiceOwner(DiceUIView diceUIView, out int owner)
+        {
+            foreach (var (id, diceView) in _diceViews)
+            {
+                if (diceView != diceUIView)
+                    continue;
+
+                return _unitService.TryGetUnit(id, out owner);
+            }
+
+            owner = -1;
+            return false;
         }
     }
 }

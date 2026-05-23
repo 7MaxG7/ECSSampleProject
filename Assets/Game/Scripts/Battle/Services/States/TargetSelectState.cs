@@ -2,6 +2,7 @@ using Abstractions;
 using CustomTypes;
 using Dices;
 using Infrastructure;
+using Zenject;
 
 namespace Battle
 {
@@ -9,6 +10,7 @@ namespace Battle
     {
         private readonly DiceTargetSelectService _targetSelectService;
 
+        [Inject]
         public TargetSelectState(DiceTargetSelectService targetSelectService)
         {
             _targetSelectService = targetSelectService;

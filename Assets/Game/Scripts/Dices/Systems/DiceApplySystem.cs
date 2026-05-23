@@ -1,4 +1,3 @@
-using System.Threading;
 using Battle;
 using CustomTypes;
 using Cysharp.Threading.Tasks;
@@ -13,7 +12,6 @@ namespace Dices
         private readonly EcsService _ecsService;
         private readonly TeamService _teamService;
         private readonly BattleDiceService _battleDiceService;
-        private readonly DiceViewService _diceViewService;
         private readonly CancellationTokenProvider _tokenProvider;
         private readonly DiceTargetSelectService _targetSelectService;
         private readonly DiceApplyService _diceApplyService;
@@ -27,12 +25,11 @@ namespace Dices
         [Inject]
         public DiceApplySystem(EcsService ecsService, DiceApplyService diceApplyService, DiceApplyViewService diceApplyViewService,
             BattleDiceService battleDiceService, CancellationTokenProvider tokenProvider, DiceTargetSelectService targetSelectService,
-            TeamService teamService, DiceViewService diceViewService)
+            TeamService teamService)
         {
             _ecsService = ecsService;
             _teamService = teamService;
             _battleDiceService = battleDiceService;
-            _diceViewService = diceViewService;
             _tokenProvider = tokenProvider;
             _targetSelectService = targetSelectService;
             _diceApplyService = diceApplyService;
@@ -61,7 +58,7 @@ namespace Dices
                         continue;
                     }
 
-                    _battleDiceService.TryGetUnit(dice, out var unit);
+                    _battleDiceService.TryGetOwner(dice, out var unit);
                     ProcessDicesApply(unit, targeted, dice).Forget();
                     return;
                 }
@@ -74,7 +71,7 @@ namespace Dices
             _isInProcess = true;
 
             ApplyDiceSide(target, dice, out var diceSide);
-            await AnimateDiceApplyAsync(unit, target, dice, diceSide, localCts);
+            await _diceApplyViewService.AnimateDiceApplyAsync(unit, target, diceSide.SideType, localCts);
 
             LogService.LogDebug(DebugType.Log, $"Unit {unit}: {diceSide.SideType}-{diceSide.Value} to {target}");
             while (_diceApplyService.IsApplyInProgress(target, diceSide.SideType))
@@ -88,12 +85,6 @@ namespace Dices
             diceSide = _battleDiceService.GetCurrentSide(dice);
             _diceApplyService.ApplyDiceSide(diceSide, target);
             _targetSelectService.ClearDiceTarget(dice);
-        }
-
-        private async UniTask AnimateDiceApplyAsync(int unit, int target, int dice, DiceSide diceSide, CancellationTokenSource localCts)
-        {
-            _diceViewService.RemoveDiceFacetIcon(dice);
-            await _diceApplyViewService.AnimateDiceApplyAsync(unit, target, diceSide.SideType, localCts);
         }
     }
 }

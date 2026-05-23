@@ -20,7 +20,6 @@ namespace Dices
         private readonly DiceAimingService _aimingService;
         private readonly FrameComponentsService _frameComponentsService;
         private readonly BattleSelectionService _selectionService;
-        private readonly DiceViewService _diceViewService;
         private readonly UnitService _unitService;
         private readonly TeamService _teamService;
 
@@ -32,15 +31,14 @@ namespace Dices
 
         [Inject]
         public DiceTargetSelectService(EcsService ecsService, BattleDiceService battleDiceService, BattleSelectionService selectionService,
-            TeamService teamService, DiceViewService diceViewService, UnitService unitService, DiceAimingService aimingService,
-            FrameComponentsService frameComponentsService)
+            UnitService unitService, DiceAimingService aimingService, FrameComponentsService frameComponentsService,
+            TeamService teamService)
         {
             _ecsService = ecsService;
             _battleDiceService = battleDiceService;
             _aimingService = aimingService;
             _frameComponentsService = frameComponentsService;
             _selectionService = selectionService;
-            _diceViewService = diceViewService;
             _unitService = unitService;
             _teamService = teamService;
 
@@ -67,7 +65,6 @@ namespace Dices
         public void StartTeamTargetSelection(TeamType team)
         {
             _teamService.SetCurrentTeam(team);
-            _diceViewService.ActivateCurrentTeamDices();
             TargetCurrentTeamMissedDices();
             LogService.LogDebug(DebugType.Log, $"{team}'s turn");
         }
@@ -78,10 +75,7 @@ namespace Dices
                 return;
 
             if (!IsCurrentTargetValid(dice, out var target))
-            {
-                _frameComponentsService.AddEvent<DiceUnaimingEventComponent>(dice);
                 return;
-            }
 
             SetDiceTarget(dice, target);
             AddDiceFacetToTarget(target, dice);
@@ -128,6 +122,7 @@ namespace Dices
                 else
                     while (newDices.TryPop(out var dicePacked))
                         targetedComponent.TargetedDices.Push(dicePacked);
+                _frameComponentsService.TryAddModifiedEvent<TargetedComponent>(target);
             }
 
             _targetSelectedPool.Del(dice);
@@ -154,8 +149,12 @@ namespace Dices
 
         private void AddDiceFacetToTarget(int target, int dice)
         {
-            ref var targetedComponent = ref _targetedPool.GetOrAdd(target);
+            ref var targetedComponent = ref _targetedPool.GetOrAdd(target, out var wasTargeted);
             targetedComponent.TargetedDices.Push(_ecsService.World.PackEntity(dice));
+            if (wasTargeted)
+                _frameComponentsService.AddModifiedEvent<TargetedComponent>(target);
+            else
+                _frameComponentsService.AddAddedEvent<TargetedComponent>(target);
         }
 
         private void RemoveTargetedAtUnitDices(int unit)
@@ -170,21 +169,20 @@ namespace Dices
                     continue;
 
                 _targetSelectedPool.Del(dice);
-                _diceViewService.RemoveDiceFacetIcon(dice);
             }
 
             _targetedPool.Del(unit);
+            _frameComponentsService.AddDeletedEvent<TargetedComponent>(unit);
         }
 
         private void RemoveUnitDiceTarget(int unit)
         {
-            if (!_unitService.TryGetMainDice(unit, out var dice))
+            if (!_unitService.TryGetDice(unit, out var dice))
                 return;
 
             if (!_targetSelectedPool.Has(dice))
                 return;
 
-            _diceViewService.RemoveDiceFacetIcon(dice);
             ClearDiceTarget(dice);
         }
 
@@ -196,7 +194,7 @@ namespace Dices
                 foreach (var dicePacked in targetedComponent.TargetedDices)
                 {
                     _ecsService.TryUnpack(dicePacked, out var dice);
-                    _battleDiceService.TryGetUnit(dice, out var unit);
+                    _battleDiceService.TryGetOwner(dice, out var unit);
                     var side = _battleDiceService.GetCurrentSide(dice);
 
                     LogService.LogDebug(DebugType.Log, $"Unit {unit} targeted {targeted} with dice {dice}: {side.SideType},{side.Value}");

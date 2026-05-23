@@ -33,7 +33,7 @@ namespace Battle
             _deadPool.Add(unit);
             _frameComponentsService.AddAddedEvent<DeadComponent>(unit);
 
-            if (_unitService.TryGetMainDice(unit, out var dice))
+            if (_unitService.TryGetDice(unit, out var dice))
             {
                 _deadPool.Add(dice);
                 _frameComponentsService.AddAddedEvent<DeadComponent>(dice);

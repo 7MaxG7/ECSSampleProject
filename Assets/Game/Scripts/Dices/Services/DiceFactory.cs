@@ -18,7 +18,7 @@ namespace Dices
             _dicePool = ecsService.World.GetPool<DiceComponent>();
         }
 
-        public int CreateMainDice(int unit, DiceConfig config)
+        public int CreateDice(int unit, DiceConfig config)
         {
             var dice = _ecsService.CreateEntity();
             InitComponents(unit, config, dice);

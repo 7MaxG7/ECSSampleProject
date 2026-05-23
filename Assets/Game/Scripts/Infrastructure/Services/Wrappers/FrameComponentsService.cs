@@ -9,15 +9,15 @@ namespace Infrastructure
     {
         private const bool ARE_ONLY_CURRENT_FRAME_COMPONENTS_CLEARED = true;
 
-        private readonly EcsWorld _world;
+        private readonly EcsService _ecsService;
 
         private readonly Dictionary<Type, (EcsFilter Filter, Action<int> DelAction)> _frameFiltersCache = new();
         private readonly HashSet<Type> _addedFrameComponents = new();
 
         [Inject]
-        public FrameComponentsService(EcsWorld world)
+        public FrameComponentsService(EcsService ecsService)
         {
-            _world = world;
+            _ecsService = ecsService;
         }
 
         public bool TryAddAddedEvent<TComponent>(int entity) where TComponent : struct
@@ -61,7 +61,7 @@ namespace Infrastructure
 
         public ref TComponent AddEvent<TComponent>(int entity) where TComponent : struct
         {
-            ref var component = ref _world.GetPool<TComponent>().Add(entity);
+            ref var component = ref _ecsService.World.GetPool<TComponent>().Add(entity);
             CacheFrameComponent<TComponent>();
             return ref component;
         }
@@ -75,10 +75,10 @@ namespace Infrastructure
         }
 
         public bool HasEvent<TComponent>(int entity) where TComponent : struct
-            => _world.GetPool<TComponent>().Has(entity);
+            => _ecsService.World.GetPool<TComponent>().Has(entity);
 
         public ref TComponent GetEvent<TComponent>(int entity) where TComponent : struct
-            => ref _world.GetPool<TComponent>().Get(entity);
+            => ref _ecsService.World.GetPool<TComponent>().Get(entity);
 
         public void ClearFrameComponents()
         {
@@ -116,13 +116,13 @@ namespace Infrastructure
             => GetModifiedEventMask<TComponent>().End();
 
         public EcsWorld.Mask GetEventMask<TComponent>() where TComponent : struct
-            => _world.Filter<TComponent>();
+            => _ecsService.World.Filter<TComponent>();
 
         public EcsFilter GetEventFilter<TComponent>() where TComponent : struct
             => GetEventMask<TComponent>().End();
 
         private void DelEvent<TComponent>(int entity) where TComponent : struct
-            => _world.GetPool<TComponent>().Del(entity);
+            => _ecsService.World.GetPool<TComponent>().Del(entity);
 
         private void CacheFrameComponent<TComponent>() where TComponent : struct
         {
@@ -130,7 +130,8 @@ namespace Infrastructure
             if (ARE_ONLY_CURRENT_FRAME_COMPONENTS_CLEARED)
                 _addedFrameComponents.Add(type);
 
-            _frameFiltersCache.TryAdd(type, (_world.Filter<TComponent>().End(), entity => _world.GetPool<TComponent>().Del(entity)));
+            _frameFiltersCache.TryAdd(type,
+                (_ecsService.World.Filter<TComponent>().End(), entity => _ecsService.World.GetPool<TComponent>().Del(entity)));
         }
     }
 }

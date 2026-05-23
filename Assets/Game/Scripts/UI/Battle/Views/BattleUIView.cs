@@ -16,17 +16,22 @@ namespace UI.Battle
         public GameButtonView RerollButton => _rerollButton;
 
 
-        public void SetTeamRolls((TeamType Team, int RollsCount) teamRolls)
+        public void SetTeamRolls(TeamType team, int rollsLeft)
         {
-            switch (teamRolls.Team)
+            var textField = team switch
             {
-                case TeamType.Player:
-                    _playerRollsCount.text = string.Format(TextKeys.ROLLS_LEFT, teamRolls.RollsCount);
-                    break;
-                case TeamType.Enemy:
-                    _enemyRollsCount.text = string.Format(TextKeys.ROLLS_LEFT, teamRolls.RollsCount);
-                    break;
+                TeamType.Player => _playerRollsCount,
+                TeamType.Enemy => _enemyRollsCount,
+                _ => null,
+            };
+            
+            if (textField == null)
+            {
+                LogService.LogDebug(DebugType.Error, $"No rolls field for team {team}");
+                return;
             }
+            
+            textField.text = string.Format(TextKeys.ROLLS_LEFT, rollsLeft);
         }
 
         public void SetRollButtonLabel(string label)

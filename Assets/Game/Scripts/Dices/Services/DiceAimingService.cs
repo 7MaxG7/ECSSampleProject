@@ -62,6 +62,7 @@ namespace Dices
             ref var diceAimingComponent = ref _diceAimingViewPool.Get(dice);
             Object.Destroy(diceAimingComponent.DiceAimView.gameObject);
             _diceAimingViewPool.Del(dice);
+            _frameComponentsService.AddEvent<DiceUnaimingEventComponent>(dice);
         }
 
         private void AddAimingComponent(int dice, DiceAimUIView aimView)

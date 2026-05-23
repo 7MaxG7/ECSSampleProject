@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 4058086943893151361}
   - component: {fileID: 6114338048999859668}
   m_Layer: 5
-  m_Name: EndBattleLable_txt
+  m_Name: EndBattleLabel_txt
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -31,7 +31,6 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 8916529239435238141}
-  m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -168,7 +167,6 @@ RectTransform:
   m_Children:
   - {fileID: 3394494385103463090}
   m_Father: {fileID: 0}
-  m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -188,7 +186,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _canvasGroup: {fileID: 5643964146457666286}
-  _lable: {fileID: 6114338048999859668}
+  _label: {fileID: 6114338048999859668}
 --- !u!223 &8436316411906752438
 Canvas:
   m_ObjectHideFlags: 0

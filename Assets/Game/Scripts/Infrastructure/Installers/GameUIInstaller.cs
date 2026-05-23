@@ -11,7 +11,7 @@ namespace Infrastructure
             Container.Bind<UiAnimationUtility>().AsSingle();
             Container.Bind<UIAssetsDb>().FromScriptableObjectResource(nameof(UIAssetsDb)).AsSingle();
             Container.Bind<UIConfig>().FromScriptableObjectResource(nameof(UIConfig)).AsSingle();
-            Container.Bind<CurtainUIController>().AsSingle();
+            Container.Bind<CurtainService>().AsSingle();
             Container.Bind<PermanentUIBuilder>().AsSingle();
         }
     }

@@ -37,11 +37,11 @@ namespace Dices
             switch (sideType)
             {
                 case DiceSideType.MeleeAttack:
-                    return !_battleDeathService.IsDead(target) && TryGetUnit(dice, out var unit) &&
+                    return !_battleDeathService.IsDead(target) && TryGetOwner(dice, out var unit) &&
                         !_locationService.IsObjectBetweenUnitsExists(target, unit, IsEnemy) && unit != target;
 
                 case DiceSideType.RangeAttack:
-                    return !_battleDeathService.IsDead(target) && TryGetUnit(dice, out unit) && unit != target;
+                    return !_battleDeathService.IsDead(target) && TryGetOwner(dice, out unit) && unit != target;
 
                 case DiceSideType.Armor:
                     return !_battleDeathService.IsDead(target);
@@ -50,7 +50,7 @@ namespace Dices
             return false;
         }
 
-        public bool TryGetUnit(int dice, out int unit)
+        public bool TryGetOwner(int dice, out int unit)
         {
             ref var diceComponent = ref _dicePool.Get(dice);
             if (_ecsService.TryUnpack(diceComponent.Unit, out unit))

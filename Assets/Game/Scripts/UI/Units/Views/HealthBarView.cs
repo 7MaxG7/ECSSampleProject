@@ -26,9 +26,6 @@ namespace UI.Units
         public async UniTask UpdateBarsAsync(int barsCapacity, int damage, int armor, int currentHp,
             CancellationTokenSource cts)
         {
-            if (currentHp > 0 && !gameObject.activeSelf)
-                Enable();
-
             KillDoTween();
 
             var capacity = (float)barsCapacity;
@@ -42,15 +39,6 @@ namespace UI.Units
             await _armorBar.DOFillAmount(armor / capacity, _healthBarAnimationDuration).WithCancellation(cts.Token);
             await _currentHpBar.DOFillAmount(currentHp / capacity, _healthBarAnimationDuration).WithCancellation(cts.Token);
         }
-
-        public void Disable()
-        {
-            if (gameObject != null)
-                gameObject.SetActive(false);
-        }
-
-        private void Enable()
-            => gameObject.SetActive(true);
 
         private void KillDoTween()
         {

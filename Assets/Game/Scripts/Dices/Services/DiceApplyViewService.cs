@@ -1,12 +1,10 @@
 using System;
 using System.Threading;
-using Battle;
 using CustomTypes;
 using Cysharp.Threading.Tasks;
 using Infrastructure;
 using Leopotam.EcsLite;
 using Units;
-using Utils;
 using Zenject;
 
 namespace Dices
@@ -17,20 +15,16 @@ namespace Dices
 
         private readonly BattleAnimatorService _battleAnimatorService;
         private readonly BattleAnimationConfig _animationConfig;
-        private readonly BattleDeathService _deathService;
-        private readonly UnitViewService _unitViewService;
         private readonly FrameComponentsService _frameComponentsService;
 
         private readonly EcsPool<ViewUpdateDelayComponent> _viewUpdateDelayPool;
 
         [Inject]
-        public DiceApplyViewService(EcsService ecsService, BattleAnimatorService battleAnimatorService, BattleDeathService deathService,
-            BattleAnimationConfig animationConfig, UnitViewService unitViewService, FrameComponentsService frameComponentsService)
+        public DiceApplyViewService(EcsService ecsService, BattleAnimatorService battleAnimatorService,
+            BattleAnimationConfig animationConfig, FrameComponentsService frameComponentsService)
         {
             _battleAnimatorService = battleAnimatorService;
             _animationConfig = animationConfig;
-            _deathService = deathService;
-            _unitViewService = unitViewService;
             _frameComponentsService = frameComponentsService;
 
             _viewUpdateDelayPool = ecsService.World.GetPool<ViewUpdateDelayComponent>();
@@ -67,13 +61,7 @@ namespace Dices
         {
             _viewUpdateDelayPool.Del(targeted);
             AddAnimationComponent(targeted, sideType, BattleAnimationType.FacetReaction);
-
-            if (HasJustDied(targeted, sideType))
-                _unitViewService.Die(targeted);
         }
-
-        private bool HasJustDied(int targeted, DiceSideType sideType)
-            => _deathService.IsDead(targeted) && sideType.IsDamageSide();
 
         private void AddAnimationComponent(int unit, DiceSideType sideType, BattleAnimationType animationType)
         {

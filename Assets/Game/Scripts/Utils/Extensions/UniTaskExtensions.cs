@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
 
 namespace Utils
@@ -12,5 +14,25 @@ namespace Utils
             property.Value = value;
         }
 
+        public static void UpdateEnum<T>(this AsyncReactiveProperty<T> property, T value) where T : Enum
+        {
+            if (EqualityComparer<T>.Default.Equals(property.Value, value))
+                return;
+
+            property.Value = value;
+        }
+
+        public static void UpdateEquatable<T>(this AsyncReactiveProperty<T> property, T value) where T : IEquatable<T>
+        {
+            if (property.Value != null)
+            {
+                if (property.Value.Equals(value))
+                    return;
+            }
+            else if (value == null)
+                return;
+
+            property.Value = value;
+        }
     }
 }

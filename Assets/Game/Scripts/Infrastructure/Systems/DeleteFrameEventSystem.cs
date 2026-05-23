@@ -2,7 +2,7 @@ using Leopotam.EcsLite;
 
 namespace Infrastructure
 {
-    public abstract class DeleteFrameEventSystem : IEcsPostRunSystem
+    public class DeleteFrameEventSystem : IEcsPostRunSystem
     {
         private readonly FrameComponentsService _frameComponentsService;
 

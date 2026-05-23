@@ -32,34 +32,35 @@ namespace Units
 
         public int CreateUnit(UnitSpecialization specialization, TeamType team)
         {
-            var unit = _ecsService.CreateEntity();
-
-            ref var unitComponent = ref _unitPool.Add(unit);
-            ref var healthComponent = ref _healthPool.Add(unit);
-            ref var teamComponent = ref _teamPool.Add(unit);
-            _battleLocationPool.Add(unit);
-
             var config = _dataService.GetAnyUnit(specialization);
             if (config == null)
             {
                 LogService.LogDebug(DebugType.Error, $"Cannot get unit config for specialization {specialization}");
-                return unit;
+                return -1;
             }
-            
-            unitComponent.Specialization = specialization;
-            unitComponent.MainDice = _ecsService.World.PackEntity(CreateMainDice(unit, team, config));
-            
-            teamComponent.Team = team;
 
+            var unit = _ecsService.CreateEntity();
+
+            ref var unitComponent = ref _unitPool.Add(unit);
+            unitComponent.Id = $"{config.Id}_{unit}";
+            unitComponent.Specialization = specialization;
+            unitComponent.Dice = _ecsService.World.PackEntity(CreateMainDice(unit, team, config));
+            
+            ref var healthComponent = ref _healthPool.Add(unit);
             healthComponent.MaxHp = config.Hp;
             healthComponent.Hp = config.Hp;
+            
+            ref var teamComponent = ref _teamPool.Add(unit);
+            teamComponent.Team = team;
+
+            _battleLocationPool.Add(unit);
             
             return unit;
         }
 
         private int CreateMainDice(int unit, TeamType team, UnitConfig config)
         {
-            var mainDice = _diceFactory.CreateMainDice(unit, config.Dice);
+            var mainDice = _diceFactory.CreateDice(unit, config.Dice);
             
             ref var teamComponent = ref _teamPool.Add(mainDice);
             teamComponent.Team = team;

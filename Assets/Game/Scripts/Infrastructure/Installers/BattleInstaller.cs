@@ -13,7 +13,11 @@ namespace Infrastructure
         {
             Container.Bind<HighlightService>().AsSingle();
             Container.Bind<HighlightConfig>().FromScriptableObjectResource(nameof(HighlightConfig)).AsSingle();
-            
+                        
+            // Battle
+            Container.Bind<TeamBuilder>().AsSingle();
+            Container.Bind<BattleBeginService>().AsSingle();
+
             // Damage
             Container.Bind<HealthService>().AsSingle();
             Container.Bind<DamageService>().AsSingle();
@@ -24,7 +28,6 @@ namespace Infrastructure
 
             // Selection
             Container.Bind<BattleSelectionService>().AsSingle();
-            Container.BindInterfacesAndSelfTo<BattleSelectionViewSystem>().AsSingle();
             
             // Dice
             Container.Bind<DiceApplyService>().AsSingle();
@@ -35,7 +38,6 @@ namespace Infrastructure
             Container.Bind<BattleDiceLockService>().AsSingle();
             Container.Bind<BattleDiceService>().AsSingle();
 
-            Container.Bind<DiceViewService>().AsSingle();
             Container.BindInterfacesAndSelfTo<DiceTargetSelectViewSystem>().AsSingle();
             Container.Bind<DiceTargetSelectService>().AsSingle();
 
@@ -52,11 +54,8 @@ namespace Infrastructure
             Container.Bind<BattlefieldViewConfig>().FromScriptableObjectResource(nameof(BattlefieldViewConfig)).AsSingle();
             
             // Units
-            Container.Bind<UnitViewService>().AsSingle();
             Container.Bind<BattleAnimatorService>().AsSingle();
             Container.Bind<BattleAnimationConfig>().FromScriptableObjectResource(nameof(BattleAnimationConfig)).AsSingle();
-            
-            Container.Bind<TeamBuilder>().AsSingle();
         }
     }
 }

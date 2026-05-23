@@ -1,12 +1,12 @@
 using System.Collections.Generic;
-using System.Linq;
-using Battle;
+using System.Threading;
+using Abstractions;
 using CustomTypes;
 using Cysharp.Threading.Tasks;
 using Infrastructure;
 using UI.Units;
+using Units;
 using UnityEngine;
-using Utils;
 using Zenject;
 
 namespace UI.Battle
@@ -16,61 +16,61 @@ namespace UI.Battle
         private readonly UnitOverlayUIService _unitOverlayUIService;
         private readonly BattleUIFactory _battleUIFactory;
         private readonly UIConfig _uiConfig;
+        private readonly UnitService _unitService;
         private readonly CancellationTokenProvider _tokenProvider;
-        private readonly HealthService _healthService;
 
-        private BattleUnitsOverlayUIView _unitsOverlayUIView;
-        private readonly Dictionary<int, UnitOverlayUIController> _unitUIOverlayControllers = new();
+        private IUnitsOverlayUIModel _model;
+        private BattleUnitsOverlayUIView _view;
+        private readonly Dictionary<string, UnitOverlayUIController> _overlayControllers = new();
 
         [Inject]
-        public UnitsOverlayUIController(UnitOverlayUIService unitOverlayUIService, BattleUIFactory battleUIFactory, UIConfig uiConfig,
-            CancellationTokenProvider tokenProvider, HealthService healthService)
+        public UnitsOverlayUIController(UnitOverlayUIService unitOverlayUIService, UnitService unitService, BattleUIFactory battleUIFactory,
+            CancellationTokenProvider tokenProvider, UIConfig uiConfig)
         {
             _unitOverlayUIService = unitOverlayUIService;
             _battleUIFactory = battleUIFactory;
             _uiConfig = uiConfig;
+            _unitService = unitService;
             _tokenProvider = tokenProvider;
-            _healthService = healthService;
         }
 
-        public void Init(BattleUnitsOverlayUIView unitsOverlayUIView)
+        public void Init(IUnitsOverlayUIModel model, BattleUnitsOverlayUIView view)
         {
-            _unitsOverlayUIView = unitsOverlayUIView;
+            _model = model;
+            _view = view;
+
+            var cts = _tokenProvider.CreateLocalCts();
+            model.AreUnitOverlayModelsAdded.Subscribe(AddUnitOverlaysAsync, cts.Token);
         }
 
         public void Clear()
         {
-            foreach (var controller in _unitUIOverlayControllers.Values)
+            foreach (var controller in _overlayControllers.Values)
                 controller.Clear();
         }
 
-        public async UniTask CreateUnitsOverlayAsync(Dictionary<TeamType, List<int>> units)
+        private async UniTaskVoid AddUnitOverlaysAsync(CancellationToken token)
         {
-            foreach (var unit in units.SelectMany(teamUnits => teamUnits.Value))
-                await CreateUIOverlayAsync(unit);
-        }
+            foreach (var (unitId, model) in _model.UnitOverlayModels)
+            {
+                if (_overlayControllers.ContainsKey(unitId))
+                    continue;
 
-        public void UpdateHealthBar(int unit)
-            => _unitUIOverlayControllers[unit].UpdateHealth(_healthService.GetCurrentHp(unit).Ceiling(), _healthService.GetMaxHp(unit),
-                _healthService.GetArmor(unit));
+                if (!_unitService.TryGetUnit(unitId, out var unit))
+                {
+                    LogService.LogDebug(DebugType.Error, $"Unit {unitId} not found to create overlay");
+                    continue;
+                }
 
-        public void UpdateIncomingDamage(int unit, int damage)
-            => _unitUIOverlayControllers[unit].UpdateDamage(damage);
+                var controller = new UnitOverlayUIController(_uiConfig, _tokenProvider, _battleUIFactory);
+                _overlayControllers.Add(unitId, controller);
+                
+                var uiOverlayAnchor = _unitOverlayUIService.GetOverlayAnchor(unit);
+                var position = Camera.main!.WorldToScreenPoint(uiOverlayAnchor.position);
+                var view = await _battleUIFactory.CreateUnitOverlayViewAsync(position, _view.OverlaysContent);
+                controller.Init(model, view);
 
-        private async UniTask CreateUIOverlayAsync(int unit)
-        {
-            var uiOverlayAnchor = _unitOverlayUIService.GetOverlayAnchor(unit);
-            var position = Camera.main!.WorldToScreenPoint(uiOverlayAnchor.position);
-
-            var uiOverlayView = await _battleUIFactory.CreateUnitOverlayViewAsync(position, _unitsOverlayUIView.OverlaysContent);
-            var unitUIOverlayController = new UnitOverlayUIController(uiOverlayView, _uiConfig, _tokenProvider);
-            unitUIOverlayController.Init();
-            _unitUIOverlayControllers.Add(unit, unitUIOverlayController);
-            
-            _unitOverlayUIService.InitComponents(unit, uiOverlayView);
-
-            UpdateHealthBar(unit);
-            UpdateIncomingDamage(unit, 0);
+            }
         }
     }
 }

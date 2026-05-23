@@ -12,5 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5d4e270a79a147ef9c039f600bd04f86, type: 3}
   m_Name: UIConfig
   m_EditorClassIdentifier: 
+  _diceSideIcons:
+  - _diceSide: 2
+    _icon: {fileID: 21300000, guid: 8802048f2230ea4439a77157c647ca25, type: 3}
+  - _diceSide: 3
+    _icon: {fileID: 21300000, guid: aa59818e056dacb42abf5167d3fd452b, type: 3}
+  - _diceSide: 4
+    _icon: {fileID: 21300000, guid: e494fae64b2504043a646739aea7b585, type: 3}
   _defaultAnimationDuration: 0.75
-  _healthBarAnimationLength: 0.25
+  _healthBarAnimationDuration: 0.25

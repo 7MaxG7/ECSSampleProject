@@ -3,6 +3,7 @@ using Battle;
 using Dices;
 using Leopotam.EcsLite;
 using UI;
+using UI.Battle;
 using UI.Units;
 using Zenject;
 
@@ -21,10 +22,10 @@ namespace Infrastructure
         public void InitSystems(EcsSystems updateSystems)
         {
             updateSystems
+                .Add(_container.Resolve<BattleBeginStateSystem>())
                 .Add(_container.Resolve<BattleDiceRollStateSystem>())
                 .Add(_container.Resolve<BattleTargetSelectStateSystem>())
                 .Add(_container.Resolve<DiceApplyStateSystem>())
-                .Add(_container.Resolve<BattleSelectionViewSystem>())
                 .Add(_container.Resolve<DiceTargetSelectViewSystem>())
                 .Add(_container.Resolve<DiceApplySystem>())
                 .Add(_container.Resolve<DamageSystem>())
@@ -32,8 +33,9 @@ namespace Infrastructure
                 .Add(_container.Resolve<UnitAnimationLaunchViewSystem>())
 
                 // Post update
-                .Add(_container.Resolve<BattleUIUpdateSystem>())
-                .Add(_container.Resolve<UnitsHealthBarUpdateSystem>())
+                .Add(_container.Resolve<BattleUpdateUISystem>())
+                .Add(_container.Resolve<BattleDicesUpdateUISystem>())
+                .Add(_container.Resolve<BattleUnitOverlayUISystem>())
 
                 .Add(_container.Resolve<DeleteFrameEventSystem>())
                 .Init();

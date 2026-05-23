@@ -15,7 +15,7 @@ namespace UI
             => DOTween.Clear();
         
         public static async UniTask ToggleCanvasGroupVisibilityAsync(CanvasGroup canvasGroup, bool mustVisible, float animationDuration,
-            CancellationTokenSource cts)
+            CancellationToken token)
         {
             canvasGroup.DOKill();
             if (mustVisible && !canvasGroup.IsVisible())
@@ -28,14 +28,14 @@ namespace UI
 
                 await canvasGroup.DOFade(1, animationDuration)
                     .SetUpdate(true)
-                    .WithCancellation(cts.Token)
+                    .WithCancellation(token)
                     .SuppressCancellationThrow();
             }
             else if (!mustVisible && canvasGroup.gameObject.activeSelf)
             {
                 await canvasGroup.DOFade(0, animationDuration)
                     .SetUpdate(true)
-                    .WithCancellation(cts.Token)
+                    .WithCancellation(token)
                     .SuppressCancellationThrow();
                 canvasGroup.gameObject.SetActive(false);
             }

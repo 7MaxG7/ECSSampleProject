@@ -8,7 +8,7 @@ namespace UI.Battle
     public class BattleEndUIView : MonoBehaviour
     {
         [SerializeField] private CanvasGroup _canvasGroup;
-        [SerializeField] private TMP_Text _lable;
+        [SerializeField] private TMP_Text _label;
 
         private float _fadeDuration;
 
@@ -17,10 +17,13 @@ namespace UI.Battle
             _fadeDuration = fadeDuration;
         }
 
-        public async UniTask ShowAsync(CancellationTokenSource cts)
-            => await UiAnimationUtility.ToggleCanvasGroupVisibilityAsync(_canvasGroup, true, _fadeDuration, cts);
+        public async UniTaskVoid SetActiveAsync(bool isActive, CancellationToken token)
+            => await UiAnimationUtility.ToggleCanvasGroupVisibilityAsync(_canvasGroup, isActive, _fadeDuration, token);
 
         public void SetWinnerLabel(string text)
-            => _lable.text = text;
+            => _label.text = text;
+
+        public void SetVisible(bool isVisible)
+            => gameObject.SetActive(isVisible);
     }
 }

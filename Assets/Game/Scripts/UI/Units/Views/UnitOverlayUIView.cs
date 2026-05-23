@@ -9,5 +9,8 @@ namespace UI.Units
 
         public HealthBarView HealthBar => _healthBar;
         public Transform FacetIconsContent => _facetIconsContent;
+
+        public void SetVisible(bool isVisible)
+            => gameObject.SetActive(isVisible);
     }
 }

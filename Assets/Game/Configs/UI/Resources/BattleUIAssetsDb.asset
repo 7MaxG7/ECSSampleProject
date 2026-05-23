@@ -42,27 +42,13 @@ MonoBehaviour:
     m_SubObjectName: 
     m_SubObjectType: 
     m_EditorAssetChanged: 0
+  _overlayDiceFacetUIView:
+    m_AssetGUID: 9e3cb9b7c96b6294299bf4a3b3fd9bc3
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_EditorAssetChanged: 0
   _unitUIOverlayView:
     m_AssetGUID: bd5a89a5f8244754eb8183c1891475e9
     m_SubObjectName: 
     m_SubObjectType: 
     m_EditorAssetChanged: 0
-  _diceOverlayFacets:
-  - _diceSide: 2
-    _overlayFacetIcon:
-      m_AssetGUID: 9e3cb9b7c96b6294299bf4a3b3fd9bc3
-      m_SubObjectName: 
-      m_SubObjectType: 
-      m_EditorAssetChanged: 0
-  - _diceSide: 3
-    _overlayFacetIcon:
-      m_AssetGUID: 02255d1028977de4ebbb8c261e6de8b3
-      m_SubObjectName: 
-      m_SubObjectType: 
-      m_EditorAssetChanged: 0
-  - _diceSide: 4
-    _overlayFacetIcon:
-      m_AssetGUID: f7e9fc673a1f5644bb385e5788dcbd24
-      m_SubObjectName: 
-      m_SubObjectType: 
-      m_EditorAssetChanged: 0

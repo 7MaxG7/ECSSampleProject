@@ -4,7 +4,6 @@ using CustomTypes;
 using Cysharp.Threading.Tasks;
 using Infrastructure;
 using Leopotam.EcsLite;
-using UI.Units;
 using UnityEngine;
 
 namespace Units
@@ -14,7 +13,6 @@ namespace Units
         private readonly UnitViewFactory _unitViewFactory;
         private readonly BattlefieldViewService _battlefieldViewService;
         private readonly HighlightService _highlightService;
-        private readonly UnitOverlayUIService _unitOverlayUIService;
 
         private readonly EcsPool<UnitComponent> _unitPool;
         private readonly EcsPool<BattleLocationComponent> _battleLocationPool;
@@ -22,12 +20,11 @@ namespace Units
         private readonly EcsPool<TeamComponent> _teamPool;
 
         public UnitSpawner(EcsService ecsService, UnitViewFactory unitViewFactory, BattlefieldViewService battlefieldViewService,
-            HighlightService highlightService, UnitOverlayUIService unitOverlayUIService)
+            HighlightService highlightService)
         {
             _unitViewFactory = unitViewFactory;
             _battlefieldViewService = battlefieldViewService;
             _highlightService = highlightService;
-            _unitOverlayUIService = unitOverlayUIService;
 
             _unitPool = ecsService.World.GetPool<UnitComponent>();
             _battleLocationPool = ecsService.World.GetPool<BattleLocationComponent>();
@@ -47,7 +44,6 @@ namespace Units
         {
             _unitViewPool.Del(unit);
             _highlightService.Clear(unit);
-            _unitOverlayUIService.Clear(unit);
         }
 
         private (UnitSpecialization Specialization, BattleCell Cell, Quaternion Rotation, TeamType Team) GetSpawnParams(int unit)

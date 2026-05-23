@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using CustomTypes;
 using Infrastructure;
 using Leopotam.EcsLite;
@@ -7,21 +8,25 @@ namespace Battle
 {
     public class HighlightService
     {
-        private readonly HighlightConfig _highlightConfig;
-        
         private readonly EcsPool<HighlightViewComponent> _viewHighlightPool;
+        private readonly Dictionary<HighlightType, Color> _highlightColors;
 
         public HighlightService(EcsService ecsService, HighlightConfig highlightConfig)
         {
-            _highlightConfig = highlightConfig;
-            
             _viewHighlightPool = ecsService.World.GetPool<HighlightViewComponent>();
+            
+            _highlightColors = new Dictionary<HighlightType, Color>()
+            {
+                [HighlightType.Default] = highlightConfig.DefaultHighlightColor,
+                [HighlightType.Aiming] = highlightConfig.AimingHighlightColor,
+            };
         }
 
         public void InitComponents(int entity, HighlightView highlightView)
         {
             ref var viewHighlightComponent = ref _viewHighlightPool.Add(entity);
             viewHighlightComponent.Highlight = highlightView;
+            highlightView.Init(_highlightColors);
             highlightView.DisableHighlight();
         }
 
@@ -30,22 +35,10 @@ namespace Battle
 
         public void SetHighlight(int entity, bool mustEnabled, HighlightType highlightType = HighlightType.Default)
         {
-            if (!mustEnabled)
-            {
-                
-            }
-            
             ref var viewHighlightComponent = ref _viewHighlightPool.Get(entity);
-
-            var color = highlightType switch
-            {
-                HighlightType.Default => _highlightConfig.DefaultHighlightColor,
-                HighlightType.Aiming => _highlightConfig.AimingHighlightColor,
-                _ => Color.clear,
-            };
             
             if (mustEnabled)
-                viewHighlightComponent.Highlight.EnableHighlight(color);
+                viewHighlightComponent.Highlight.EnableHighlight(highlightType);
             else
                 viewHighlightComponent.Highlight.DisableHighlight();
         }

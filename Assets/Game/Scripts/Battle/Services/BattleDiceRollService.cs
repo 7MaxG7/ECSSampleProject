@@ -11,10 +11,9 @@ namespace Battle
         public TeamType RollingStartTeam => TeamType.Enemy;
         public TeamType RollingEndTeam => TeamType.Player;
         public bool IsRollingState { get; private set; }
-        
+
         private readonly RandomService _random;
         private readonly TeamService _teamService;
-        private readonly DiceViewService _diceViewService;
         private readonly BattleDiceLockService _lockService;
         private readonly FrameComponentsService _frameComponentsService;
 
@@ -24,12 +23,11 @@ namespace Battle
         private readonly EcsPool<TeamBattleDicesRollComponent> _teamBattleDicesRollPool;
 
         [Inject]
-        public BattleDiceRollService(EcsService ecsService, RandomService random, TeamService teamService, DiceViewService diceViewService,
-            BattleDiceLockService lockService, FrameComponentsService frameComponentsService)
+        public BattleDiceRollService(EcsService ecsService, FrameComponentsService frameComponentsService, TeamService teamService,
+            BattleDiceLockService lockService, RandomService random)
         {
             _random = random;
             _teamService = teamService;
-            _diceViewService = diceViewService;
             _lockService = lockService;
             _frameComponentsService = frameComponentsService;
 
@@ -54,7 +52,6 @@ namespace Battle
         public void StartTeamDiceRolling(TeamType team)
         {
             _teamService.SetCurrentTeam(team);
-            _diceViewService.ActivateCurrentTeamDices();
             _lockService.SetCurrentTeamDicesLock(false);
             RollCurrentTeamUnlockedMainDices();
             LogService.LogDebug(DebugType.Log, $"{team}'s turn");

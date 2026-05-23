@@ -13,10 +13,12 @@ namespace Infrastructure
   
             // States
             Container.Bind<BattleStateMachine>().AsSingle();
+            Container.Bind<BattleBeginState>().AsSingle();
             Container.Bind<BattleDiceRollState>().AsSingle();
             Container.Bind<TargetSelectState>().AsSingle();
             Container.Bind<DicesApplyState>().AsSingle();
             Container.Bind<EndBattleState>().AsSingle();
+            Container.BindInterfacesAndSelfTo<BattleBeginStateSystem>().AsSingle();
             Container.BindInterfacesAndSelfTo<BattleDiceRollStateSystem>().AsSingle();
             Container.BindInterfacesAndSelfTo<BattleTargetSelectStateSystem>().AsSingle();
             Container.BindInterfacesAndSelfTo<DiceApplyStateSystem>().AsSingle();

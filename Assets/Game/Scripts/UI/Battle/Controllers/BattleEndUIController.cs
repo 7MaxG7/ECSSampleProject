@@ -1,6 +1,5 @@
 using Abstractions;
 using CustomTypes;
-using Cysharp.Threading.Tasks;
 using Cysharp.Threading.Tasks.Linq;
 using Infrastructure;
 using Zenject;
@@ -28,21 +27,12 @@ namespace UI.Battle
             _battleEndUIView = battleEndUIView;
 
             _battleEndUIView.Init(_uiConfig.DefaultAnimationDuration);
-            _battleEndUIModel.Winner.Subscribe(SetWinnerLabel);
 
-            _battleEndUIView.gameObject.SetActive(false);
-        }
+            var cts = _tokenProvider.CreateLocalCts();
+            _battleEndUIModel.IsBattleEndUIVisible.Subscribe(_battleEndUIView.SetActiveAsync, cts.Token);
+            _battleEndUIModel.Winner.Subscribe(SetWinnerLabel, cts.Token);
 
-        public void ShowBattleEndLabel(TeamType winner)
-        {
-            _battleEndUIModel.Winner.Value = winner;
-            ShowBattleEndPanelAsync().Forget();
-        }
-
-        private async UniTaskVoid ShowBattleEndPanelAsync()
-        {
-            using var localCts = _tokenProvider.CreateLocalCts();
-            await _battleEndUIView.ShowAsync(localCts);
+            _battleEndUIView.SetVisible(false);
         }
 
         private void SetWinnerLabel(TeamType winner)

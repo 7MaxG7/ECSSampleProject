@@ -2,8 +2,8 @@ using System.Threading;
 using Battle;
 using Battle.Battlefield;
 using Cysharp.Threading.Tasks;
-using UI;
 using UI.Battle;
+using UI.Permanent;
 using Units;
 using Zenject;
 
@@ -15,7 +15,7 @@ namespace Infrastructure
         private readonly UnitViewFactory _unitViewFactory;
         private readonly BattleUIBuilder _battleUIBuilder;
         private readonly BattleAnimatorService _animatorService;
-        private readonly CurtainUIController _curtainUIController;
+        private readonly CurtainService _curtainService;
         private readonly BattleUpdateSystemsInitializer _updateSystemsInitializer;
         private readonly BattleFixedUpdateSystemsInitializer _fixedUpdateSystemsInitializer;
         private readonly BattleStateMachine _battleStateMachine;
@@ -26,14 +26,14 @@ namespace Infrastructure
             BattleUpdateSystemsInitializer updateSystemsInitializer, BattleFixedUpdateSystemsInitializer fixedUpdateSystemsInitializer,
             BattleStateMachine battleStateMachine, AssetsProvider assetsProvider, BattlefieldBuilder battlefieldBuilder,
             UnitViewFactory unitViewFactory, BattleUIBuilder battleUIBuilder, BattleAnimatorService animatorService,
-            CurtainUIController curtainUIController, CancellationTokenProvider tokenProvider) : base(ecsService, assetsProvider,
-            tokenProvider, disposeCoordinator)
+            CurtainService curtainService, CancellationTokenProvider tokenProvider) : base(ecsService, assetsProvider, tokenProvider,
+            disposeCoordinator)
         {
             _battlefieldBuilder = battlefieldBuilder;
             _unitViewFactory = unitViewFactory;
             _battleUIBuilder = battleUIBuilder;
             _animatorService = animatorService;
-            _curtainUIController = curtainUIController;
+            _curtainService = curtainService;
             UpdateSystemsInitializer = updateSystemsInitializer;
             FixedUpdateSystemsInitializer = fixedUpdateSystemsInitializer;
             _battleStateMachine = battleStateMachine;
@@ -48,8 +48,8 @@ namespace Infrastructure
             await _battleUIBuilder.BuildBattleUIAsync();
             _battleSelectionService.Init();
 
-            _battleStateMachine.Enter<BattleDiceRollState>();
-            await _curtainUIController.Hide(cts);
+            _battleStateMachine.Enter<BattleBeginState>();
+            await _curtainService.Hide();
         }
 
         public override void OnDispose()

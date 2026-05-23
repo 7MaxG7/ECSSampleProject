@@ -24,13 +24,13 @@ namespace UI.Permanent
 			_canvasGroup.DOKill();
 		}
 
-		public async UniTask ToggleActiveAsync(bool isActive, CancellationTokenSource cts)
-			=> await UiAnimationUtility.ToggleCanvasGroupVisibilityAsync(_canvasGroup, isActive, _fadeDuration, cts);
+		public async UniTask SetActiveAsync(bool isActive, CancellationToken token)
+			=> await UiAnimationUtility.ToggleCanvasGroupVisibilityAsync(_canvasGroup, isActive, _fadeDuration, token);
 
-		public void ShowInstantly()
+		public void SetActiveInstantly(bool isActive)
 		{
-			_canvasGroup.alpha = 1f;
-			gameObject.SetActive(true);
+			_canvasGroup.alpha = isActive ? 1f : 0f;
+			gameObject.SetActive(isActive);
 		}
     }
 }

@@ -11,7 +11,7 @@ namespace Dices
     {
         [SerializeField] private GameButtonView _lockButton;
         [SerializeField] private GameObject _lockObj;
-        [SerializeField] private GameObject _hideObj;
+        [SerializeField] private GameObject _dimmer;
         [SerializeField] private HighlightView _highlight;
 
         public event Action<DiceUIView> OnDicePointed;
@@ -50,19 +50,19 @@ namespace Dices
         }
 #endregion
 
-        public void UpdateView(DiceData diceData)
-        {
-            SetCurrentSide(diceData.DiceSide);
-            _lockButton.Interactable = diceData.IsInteractable;
-        }
-
         public void SetCurrentSide(DiceSide diceSide)
             => _lockButton.Text = diceSide.ToString();
+
+        public void SetInteractable(bool isInteractable)
+            => _lockButton.Interactable = isInteractable;
 
         public void SetLocked(bool mustLocked)
             => _lockObj.SetActive(mustLocked);
 
-        public void SetHidden(bool mustHidden)
-            => _hideObj.SetActive(mustHidden);
+        public void SetDimmed(bool mustHidden)
+            => _dimmer.SetActive(mustHidden);
+
+        public void SetVisible(bool isVisible)
+            => gameObject.SetActive(isVisible);
     }
 }

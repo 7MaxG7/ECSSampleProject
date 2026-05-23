@@ -22,28 +22,13 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: f5fe005d89bd79e46b659b1a8fe39054
-    m_Address: BattleUI
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 1ee2e9c4eacac9945ad0757ab2472de0
     m_Address: DiceAimUI
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: db877cc517887224a9231dceaf2e3a4d
-    m_Address: DiceUI
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: bd5a89a5f8244754eb8183c1891475e9
-    m_Address: UnitUIOverlay
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: f7e9fc673a1f5644bb385e5788dcbd24
-    m_Address: ArmorOverlayIcon
+  - m_GUID: 3506d1de341657f4c82526fe906060df
+    m_Address: CurtainUI
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -52,13 +37,18 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 02255d1028977de4ebbb8c261e6de8b3
-    m_Address: RangeAttackOverlayIcon
+  - m_GUID: bd5a89a5f8244754eb8183c1891475e9
+    m_Address: UnitUIOverlay
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 3506d1de341657f4c82526fe906060df
-    m_Address: CurtainUI
+  - m_GUID: db877cc517887224a9231dceaf2e3a4d
+    m_Address: DiceUI
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f5fe005d89bd79e46b659b1a8fe39054
+    m_Address: BattleUI
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
