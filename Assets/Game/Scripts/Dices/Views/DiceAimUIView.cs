@@ -10,7 +10,10 @@ namespace Dices
 
         public void SetSide(DiceSide diceSide)
         {
-            _sideText.text = diceSide.ToString();
+            var text = diceSide.SideType.ToString();
+            if (diceSide.IsValued)
+                text += $":\n{diceSide.Value}";
+            _sideText.text = text;
         }
     }
 }

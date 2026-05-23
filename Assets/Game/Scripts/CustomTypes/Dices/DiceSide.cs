@@ -17,9 +17,9 @@ namespace CustomTypes
 
         public override string ToString()
         {
-            var result = $"{_sideType}";
+            var result = _sideType.ToString();
             if (IsValued)
-                result += $":\n{_value}";
+                result += $"{_value}";
             
             return result;
         }

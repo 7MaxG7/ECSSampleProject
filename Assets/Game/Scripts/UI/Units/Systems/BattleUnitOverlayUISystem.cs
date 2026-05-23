@@ -24,7 +24,7 @@ namespace UI.Units
         private readonly EcsFilter _targetedModifiedEventFilter;
         private readonly EcsFilter _deadUnitAddedEventFilter;
         private readonly EcsFilter _unitFilter;
-        private readonly EcsFilter _undelayedUnitUIOverlayFilter;
+        private readonly EcsFilter _unitViewActionedEventFilter;
         private readonly EcsPool<UnitComponent> _unitPool;
         private readonly EcsPool<TargetedComponent> _targetedPool;
         private readonly EcsPool<DeadComponent> _deadPool;
@@ -46,8 +46,8 @@ namespace UI.Units
             _targetedDeletedEventFilter = frameComponentsService.GetDeletedEventFilter<TargetedComponent>();
             _targetedModifiedEventFilter = frameComponentsService.GetModifiedEventFilter<TargetedComponent>();
             _deadUnitAddedEventFilter = frameComponentsService.GetAddedEventMask<DeadComponent>().Inc<UnitComponent>().End();
+            _unitViewActionedEventFilter = frameComponentsService.GetEventFilter<UnitViewActionedEventComponent>();
             _unitFilter = ecsService.World.Filter<UnitComponent>().End();
-            _undelayedUnitUIOverlayFilter = ecsService.World.Filter<UnitComponent>().Exc<ViewUpdateDelayComponent>().End();
             _unitPool = ecsService.World.GetPool<UnitComponent>();
             _targetedPool = ecsService.World.GetPool<TargetedComponent>();
             _deadPool = ecsService.World.GetPool<DeadComponent>();
@@ -72,8 +72,7 @@ namespace UI.Units
             if (isUnitModelAdded)
                 _unitsOverlayUIModel.AreUnitOverlayModelsAdded.Invoke();
 
-            foreach (var unit in _undelayedUnitUIOverlayFilter)
-                UpdateHealthBar(unit);
+            UpdateHealthBars();
         }
 
         private void UpdateDicesFacets()
@@ -88,6 +87,18 @@ namespace UI.Units
 
             foreach (var id in _addedFacetModelIds)
                 _unitsOverlayUIModel.UnitOverlayModels[id].AreFacetModelsAdded.Invoke();
+        }
+
+        private void UpdateHealthBars()
+        {
+            foreach (var unit in _unitViewActionedEventFilter)
+                UpdateHealthBar(unit);
+            foreach (var unit in _targetedAddedEventFilter)
+                UpdateHealthBar(unit);
+            foreach (var unit in _targetedDeletedEventFilter)
+                UpdateHealthBar(unit);
+            foreach (var unit in _targetedModifiedEventFilter)
+                UpdateHealthBar(unit);
         }
 
         private void UpdateUnitOverlay(int unit, ref bool isUnitModelAdded)

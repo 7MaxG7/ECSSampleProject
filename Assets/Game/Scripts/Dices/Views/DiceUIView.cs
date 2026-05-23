@@ -51,7 +51,13 @@ namespace Dices
 #endregion
 
         public void SetCurrentSide(DiceSide diceSide)
-            => _lockButton.Text = diceSide.ToString();
+        {
+            var text = diceSide.SideType.ToString();
+            if (diceSide.IsValued)
+                text += $"\n{diceSide.Value}";
+            _lockButton.Text = text;
+
+        }
 
         public void SetInteractable(bool isInteractable)
             => _lockButton.Interactable = isInteractable;

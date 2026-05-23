@@ -12,10 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4faae00c3e7c4ffda96aa92cf33d5444, type: 3}
   m_Name: BattleAnimationConfig
   m_EditorClassIdentifier: 
-  _betweenUnitsUpplyingDelay: 0.65
+  _betweenUnitsApplyingDelay: 0.65
   _idleAnimationName: Idle
   _deathAnimationName: Death
   _meleeAttackParameterName: MeleeAttack
   _rangeAttackParameterName: MeleeAttack
+  _armorCastParameterName: MeleeAttack
   _damageReceiveParameterName: DamageReceive
   _deathParameterName: Death

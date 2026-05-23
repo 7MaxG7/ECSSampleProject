@@ -46,6 +46,7 @@ namespace Units
             {
                 [DiceSideType.MeleeAttack] = Animator.StringToHash(_animationConfig.MeleeAttackParameterName),
                 [DiceSideType.RangeAttack] = Animator.StringToHash(_animationConfig.RangeAttackParameterName),
+                [DiceSideType.Armor] = Animator.StringToHash(_animationConfig.ArmorCastParameterName),
             };
 
             _facetReactionHashes = new Dictionary<DiceSideType, int>

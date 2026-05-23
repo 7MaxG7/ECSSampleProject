@@ -3,7 +3,6 @@ using System.Threading;
 using CustomTypes;
 using Cysharp.Threading.Tasks;
 using Infrastructure;
-using Leopotam.EcsLite;
 using Units;
 using Zenject;
 
@@ -17,8 +16,6 @@ namespace Dices
         private readonly BattleAnimationConfig _animationConfig;
         private readonly FrameComponentsService _frameComponentsService;
 
-        private readonly EcsPool<ViewUpdateDelayComponent> _viewUpdateDelayPool;
-
         [Inject]
         public DiceApplyViewService(EcsService ecsService, BattleAnimatorService battleAnimatorService,
             BattleAnimationConfig animationConfig, FrameComponentsService frameComponentsService)
@@ -26,24 +23,21 @@ namespace Dices
             _battleAnimatorService = battleAnimatorService;
             _animationConfig = animationConfig;
             _frameComponentsService = frameComponentsService;
-
-            _viewUpdateDelayPool = ecsService.World.GetPool<ViewUpdateDelayComponent>();
         }
 
         public async UniTask AnimateDiceApplyAsync(int unit, int targeted, DiceSideType sideType, CancellationTokenSource cts)
         {
             IsInProgress = true;
 
-            await StartApplyAnimation(unit, targeted, sideType, cts);
+            await StartApplyAnimation(unit, sideType, cts);
             await EndApplyAnimation(targeted, sideType, cts);
 
             await UniTask.Delay(TimeSpan.FromSeconds(_animationConfig.BetweenUnitsApplyingDelay), cancellationToken: cts.Token);
             IsInProgress = false;
         }
 
-        private async UniTask StartApplyAnimation(int unit, int targeted, DiceSideType sideType, CancellationTokenSource cts)
+        private async UniTask StartApplyAnimation(int unit, DiceSideType sideType, CancellationTokenSource cts)
         {
-            _viewUpdateDelayPool.Add(targeted);
             AddAnimationComponent(unit, sideType, BattleAnimationType.FacetApply);
 
             while (_battleAnimatorService.IsAnimationInProcess && !_battleAnimatorService.IsApplyActionReady(unit))
@@ -59,7 +53,7 @@ namespace Dices
 
         private void AnimateTarget(int targeted, DiceSideType sideType)
         {
-            _viewUpdateDelayPool.Del(targeted);
+            _frameComponentsService.AddEvent<UnitViewActionedEventComponent>(targeted);
             AddAnimationComponent(targeted, sideType, BattleAnimationType.FacetReaction);
         }
 
