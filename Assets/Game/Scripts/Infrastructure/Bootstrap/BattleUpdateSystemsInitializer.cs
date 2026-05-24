@@ -36,6 +36,7 @@ namespace Infrastructure
                 .Add(_container.Resolve<BattleUpdateUISystem>())
                 .Add(_container.Resolve<BattleDicesUpdateUISystem>())
                 .Add(_container.Resolve<BattleUnitOverlayUISystem>())
+                .Add(_container.Resolve<AnimationClearSystem>())
 
                 .Add(_container.Resolve<DeleteFrameEventSystem>())
                 .Init();

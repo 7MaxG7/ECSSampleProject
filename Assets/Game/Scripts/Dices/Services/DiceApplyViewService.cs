@@ -40,7 +40,7 @@ namespace Dices
         {
             AddAnimationComponent(unit, sideType, BattleAnimationType.FacetApply);
 
-            while (_battleAnimatorService.IsAnimationInProcess && !_battleAnimatorService.IsApplyActionReady(unit))
+            while (_battleAnimatorService.IsAnimationInProcess && !_battleAnimatorService.IsAnimationActionInvoked(unit))
                 await UniTask.NextFrame(cts.Token);
         }
 

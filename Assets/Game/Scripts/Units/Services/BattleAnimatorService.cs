@@ -5,6 +5,7 @@ using Cysharp.Threading.Tasks;
 using Infrastructure;
 using Leopotam.EcsLite;
 using UnityEngine;
+using Zenject;
 
 namespace Units
 {
@@ -16,7 +17,6 @@ namespace Units
         private readonly EcsService _ecsService;
         private readonly CancellationTokenProvider _tokenProvider;
         private readonly BattleAnimationConfig _animationConfig;
-        private readonly FrameComponentsService _frameComponentsService;
 
         private readonly EcsFilter _animatorViewFilter;
         private readonly EcsFilter _animationLaunchEventFilter;
@@ -27,14 +27,16 @@ namespace Units
         private readonly Dictionary<DiceSideType, int> _facetActionHashes;
         private readonly Dictionary<DiceSideType, int> _facetReactionHashes;
         private readonly int _deathHash;
+        
+        private readonly HashSet<int> _animationActionReadyUnits = new();
 
+        [Inject]
         public BattleAnimatorService(EcsService ecsService, CancellationTokenProvider tokenProvider, BattleAnimationConfig animationConfig,
             FrameComponentsService frameComponentsService)
         {
             _ecsService = ecsService;
             _tokenProvider = tokenProvider;
             _animationConfig = animationConfig;
-            _frameComponentsService = frameComponentsService;
 
             _animatorViewFilter = ecsService.World.Filter<AnimatorViewComponent>().End();
             _animationLaunchEventFilter = frameComponentsService.GetEventFilter<AnimationLaunchEventComponent>();
@@ -104,8 +106,11 @@ namespace Units
             animatorComponent.Animator.SetBool(_deathHash, isDead);
         }
 
-        public bool IsApplyActionReady(int unit)
-            => _frameComponentsService.HasEvent<AnimationActionReadyEventComponent>(unit);
+        public bool IsAnimationActionInvoked(int unit)
+            => _animationActionReadyUnits.Contains(unit);
+
+        public void ClearReadyAnimationActions()
+            => _animationActionReadyUnits.Clear();
 
         private void PlayAnimation(int unit, int hash)
         {
@@ -140,10 +145,8 @@ namespace Units
 
         private void InvokeActionStart(EcsPackedEntity unitPacked)
         {
-            if (!_ecsService.TryUnpackWithWarning(unitPacked, out var unit))
-                return;
-
-            _frameComponentsService.AddEvent<AnimationActionReadyEventComponent>(unit);
+            if (_ecsService.TryUnpackWithWarning(unitPacked, out var unit))
+                _animationActionReadyUnits.Add(unit);
         }
 
         private async UniTaskVoid ResetTransformPositionAsync(Transform transform)

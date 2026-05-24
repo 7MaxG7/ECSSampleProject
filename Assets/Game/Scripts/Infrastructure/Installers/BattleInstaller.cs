@@ -24,7 +24,6 @@ namespace Infrastructure
             Container.Bind<BattleDeathService>().AsSingle();
             Container.BindInterfacesAndSelfTo<DamageSystem>().AsSingle();
             Container.BindInterfacesAndSelfTo<DeathSystem>().AsSingle();
-            Container.BindInterfacesAndSelfTo<UnitAnimationLaunchViewSystem>().AsSingle();
 
             // Selection
             Container.Bind<BattleSelectionService>().AsSingle();
@@ -56,6 +55,8 @@ namespace Infrastructure
             // Units
             Container.Bind<BattleAnimatorService>().AsSingle();
             Container.Bind<BattleAnimationConfig>().FromScriptableObjectResource(nameof(BattleAnimationConfig)).AsSingle();
+            Container.BindInterfacesAndSelfTo<UnitAnimationLaunchViewSystem>().AsSingle();
+            Container.BindInterfacesAndSelfTo<AnimationClearSystem>().AsSingle();
         }
     }
 }
