@@ -4,6 +4,7 @@ using CustomTypes;
 using Cysharp.Threading.Tasks;
 using Infrastructure;
 using UI.Units;
+using UnityEngine;
 
 namespace UI.Battle
 {
@@ -18,6 +19,10 @@ namespace UI.Battle
         };
 
         // IBattleDicesUIModel
+        public AsyncReactiveProperty<bool> IsDiceAimingVisible { get; } = new(default);
+        public AsyncReactiveProperty<TeamType> AimingTeam { get; } = new(default);
+        public AsyncReactiveProperty<DiceSide> AimingSide { get; } = new(default);
+        public AsyncReactiveProperty<Vector2> AimingPosition { get; } = new(default);
         public AsyncReactiveTrigger AreDicesAdded { get; } = new();
         public Dictionary<TeamType, Dictionary<string, BattleDiceUIModel>> DiceModels { get; } = new()
         {

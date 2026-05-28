@@ -54,11 +54,12 @@ namespace UI.Units
             currentHp = Math.Max(currentHp, 0);
 
             var barsCapacity = Math.Max(maxHp, currentHp + armor);
-            var damageBar = damage == 0 ? 0 : currentHp + armor;
+            var damageBar = damage == 0 ? 0 : currentHp;
+            var armoredDamageBar = damage == 0 || armor == 0 ? 0 : currentHp + armor;
             var armorBar = currentHp + armor - damage;
             var currentHpBar = Math.Min(currentHp - damage + armor, currentHp);
 
-            await _view.UpdateBarsAsync(barsCapacity, damageBar, armorBar, currentHpBar, _tokenProvider.CreateLocalCts());
+            await _view.UpdateBarsAsync(barsCapacity, armoredDamageBar, damageBar, armorBar, currentHpBar, _tokenProvider.CreateLocalCts());
         }
     }
 }

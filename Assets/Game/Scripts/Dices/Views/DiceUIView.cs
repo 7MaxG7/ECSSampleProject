@@ -13,6 +13,8 @@ namespace Dices
         [SerializeField] private GameObject _lockObj;
         [SerializeField] private GameObject _dimmer;
         [SerializeField] private HighlightView _highlight;
+        [SerializeField] private GameObject _visibleContent;
+        [SerializeField] private TeamObj[] _teamDiceBgs;
 
         public event Action<DiceUIView> OnDicePointed;
         public event Action<DiceUIView> OnDiceUnpointed;
@@ -70,5 +72,14 @@ namespace Dices
 
         public void SetVisible(bool isVisible)
             => gameObject.SetActive(isVisible);
+
+        public void SetHidden(bool isHidden)
+            => _visibleContent.SetActive(!isHidden);
+
+        public void SetTeam(TeamType team)
+        {
+            foreach (var teamObj in _teamDiceBgs)
+                teamObj.GObject.SetActive(teamObj.Team == team);
+        }
     }
 }

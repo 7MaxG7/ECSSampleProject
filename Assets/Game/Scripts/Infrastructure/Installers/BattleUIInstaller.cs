@@ -1,4 +1,3 @@
-using Dices;
 using UI;
 using UI.Battle;
 using UI.Units;
@@ -16,7 +15,6 @@ namespace Infrastructure
             Container.Bind<BattleEndUIController>().AsSingle();
             Container.Bind<UnitsOverlayUIController>().AsSingle();
             Container.Bind<BattleDicesUIController>().AsSingle();
-            Container.Bind<DiceAimingService>().AsSingle();
             Container.BindInterfacesAndSelfTo<BattleUpdateUISystem>().AsSingle();
             Container.BindInterfacesAndSelfTo<BattleDicesUpdateUISystem>().AsSingle();
             Container.BindInterfacesAndSelfTo<BattleUnitOverlayUISystem>().AsSingle();

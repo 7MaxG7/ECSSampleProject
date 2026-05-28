@@ -7,6 +7,7 @@ using Cysharp.Threading.Tasks;
 using Cysharp.Threading.Tasks.Linq;
 using Dices;
 using Infrastructure;
+using Leopotam.EcsLite;
 using Units;
 using Zenject;
 
@@ -19,8 +20,12 @@ namespace UI.Battle
         private readonly DiceTargetSelectService _diceTargetSelectService;
         private readonly BattleDiceLockService _diceLockService;
         private readonly HighlightService _highlightService;
-        private readonly DiceAimingService _diceAimingService;
+        private readonly TeamService _teamService;
+        private readonly FrameComponentsService _frameComponentsService;
         private readonly CancellationTokenProvider _tokenProvider;
+
+        private readonly EcsPool<TargetSelectedComponent> _targetSelectedPool;
+        private readonly EcsPool<AimingDiceComponent> _aimingDicePool;
 
         private BattleDicesUIView _battleDicesUIView;
         private IBattleDicesUIModel _battleDicesUIModel;
@@ -29,16 +34,20 @@ namespace UI.Battle
 
         [Inject]
         public BattleDicesUIController(EcsService ecsService, BattleUIFactory battleUIFactory, BattleDiceLockService diceLockService,
-            DiceTargetSelectService diceTargetSelectService, HighlightService highlightService,
-            DiceAimingService diceAimingService, CancellationTokenProvider tokenProvider, UnitService unitService)
+            DiceTargetSelectService diceTargetSelectService, HighlightService highlightService, CancellationTokenProvider tokenProvider,
+            TeamService teamService, FrameComponentsService frameComponentsService, UnitService unitService)
         {
             _unitService = unitService;
             _battleUIFactory = battleUIFactory;
             _diceTargetSelectService = diceTargetSelectService;
             _diceLockService = diceLockService;
             _highlightService = highlightService;
-            _diceAimingService = diceAimingService;
+            _teamService = teamService;
+            _frameComponentsService = frameComponentsService;
             _tokenProvider = tokenProvider;
+
+            _targetSelectedPool = ecsService.World.GetPool<TargetSelectedComponent>();
+            _aimingDicePool = ecsService.World.GetPool<AimingDiceComponent>();
         }
 
         public void Init(IBattleDicesUIModel battleDicesUIModel, BattleDicesUIView battleDicesUIView)
@@ -47,6 +56,12 @@ namespace UI.Battle
             _battleDicesUIView = battleDicesUIView;
 
             _battleDicesUIModel.AreDicesAdded.Subscribe(AddNewDices, _tokenProvider.CreateLocalCts().Token);
+            _battleDicesUIModel.IsDiceAimingVisible.Subscribe(_battleDicesUIView.AimingDice.SetVisible,
+                _tokenProvider.CreateLocalCts().Token);
+            _battleDicesUIModel.AimingSide.WithoutCurrent()
+                .Subscribe(_battleDicesUIView.AimingDice.SetSide, _tokenProvider.CreateLocalCts().Token);
+            _battleDicesUIModel.AimingPosition.Subscribe(_battleDicesUIView.AimingDice.SetPosition, _tokenProvider.CreateLocalCts().Token);
+            _battleDicesUIModel.AimingTeam.Subscribe(_battleDicesUIView.AimingDice.SetTeam, _tokenProvider.CreateLocalCts().Token);
         }
 
         public void Clear()
@@ -78,10 +93,12 @@ namespace UI.Battle
 
                 var diceView = await _battleUIFactory.CreateDiceUIViewAsync(dice, content);
                 diceModel.IsVisible.Subscribe(diceView.SetVisible, token);
+                diceModel.Team.Subscribe(diceView.SetTeam, token);
                 diceModel.IsInteractable.Subscribe(diceView.SetInteractable, token);
                 diceModel.IsLocked.Subscribe(diceView.SetLocked, token);
                 diceModel.DiceSide.Subscribe(diceView.SetCurrentSide, token);
                 diceModel.IsDimmed.Subscribe(diceView.SetDimmed, token);
+                diceModel.IsAiming.Subscribe(diceView.SetHidden, token);
                 diceModel.IsLit.Subscribe(diceView.Highlight.SetHighlightEnabled, token);
 
                 SubscribeDiceView(diceView, dice);
@@ -116,16 +133,29 @@ namespace UI.Battle
         private void StartDiceAiming(DiceUIView diceUIView)
         {
             if (!_diceTargetSelectService.IsTargetSelecting || !TryGetDiceOwner(diceUIView, out var owner) ||
-                !_unitService.TryGetDice(owner, out var dice))
+                !_unitService.TryGetDice(owner, out var dice) || !_teamService.IsCurrentTeamEntity(dice) || _targetSelectedPool.Has(dice))
                 return;
-            
-            _diceAimingService.StartDiceAiming(dice);
+
+            _aimingDicePool.Add(dice);
+            _frameComponentsService.AddAddedEvent<AimingDiceComponent>(dice);
         }
 
         private void TrySetTarget(DiceUIView diceUIView)
         {
-            if (TryGetDiceOwner(diceUIView, out var owner) && _unitService.TryGetDice(owner, out var dice))
-                _diceTargetSelectService.TrySetTarget(dice);
+            if (!TryGetDiceOwner(diceUIView, out var owner) || !_unitService.TryGetDice(owner, out var dice) || !TryStopAiming(dice))
+                return;
+
+            _diceTargetSelectService.TrySetTarget(dice);
+        }
+
+        private bool TryStopAiming(int dice)
+        {
+            if (!_aimingDicePool.Has(dice))
+                return false;
+
+            _aimingDicePool.Del(dice);
+            _frameComponentsService.AddDeletedEvent<AimingDiceComponent>(dice);
+            return true;
         }
 
         private void SetDiceUnitHighlight(DiceUIView diceUIView, bool mustLit)

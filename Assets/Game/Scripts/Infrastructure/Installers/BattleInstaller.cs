@@ -37,7 +37,7 @@ namespace Infrastructure
             Container.Bind<BattleDiceLockService>().AsSingle();
             Container.Bind<BattleDiceService>().AsSingle();
 
-            Container.BindInterfacesAndSelfTo<DiceTargetSelectViewSystem>().AsSingle();
+            Container.BindInterfacesAndSelfTo<DiceAimingViewSystem>().AsSingle();
             Container.Bind<DiceTargetSelectService>().AsSingle();
 
             // Factories

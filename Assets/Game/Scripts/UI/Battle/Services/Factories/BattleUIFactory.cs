@@ -1,4 +1,3 @@
-using CustomTypes;
 using Cysharp.Threading.Tasks;
 using Dices;
 using Infrastructure;
@@ -38,15 +37,6 @@ namespace UI.Battle
         {
             var diceUIView = await _assetsProvider.CreateInstanceAsync<DiceUIView>(_battleUIAssetsDb.DiceUIView, parent);
             _ecsService.AddEntityDebugView(diceUIView.gameObject, dice);
-            return diceUIView;
-        }
-
-        public async UniTask<DiceAimUIView> CreateDiceAimViewAsync(DiceSide diceSide, Vector3 position)
-        {
-            var diceUIView =
-                await _assetsProvider.CreateInstanceAsync<DiceAimUIView>(_battleUIAssetsDb.DiceAimUIView, position, Quaternion.identity,
-                    _rootCanvas);
-            diceUIView.SetSide(diceSide);
             return diceUIView;
         }
 

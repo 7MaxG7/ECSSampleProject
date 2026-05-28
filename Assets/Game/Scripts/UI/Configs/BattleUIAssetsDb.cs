@@ -11,7 +11,6 @@ namespace UI
         [SerializeField] private AssetReference _battleEndUIView;
         [SerializeField] private AssetReference _battleDicesUIView;
         [SerializeField] private AssetReference _diceUIView;
-        [SerializeField] private AssetReference _diceAimUIView;
         [Header("Overlay")]
         [Tooltip("ЮИ для оверлеев юнитов")]
         [SerializeField] private AssetReference _battleUnitsOverlayUIView;
@@ -22,7 +21,6 @@ namespace UI
         public AssetReference BattleUIView => _battleUIView;
         public AssetReference BattleEndUIView => _battleEndUIView;
         public AssetReference DiceUIView => _diceUIView;
-        public AssetReference DiceAimUIView => _diceAimUIView;
         public AssetReference BattleUnitsOverlayUIView => _battleUnitsOverlayUIView;
         public AssetReference UnitUIOverlayView => _unitUIOverlayView;
         public AssetReference OverlayDiceFacetUIView => _overlayDiceFacetUIView;

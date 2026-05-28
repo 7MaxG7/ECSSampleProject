@@ -104,7 +104,7 @@ namespace UI.Units
         private void UpdateUnitOverlay(int unit, ref bool isUnitModelAdded)
         {
             ref var unitComponent = ref _unitPool.Get(unit);
-            isUnitModelAdded |= _unitsOverlayUIModel.UnitOverlayModels.TryAdd(unitComponent.Id, new(unitComponent.Id));
+            isUnitModelAdded |= _unitsOverlayUIModel.UnitOverlayModels.TryAdd(unitComponent.Id, new());
                   
             var overlayModel = _unitsOverlayUIModel.UnitOverlayModels[unitComponent.Id];
             overlayModel.IsOverlayVisible.Update(!_deadPool.Has(unit));

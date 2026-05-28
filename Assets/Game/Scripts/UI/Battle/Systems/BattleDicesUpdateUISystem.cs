@@ -18,10 +18,12 @@ namespace UI.Battle
         private readonly UnitService _unitService;
         private readonly BattleDeathService _battleDeathService;
         private readonly DiceApplyService _diceApplyService;
+        private readonly InputService _inputService;
 
         private readonly EcsFilter _battleAddedEventFilter;
-        private readonly EcsFilter _diceUnaimingEventFilter;
-        private readonly EcsFilter _diceAimingEventFilter;
+        private readonly EcsFilter _aimingDiceAddedEventFilter;
+        private readonly EcsFilter _aimingDiceDeleteEventFilter;
+        private readonly EcsFilter _targetSelectedAddedEventFilter;
         private readonly EcsFilter _dicesRollEventFilter;
         private readonly EcsFilter _diceLockAddedEventFilter;
         private readonly EcsFilter _diceLockDeletedEventFilter;
@@ -31,16 +33,16 @@ namespace UI.Battle
         private readonly EcsFilter _battleDeselectEventFilter;
         private readonly EcsFilter _unitFilter;
         private readonly EcsFilter _diceFilter;
+        private readonly EcsFilter _aimingDiceFilter;
         private readonly EcsPool<UnitComponent> _unitPool;
         private readonly EcsPool<TeamBattleDicesRollComponent> _teamBattleDicesRollPool;
         private readonly EcsPool<BattleSelectedComponent> _battleSelectedPool;
         private readonly EcsPool<TargetSelectedComponent> _targetSelectedPool;
-        private readonly EcsPool<DiceAimingViewComponent> _diceAimingViewPool;
 
         [Inject]
         public BattleDicesUpdateUISystem(EcsService ecsService, BattleUIModel battleUIModel, FrameComponentsService frameComponentsService,
             BattleDiceLockService diceLockService, BattleDiceService battleDiceService, TeamService teamService, UnitService unitService,
-            BattleDeathService battleDeathService, DiceApplyService diceApplyService)
+            BattleDeathService battleDeathService, DiceApplyService diceApplyService, InputService inputService)
         {
             _battleUIModel = battleUIModel;
             _diceLockService = diceLockService;
@@ -49,10 +51,12 @@ namespace UI.Battle
             _unitService = unitService;
             _battleDeathService = battleDeathService;
             _diceApplyService = diceApplyService;
+            _inputService = inputService;
 
             _battleAddedEventFilter = frameComponentsService.GetAddedEventFilter<BattleComponent>();
-            _diceAimingEventFilter = frameComponentsService.GetEventFilter<DiceAimingEventComponent>();
-            _diceUnaimingEventFilter = frameComponentsService.GetEventFilter<DiceUnaimingEventComponent>();
+            _aimingDiceAddedEventFilter = frameComponentsService.GetAddedEventFilter<AimingDiceComponent>();
+            _aimingDiceDeleteEventFilter = frameComponentsService.GetDeletedEventFilter<AimingDiceComponent>();
+            _targetSelectedAddedEventFilter = frameComponentsService.GetAddedEventFilter<TargetSelectedComponent>();
             _dicesRollEventFilter = frameComponentsService.GetEventFilter<DicesRollEventComponent>();
             _diceLockAddedEventFilter = frameComponentsService.GetAddedEventFilter<LockedComponent>();
             _diceLockDeletedEventFilter = frameComponentsService.GetDeletedEventFilter<LockedComponent>();
@@ -62,11 +66,11 @@ namespace UI.Battle
             _battleDeselectEventFilter = frameComponentsService.GetEventFilter<BattleDeselectEventComponent>();
             _unitFilter = ecsService.World.Filter<UnitComponent>().End();
             _diceFilter = ecsService.World.Filter<DiceComponent>().End();
+            _aimingDiceFilter = ecsService.World.Filter<AimingDiceComponent>().End();
             _unitPool = ecsService.World.GetPool<UnitComponent>();
             _teamBattleDicesRollPool = ecsService.World.GetPool<TeamBattleDicesRollComponent>();
             _battleSelectedPool = ecsService.World.GetPool<BattleSelectedComponent>();
             _targetSelectedPool = ecsService.World.GetPool<TargetSelectedComponent>();
-            _diceAimingViewPool = ecsService.World.GetPool<DiceAimingViewComponent>();
         }
 
         public void PostRun(IEcsSystems systems)
@@ -77,6 +81,28 @@ namespace UI.Battle
             UpdateDimming();
             UpdateVisible();
             UpdateHighlight();
+            UpdateAiming();
+        }
+
+        private void UpdateAiming()
+        {
+            foreach (var dice in _aimingDiceAddedEventFilter)
+                if (TryGetDiceModel(dice, out var model))
+                    model.IsAiming.Update(true);
+            foreach (var dice in _aimingDiceDeleteEventFilter)
+                if (TryGetDiceModel(dice, out var model))
+                    model.IsAiming.Update(false);
+
+            foreach (var aimingDice in _aimingDiceFilter)
+            {
+                _battleUIModel.IsDiceAimingVisible.Update(true);
+                _battleUIModel.AimingTeam.UpdateEnum(_teamService.GetTeam(aimingDice));
+                _battleUIModel.AimingPosition.Update(_inputService.MousePosition);
+                _battleUIModel.AimingSide.UpdateEquatable(_battleDiceService.GetCurrentSide(aimingDice));
+                return;
+            }
+            
+            _battleUIModel.IsDiceAimingVisible.Update(false);
         }
 
         private void UpdateHighlight()
@@ -130,6 +156,7 @@ namespace UI.Battle
                 }
 
                 diceModel.IsVisible.Update(!_battleDeathService.IsDead(unit));
+                diceModel.Team.Update(team);
                 diceModel.DiceSide.UpdateEquatable(_battleDiceService.GetCurrentSide(dice));
                 diceModel.IsInteractable.Update(false);
                 diceModel.IsLocked.Update(_diceLockService.IsLocked(dice));
@@ -171,10 +198,7 @@ namespace UI.Battle
                             model.IsInteractable.Update(false);
                     }
 
-            foreach (var dice in _diceAimingEventFilter)
-                if (TryGetDiceModel(dice, out var model))
-                    model.IsDimmed.Update(IsDimmed(dice));
-            foreach (var dice in _diceUnaimingEventFilter)
+            foreach (var dice in _targetSelectedAddedEventFilter)
                 if (TryGetDiceModel(dice, out var model))
                     model.IsDimmed.Update(IsDimmed(dice));
         }
@@ -258,7 +282,6 @@ namespace UI.Battle
         }
 
         private bool IsDimmed(int dice)
-            => _diceApplyService.IsApplyingDice || !_teamService.IsCurrentTeamEntity(dice) || _targetSelectedPool.Has(dice) ||
-                _diceAimingViewPool.Has(dice);
+            => _diceApplyService.IsApplyingDice || !_teamService.IsCurrentTeamEntity(dice) || _targetSelectedPool.Has(dice);
     }
 }

@@ -17,7 +17,6 @@ namespace Dices
 
         private readonly EcsService _ecsService;
         private readonly BattleDiceService _battleDiceService;
-        private readonly DiceAimingService _aimingService;
         private readonly FrameComponentsService _frameComponentsService;
         private readonly BattleSelectionService _selectionService;
         private readonly UnitService _unitService;
@@ -31,12 +30,10 @@ namespace Dices
 
         [Inject]
         public DiceTargetSelectService(EcsService ecsService, BattleDiceService battleDiceService, BattleSelectionService selectionService,
-            UnitService unitService, DiceAimingService aimingService, FrameComponentsService frameComponentsService,
-            TeamService teamService)
+            UnitService unitService, FrameComponentsService frameComponentsService, TeamService teamService)
         {
             _ecsService = ecsService;
             _battleDiceService = battleDiceService;
-            _aimingService = aimingService;
             _frameComponentsService = frameComponentsService;
             _selectionService = selectionService;
             _unitService = unitService;
@@ -71,9 +68,6 @@ namespace Dices
 
         public void TrySetTarget(int dice)
         {
-            if (!_aimingService.TryStopAiming(dice))
-                return;
-
             if (!IsCurrentTargetValid(dice, out var target))
                 return;
 
@@ -136,7 +130,7 @@ namespace Dices
                     continue;
 
                 _targetSelectedPool.Add(dice);
-                _frameComponentsService.AddEvent<DiceAimingEventComponent>(dice);
+                _frameComponentsService.AddAddedEvent<TargetSelectedComponent>(dice);
             }
         }
 

@@ -15,7 +15,7 @@ namespace Battle
         {
             _viewHighlightPool = ecsService.World.GetPool<HighlightViewComponent>();
             
-            _highlightColors = new Dictionary<HighlightType, Color>()
+            _highlightColors = new Dictionary<HighlightType, Color>
             {
                 [HighlightType.Default] = highlightConfig.DefaultHighlightColor,
                 [HighlightType.Aiming] = highlightConfig.AimingHighlightColor,

@@ -4,6 +4,6 @@ namespace Dices
 {
     public struct TargetSelectedComponent
     {
-        public EcsPackedEntity Target;
+        public EcsPackedEntity? Target; // Null for missed dices
     }
 }

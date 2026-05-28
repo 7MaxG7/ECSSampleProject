@@ -2,7 +2,6 @@ using Abstractions;
 using Battle;
 using Dices;
 using Leopotam.EcsLite;
-using UI;
 using UI.Battle;
 using UI.Units;
 using Zenject;
@@ -26,7 +25,7 @@ namespace Infrastructure
                 .Add(_container.Resolve<BattleDiceRollStateSystem>())
                 .Add(_container.Resolve<BattleTargetSelectStateSystem>())
                 .Add(_container.Resolve<DiceApplyStateSystem>())
-                .Add(_container.Resolve<DiceTargetSelectViewSystem>())
+                .Add(_container.Resolve<DiceAimingViewSystem>())
                 .Add(_container.Resolve<DiceApplySystem>())
                 .Add(_container.Resolve<DamageSystem>())
                 .Add(_container.Resolve<DeathSystem>())
