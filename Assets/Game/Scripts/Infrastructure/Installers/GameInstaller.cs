@@ -13,6 +13,7 @@ namespace Infrastructure
         {
             // Common
             Container.Bind<TeamService>().AsSingle();
+            Container.Bind<AssetsProviderConfig>().FromScriptableObjectResource(nameof(AssetsProviderConfig)).AsSingle();
 
             // Input
             Container.Bind<InputService>().AsSingle();

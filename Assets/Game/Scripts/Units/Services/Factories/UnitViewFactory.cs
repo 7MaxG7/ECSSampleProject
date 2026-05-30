@@ -11,24 +11,24 @@ namespace Units
     public class UnitViewFactory
     {
         private readonly EcsService _ecsService;
-        private readonly AssetsProvider _assetsProvider;
         private readonly StaticDataService _dataService;
         private readonly HighlightService _highlightService;
         private readonly BattleAnimatorService _battleAnimatorService;
+        private readonly Instantiator _instantiator;
 
         private readonly EcsPool<UnitViewComponent> _unitViewPool;
 
         private Transform _unitsParent;
 
         [Inject]
-        public UnitViewFactory(EcsService ecsService, AssetsProvider assetsProvider, StaticDataService dataService,
-            HighlightService highlightService, BattleAnimatorService battleAnimatorService)
+        public UnitViewFactory(EcsService ecsService, StaticDataService dataService, BattleAnimatorService battleAnimatorService,
+            HighlightService highlightService, Instantiator instantiator)
         {
             _ecsService = ecsService;
-            _assetsProvider = assetsProvider;
             _dataService = dataService;
             _highlightService = highlightService;
             _battleAnimatorService = battleAnimatorService;
+            _instantiator = instantiator;
 
             _unitViewPool = ecsService.World.GetPool<UnitViewComponent>();
         }
@@ -49,9 +49,9 @@ namespace Units
                 return null;
             }
 
-            var unitView = await _assetsProvider.CreateInstanceAsync<UnitView>(unitConfig.Prefab, position, rotation, _unitsParent);
+            var unitView = await _instantiator.CreateAsync<UnitView>(unitConfig.Prefab, position, rotation, _unitsParent);
 
-            InitComponents(unit, unitView );
+            InitComponents(unit, unitView);
 
             unitView.SelectView.Init(_ecsService.World.PackEntity(unit));
             unitView.SetTeam(team);

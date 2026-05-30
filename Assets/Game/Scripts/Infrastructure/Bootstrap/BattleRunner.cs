@@ -26,8 +26,9 @@ namespace Infrastructure
             BattleUpdateSystemsInitializer updateSystemsInitializer, BattleFixedUpdateSystemsInitializer fixedUpdateSystemsInitializer,
             BattleStateMachine battleStateMachine, AssetsProvider assetsProvider, BattlefieldBuilder battlefieldBuilder,
             UnitViewFactory unitViewFactory, BattleUIBuilder battleUIBuilder, BattleAnimatorService animatorService,
-            CurtainService curtainService, CancellationTokenProvider tokenProvider) : base(ecsService, assetsProvider, tokenProvider,
-            disposeCoordinator)
+            CurtainService curtainService, CancellationTokenProvider tokenProvider, AssetsProviderConfig assetsProviderConfig,
+            SceneLoader sceneLoader) : base(ecsService, assetsProvider, tokenProvider, disposeCoordinator, sceneLoader,
+            assetsProviderConfig)
         {
             _battlefieldBuilder = battlefieldBuilder;
             _unitViewFactory = unitViewFactory;

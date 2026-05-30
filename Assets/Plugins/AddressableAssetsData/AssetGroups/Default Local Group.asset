@@ -22,19 +22,9 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: a1e5140bc9994d343a8f4c4166df43a6
-    m_Address: OverlayUI
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: a7640698f032ffa45ae608b2adfd440b
-    m_Address: BattleDicesUI
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 3917e10d2eecae64ab1c5c700bb9d90b, type: 2}
   m_SchemaSet:
     m_Schemas:
-    - {fileID: 11400000, guid: d14c4f72a3c7cec4c97cf637352dbeb8, type: 2}
     - {fileID: 11400000, guid: a4a95b6e646bf3844a412772f8bb93e7, type: 2}
+    - {fileID: 11400000, guid: d14c4f72a3c7cec4c97cf637352dbeb8, type: 2}

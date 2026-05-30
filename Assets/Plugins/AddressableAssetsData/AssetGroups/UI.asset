@@ -27,13 +27,18 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 3506d1de341657f4c82526fe906060df
-    m_Address: CurtainUI
+  - m_GUID: 9e3cb9b7c96b6294299bf4a3b3fd9bc3
+    m_Address: OverlayDiceFacetUIView
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 9e3cb9b7c96b6294299bf4a3b3fd9bc3
-    m_Address: MeleeAttackOverlayIcon
+  - m_GUID: a1e5140bc9994d343a8f4c4166df43a6
+    m_Address: OverlayUI
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a7640698f032ffa45ae608b2adfd440b
+    m_Address: BattleDicesUI
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -49,11 +54,6 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: f5fe005d89bd79e46b659b1a8fe39054
     m_Address: BattleUI
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: f792a28310684c646ad0d95d7d05f2e2
-    m_Address: PermanentUI
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0

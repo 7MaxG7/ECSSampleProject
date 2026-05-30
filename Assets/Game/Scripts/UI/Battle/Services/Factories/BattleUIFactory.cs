@@ -10,23 +10,23 @@ namespace UI.Battle
     public class BattleUIFactory
     {
         private readonly BattleUIAssetsDb _battleUIAssetsDb;
-        private readonly AssetsProvider _assetsProvider;
+        private readonly Instantiator _instantiator;
         private readonly EcsService _ecsService;
 
         private Transform _rootCanvas;
         private Transform _overlayCanvas;
 
         [Inject]
-        public BattleUIFactory(EcsService ecsService, AssetsProvider assetsProvider, BattleUIAssetsDb battleUIAssetsDb)
+        public BattleUIFactory(EcsService ecsService, BattleUIAssetsDb battleUIAssetsDb, Instantiator instantiator)
         {
             _battleUIAssetsDb = battleUIAssetsDb;
-            _assetsProvider = assetsProvider;
+            _instantiator = instantiator;
             _ecsService = ecsService;
         }
 
         public async UniTask<BattleUIView> CreateBattleUIViewAsync()
         {
-            var battleUIView = await _assetsProvider.CreateInstanceAsync<BattleUIView>(_battleUIAssetsDb.BattleUIView);
+            var battleUIView = await _instantiator.CreateAsync<BattleUIView>(_battleUIAssetsDb.BattleUIView);
             if (_rootCanvas == null)
                 _rootCanvas = battleUIView.RootContent;
 
@@ -35,25 +35,25 @@ namespace UI.Battle
 
         public async UniTask<DiceUIView> CreateDiceUIViewAsync(int dice, Transform parent)
         {
-            var diceUIView = await _assetsProvider.CreateInstanceAsync<DiceUIView>(_battleUIAssetsDb.DiceUIView, parent);
+            var diceUIView = await _instantiator.CreateAsync<DiceUIView>(_battleUIAssetsDb.DiceUIView, parent);
             _ecsService.AddEntityDebugView(diceUIView.gameObject, dice);
             return diceUIView;
         }
 
         public async UniTask<UnitOverlayUIView> CreateUnitOverlayViewAsync(Vector3 position, Transform parent)
-            => await _assetsProvider.CreateInstanceAsync<UnitOverlayUIView>(_battleUIAssetsDb.UnitUIOverlayView, position,
+            => await _instantiator.CreateAsync<UnitOverlayUIView>(_battleUIAssetsDb.UnitUIOverlayView, position,
                 Quaternion.identity, parent);
 
         public async UniTask<OverlayDiceFacetUIView> CreateOverlayDiceFacetAsync(Transform parent)
-            => await _assetsProvider.CreateInstanceAsync<OverlayDiceFacetUIView>(_battleUIAssetsDb.OverlayDiceFacetUIView, parent);
+            => await _instantiator.CreateAsync<OverlayDiceFacetUIView>(_battleUIAssetsDb.OverlayDiceFacetUIView, parent);
 
         public async UniTask<BattleEndUIView> CreateEndBattleUIViewAsync(Transform parent)
-            => await _assetsProvider.CreateInstanceAsync<BattleEndUIView>(_battleUIAssetsDb.BattleEndUIView, parent);
+            => await _instantiator.CreateAsync<BattleEndUIView>(_battleUIAssetsDb.BattleEndUIView, parent);
 
         public async UniTask<BattleUnitsOverlayUIView> CreateUnitsOverlayUIViewAsync(Transform parent)
-            => await _assetsProvider.CreateInstanceAsync<BattleUnitsOverlayUIView>(_battleUIAssetsDb.BattleUnitsOverlayUIView, parent);
+            => await _instantiator.CreateAsync<BattleUnitsOverlayUIView>(_battleUIAssetsDb.BattleUnitsOverlayUIView, parent);
 
         public async UniTask<BattleDicesUIView> CreateBattleDicesUIViewAsync(Transform parent)
-            => await _assetsProvider.CreateInstanceAsync<BattleDicesUIView>(_battleUIAssetsDb.BattleDicesUIView, parent);
+            => await _instantiator.CreateAsync<BattleDicesUIView>(_battleUIAssetsDb.BattleDicesUIView, parent);
     }
 }

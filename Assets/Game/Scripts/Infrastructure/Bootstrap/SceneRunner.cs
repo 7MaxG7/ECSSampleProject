@@ -13,6 +13,8 @@ namespace Infrastructure
         private readonly AssetsProvider _assetsProvider;
         private readonly CancellationTokenProvider _tokenProvider;
         private readonly DisposeCoordinator _disposeCoordinator;
+        private readonly SceneLoader _sceneLoader;
+        private readonly AssetsProviderConfig _assetsProviderConfig;
 
         protected IUpdateSystemsInitializer UpdateSystemsInitializer;
         protected IUpdateSystemsInitializer FixedUpdateSystemsInitializer;
@@ -22,12 +24,14 @@ namespace Infrastructure
         private bool _isInited;
 
         protected SceneRunner(EcsService ecsService, AssetsProvider assetsProvider, CancellationTokenProvider tokenProvider,
-            DisposeCoordinator disposeCoordinator)
+            DisposeCoordinator disposeCoordinator, SceneLoader sceneLoader, AssetsProviderConfig assetsProviderConfig)
         {
             _ecsService = ecsService;
             _assetsProvider = assetsProvider;
             _tokenProvider = tokenProvider;
             _disposeCoordinator = disposeCoordinator;
+            _sceneLoader = sceneLoader;
+            _assetsProviderConfig = assetsProviderConfig;
         }
 
         public void Initialize()
@@ -73,6 +77,7 @@ namespace Infrastructure
 
             InitSystems();
 
+            await WarmUpCurrentSceneAsync();
             await OnInitAsync(localCts);
 
             _isInited = true;
@@ -85,6 +90,13 @@ namespace Infrastructure
 
             UpdateSystemsInitializer.InitSystems(_updateSystems);
             FixedUpdateSystemsInitializer.InitSystems(_fixedUpdateSystems);
+        }
+
+        private async UniTask WarmUpCurrentSceneAsync()
+        {
+            var sceneName = _sceneLoader.GetCurrentSceneName();
+            foreach (var reference in _assetsProviderConfig.GetAssetReferencesForScene(sceneName))
+                await _assetsProvider.LoadAsync(reference);
         }
     }
 }
