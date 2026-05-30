@@ -29,6 +29,9 @@ namespace Infrastructure
                 .Add(_container.Resolve<DiceApplySystem>())
                 .Add(_container.Resolve<DamageSystem>())
                 .Add(_container.Resolve<DeathSystem>())
+                
+                // Views
+                .Add(_container.Resolve<DiceApplyViewSystem>())
                 .Add(_container.Resolve<UnitAnimationLaunchViewSystem>())
 
                 // Post update

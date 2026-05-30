@@ -1,6 +1,5 @@
 using Battle;
 using CustomTypes;
-using Cysharp.Threading.Tasks;
 using Infrastructure;
 using Leopotam.EcsLite;
 using Zenject;
@@ -12,7 +11,6 @@ namespace Dices
         private readonly EcsService _ecsService;
         private readonly TeamService _teamService;
         private readonly BattleDiceService _battleDiceService;
-        private readonly CancellationTokenProvider _tokenProvider;
         private readonly DiceTargetSelectService _targetSelectService;
         private readonly DiceApplyService _diceApplyService;
         private readonly DiceApplyViewService _diceApplyViewService;
@@ -20,17 +18,13 @@ namespace Dices
         private readonly EcsFilter _targetedFilter;
         private readonly EcsPool<TargetedComponent> _targetedPool;
 
-        private bool _isInProcess;
-
         [Inject]
         public DiceApplySystem(EcsService ecsService, DiceApplyService diceApplyService, DiceApplyViewService diceApplyViewService,
-            BattleDiceService battleDiceService, CancellationTokenProvider tokenProvider, DiceTargetSelectService targetSelectService,
-            TeamService teamService)
+            BattleDiceService battleDiceService, DiceTargetSelectService targetSelectService, TeamService teamService)
         {
             _ecsService = ecsService;
             _teamService = teamService;
             _battleDiceService = battleDiceService;
-            _tokenProvider = tokenProvider;
             _targetSelectService = targetSelectService;
             _diceApplyService = diceApplyService;
             _diceApplyViewService = diceApplyViewService;
@@ -41,7 +35,7 @@ namespace Dices
 
         public void Run(IEcsSystems systems)
         {
-            if (!_diceApplyService.IsApplyingDice || _isInProcess)
+            if (!_diceApplyService.IsApplyingDice || _diceApplyViewService.IsInProgress)
                 return;
 
             foreach (var targeted in _targetedFilter)
@@ -58,32 +52,17 @@ namespace Dices
                         continue;
                     }
 
-                    _battleDiceService.TryGetOwner(dice, out var unit);
-                    ProcessDicesApply(unit, targeted, dice).Forget();
+                    ApplyDiceSide(targeted, dice);
+                    var diceSide = _battleDiceService.GetCurrentSide(dice);
+                    LogService.LogDebug(DebugType.Log, $"Dice {dice}: {diceSide.SideType}-{diceSide.Value} to {targeted}");
                     return;
                 }
             }
         }
 
-        private async UniTaskVoid ProcessDicesApply(int unit, int target, int dice)
+        private void ApplyDiceSide(int target, int dice)
         {
-            using var localCts = _tokenProvider.CreateLocalCts();
-            _isInProcess = true;
-
-            ApplyDiceSide(target, dice, out var diceSide);
-            await _diceApplyViewService.AnimateDiceApplyAsync(unit, target, diceSide.SideType, localCts);
-
-            LogService.LogDebug(DebugType.Log, $"Unit {unit}: {diceSide.SideType}-{diceSide.Value} to {target}");
-            while (_diceApplyService.IsApplyInProgress(target, diceSide.SideType))
-                await UniTask.NextFrame(localCts.Token);
-
-            _isInProcess = false;
-        }
-
-        private void ApplyDiceSide(int target, int dice, out DiceSide diceSide)
-        {
-            diceSide = _battleDiceService.GetCurrentSide(dice);
-            _diceApplyService.ApplyDiceSide(diceSide, target);
+            _diceApplyService.ApplyDiceSide(dice, target);
             _targetSelectService.ClearDiceTarget(dice);
         }
     }

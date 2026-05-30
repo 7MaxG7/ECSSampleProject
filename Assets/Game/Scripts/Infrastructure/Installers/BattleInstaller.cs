@@ -32,6 +32,7 @@ namespace Infrastructure
             Container.Bind<DiceApplyService>().AsSingle();
             Container.Bind<DiceApplyViewService>().AsSingle();
             Container.BindInterfacesAndSelfTo<DiceApplySystem>().AsSingle();
+            Container.BindInterfacesAndSelfTo<DiceApplyViewSystem>().AsSingle();
             Container.Bind<BattleDiceRollService>().AsSingle();
             Container.Bind<DiceRollsConfig>().FromScriptableObjectResource(nameof(DiceRollsConfig)).AsSingle();
             Container.Bind<BattleDiceLockService>().AsSingle();
