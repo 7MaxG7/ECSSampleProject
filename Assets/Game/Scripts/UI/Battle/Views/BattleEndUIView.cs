@@ -1,6 +1,7 @@
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using TMPro;
+using UI.Utils;
 using UnityEngine;
 
 namespace UI.Battle
@@ -18,7 +19,7 @@ namespace UI.Battle
         }
 
         public async UniTaskVoid SetActiveAsync(bool isActive, CancellationToken token)
-            => await UiAnimationUtility.ToggleCanvasGroupVisibilityAsync(_canvasGroup, isActive, _fadeDuration, token);
+            => await _canvasGroup.ToggleCanvasGroupVisibilityAsync(isActive, _fadeDuration, token);
 
         public void SetWinnerLabel(string text)
             => _label.text = text;

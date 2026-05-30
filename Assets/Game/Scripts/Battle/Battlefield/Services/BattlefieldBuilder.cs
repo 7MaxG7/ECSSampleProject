@@ -32,11 +32,17 @@ namespace Battle.Battlefield
             _battlefieldFilter = ecsService.World.Filter<BattlefieldComponent>().End();
         }
 
-        public async UniTask BuildBattlefieldAsync()
+        public void BuildBattlefield()
         {
-            var battlefield = _battlefieldFactory.CreateBattlefield();
-            await _battlefieldViewFactory.CreateBattlefieldViewAsync(battlefield);
+            _battlefieldFactory.CreateBattlefield();
             _teamBuilder.BuildTeams();
+        }
+
+        public async UniTask BuildBattlefieldViewsAsync()
+        {
+            foreach (var battlefield in _battlefieldFilter)
+                await _battlefieldViewFactory.CreateBattlefieldViewAsync(battlefield);
+            
             foreach (var unit in _unitFilter)
                 await _unitSpawner.SpawnUnitAsync(unit);
         }

@@ -43,11 +43,14 @@ namespace Infrastructure
 
         protected override async UniTask OnInitAsync(CancellationTokenSource cts)
         {
-            _unitViewFactory.Init();
-
-            await _battlefieldBuilder.BuildBattlefieldAsync();
-            await _battleUIBuilder.BuildBattleUIAsync();
+            // Logic
             _battleSelectionService.Init();
+            _battlefieldBuilder.BuildBattlefield();
+            
+            // Views
+            _unitViewFactory.Init();
+            await _battlefieldBuilder.BuildBattlefieldViewsAsync();
+            await _battleUIBuilder.BuildBattleUIAsync();
 
             _battleStateMachine.Enter<BattleBeginState>();
             await _curtainService.Hide();
@@ -57,10 +60,11 @@ namespace Infrastructure
         {
             base.OnDispose();
 
-            _animatorService.OnDispose();
             _battleSelectionService.OnDispose();
-            _battleUIBuilder.OnDispose();
             _battlefieldBuilder.OnDispose();
+            
+            _animatorService.OnDispose();
+            _battleUIBuilder.OnDispose();
         }
     }
 }

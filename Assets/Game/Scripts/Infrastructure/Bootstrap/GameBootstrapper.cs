@@ -1,7 +1,7 @@
 using Abstractions;
 using Cysharp.Threading.Tasks;
+using DG.Tweening;
 using Leopotam.EcsLite;
-using UI;
 using UI.Permanent;
 using Zenject;
 
@@ -15,9 +15,8 @@ namespace Infrastructure
         private readonly RandomService _randomService;
         private readonly CancellationTokenProvider _tokenProvider;
         private readonly GameEditorSystemsInitializer _editorSystemsInitializer;
-        private readonly StaticDataService _dataService;
+        private readonly StaticDataService _staticDataService;
         private readonly InputService _inputService;
-        private readonly UiAnimationUtility _uiAnimationUtility;
         private readonly PermanentUIBuilder _permanentUIBuilder;
         private readonly DisposeCoordinator _disposeCoordinator;
 
@@ -26,9 +25,8 @@ namespace Infrastructure
         private bool _isInited;
 
         public GameBootstrapper(AssetsProvider assetsProvider, SceneLoader sceneLoader, EcsService ecsService, RandomService randomService,
-            CancellationTokenProvider tokenProvider, GameEditorSystemsInitializer editorSystemsInitializer, StaticDataService dataService,
-            UiAnimationUtility uiAnimationUtility, PermanentUIBuilder permanentUIBuilder, DisposeCoordinator disposeCoordinator,
-            InputService inputService)
+            CancellationTokenProvider tokenProvider, GameEditorSystemsInitializer editorSystemsInitializer, InputService inputService,
+            StaticDataService staticDataService, PermanentUIBuilder permanentUIBuilder, DisposeCoordinator disposeCoordinator)
         {
             _assetsProvider = assetsProvider;
             _sceneLoader = sceneLoader;
@@ -36,9 +34,8 @@ namespace Infrastructure
             _randomService = randomService;
             _tokenProvider = tokenProvider;
             _editorSystemsInitializer = editorSystemsInitializer;
-            _dataService = dataService;
+            _staticDataService = staticDataService;
             _inputService = inputService;
-            _uiAnimationUtility = uiAnimationUtility;
             _permanentUIBuilder = permanentUIBuilder;
             _disposeCoordinator = disposeCoordinator;
         }
@@ -64,27 +61,30 @@ namespace Infrastructure
 
         public void OnDispose()
         {
-            _permanentUIBuilder.OnDispose();
-            _uiAnimationUtility.OnDispose();
-            _inputService.OnDispose();
             _tokenProvider.OnDispose();
+            _inputService.OnDispose();
+            _permanentUIBuilder.OnDispose();
+            DOTween.Clear();
             _assetsProvider.OnDispose();
             _ecsService.DestroyAll();
         }
 
         private async UniTaskVoid InitInfrastructureAsync()
         {
+            // Logic
             _tokenProvider.Init();
             using var localCts = _tokenProvider.CreateLocalCts();
 
-            _assetsProvider.Init();
             _ecsService.Init();
             _randomService.Init();
-            _dataService.Init();
-            _uiAnimationUtility.Init();
+            _staticDataService.Init();
+            InitSystemsAsync();
+            
+            // Views
+            DOTween.Init();
+            _assetsProvider.Init();
             _permanentUIBuilder.BuildUI();
 
-            InitSystemsAsync();
 
             await _sceneLoader.LoadSceneAsync(Constants.BATTLE_SCENE_NAME, localCts);
             _isInited = true;

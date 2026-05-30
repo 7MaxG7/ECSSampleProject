@@ -1,6 +1,7 @@
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
+using UI.Utils;
 using UnityEngine;
 
 namespace UI.Permanent
@@ -25,7 +26,7 @@ namespace UI.Permanent
 		}
 
 		public async UniTask SetActiveAsync(bool isActive, CancellationToken token)
-			=> await UiAnimationUtility.ToggleCanvasGroupVisibilityAsync(_canvasGroup, isActive, _fadeDuration, token);
+			=> await _canvasGroup.ToggleCanvasGroupVisibilityAsync(isActive, _fadeDuration, token);
 
 		public void SetActiveInstantly(bool isActive)
 		{
