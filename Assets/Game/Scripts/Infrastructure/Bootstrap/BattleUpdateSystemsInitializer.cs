@@ -32,9 +32,9 @@ namespace Infrastructure
                 .Add(_container.Resolve<UnitAnimationLaunchViewSystem>())
 
                 // Post update
-                .Add(_container.Resolve<BattleUpdateUISystem>())
-                .Add(_container.Resolve<BattleDicesUpdateUISystem>())
-                .Add(_container.Resolve<BattleUnitOverlayUISystem>())
+                .Add(_container.Resolve<BattleUIUpdater>())
+                .Add(_container.Resolve<BattleDicesUIUpdater>())
+                .Add(_container.Resolve<BattleUnitOverlayUIUpdater>())
                 .Add(_container.Resolve<AnimationClearSystem>())
 
                 .Add(_container.Resolve<DeleteFrameEventSystem>())

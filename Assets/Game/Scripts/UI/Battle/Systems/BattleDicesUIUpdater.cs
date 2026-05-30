@@ -9,7 +9,7 @@ using Zenject;
 
 namespace UI.Battle
 {
-    public class BattleDicesUpdateUISystem : IEcsPostRunSystem
+    public class BattleDicesUIUpdater : IEcsPostRunSystem
     {
         private readonly BattleUIModel _battleUIModel;
         private readonly BattleDiceLockService _diceLockService;
@@ -40,7 +40,7 @@ namespace UI.Battle
         private readonly EcsPool<TargetSelectedComponent> _targetSelectedPool;
 
         [Inject]
-        public BattleDicesUpdateUISystem(EcsService ecsService, BattleUIModel battleUIModel, FrameComponentsService frameComponentsService,
+        public BattleDicesUIUpdater(EcsService ecsService, BattleUIModel battleUIModel, FrameComponentsService frameComponentsService,
             BattleDiceLockService diceLockService, BattleDiceService battleDiceService, TeamService teamService, UnitService unitService,
             BattleDeathService battleDeathService, DiceApplyService diceApplyService, InputService inputService)
         {

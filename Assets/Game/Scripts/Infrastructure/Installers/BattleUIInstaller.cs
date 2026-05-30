@@ -15,9 +15,9 @@ namespace Infrastructure
             Container.Bind<BattleEndUIController>().AsSingle();
             Container.Bind<UnitsOverlayUIController>().AsSingle();
             Container.Bind<BattleDicesUIController>().AsSingle();
-            Container.BindInterfacesAndSelfTo<BattleUpdateUISystem>().AsSingle();
-            Container.BindInterfacesAndSelfTo<BattleDicesUpdateUISystem>().AsSingle();
-            Container.BindInterfacesAndSelfTo<BattleUnitOverlayUISystem>().AsSingle();
+            Container.BindInterfacesAndSelfTo<BattleUIUpdater>().AsSingle();
+            Container.BindInterfacesAndSelfTo<BattleDicesUIUpdater>().AsSingle();
+            Container.BindInterfacesAndSelfTo<BattleUnitOverlayUIUpdater>().AsSingle();
             Container.Bind<UnitOverlayUIService>().AsSingle();
             Container.Bind<BattleUIAssetsDb>().FromScriptableObjectResource(nameof(BattleUIAssetsDb)).AsSingle();
         }

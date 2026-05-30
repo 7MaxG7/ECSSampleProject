@@ -12,7 +12,7 @@ using Zenject;
 
 namespace UI.Units
 {
-    public class BattleUnitOverlayUISystem : IEcsPostRunSystem
+    public class BattleUnitOverlayUIUpdater : IEcsPostRunSystem
     {
         private readonly EcsService _ecsService;
         private readonly BattleDiceService _battleDiceService;
@@ -33,7 +33,7 @@ namespace UI.Units
         private readonly HashSet<string> _addedFacetModelIds = new();
 
         [Inject]
-        public BattleUnitOverlayUISystem(EcsService ecsService, BattleUIModel battleUIModel, BattleDiceService battleDiceService,
+        public BattleUnitOverlayUIUpdater(EcsService ecsService, BattleUIModel battleUIModel, BattleDiceService battleDiceService,
             FrameComponentsService frameComponentsService, HealthService healthService)
         {
             _ecsService = ecsService;

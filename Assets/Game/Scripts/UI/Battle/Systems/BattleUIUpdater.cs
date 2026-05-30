@@ -5,14 +5,14 @@ using Zenject;
 
 namespace UI.Battle
 {
-    public class BattleUpdateUISystem : IEcsPostRunSystem
+    public class BattleUIUpdater : IEcsPostRunSystem
     {
         private readonly BattleUIModel _battleUIModel;
         private readonly BattleDiceRollService _battleDiceRollService;
         private readonly BattleDeathService _battleDeathService;
 
         [Inject]
-        public BattleUpdateUISystem(BattleUIModel battleUIModel, BattleDiceRollService battleDiceRollService,
+        public BattleUIUpdater(BattleUIModel battleUIModel, BattleDiceRollService battleDiceRollService,
             BattleDeathService battleDeathService)
         {
             _battleUIModel = battleUIModel;
