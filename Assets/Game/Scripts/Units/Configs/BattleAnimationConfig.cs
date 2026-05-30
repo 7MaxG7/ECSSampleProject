@@ -8,10 +8,14 @@ namespace Units
     {
         [Tooltip("Задержка при переходе от окончания анимации применения кости юнита до старта применения кости второго предмета")]
         [SerializeField] private float _betweenUnitsApplyingDelay = .65f;
+        
+        [Header("Node names")]
         [Tooltip("Название блока анимации стойки в аниматоре")] [FoldoutGroup("Animations tech names")]
         [SerializeField] private string _idleAnimationName;
         [Tooltip("Название блока анимации смерти в аниматоре")] [FoldoutGroup("Animations tech names")]
         [SerializeField] private string _deathAnimationName;
+        
+        [Header("Transition names")]
         [Tooltip("Название параметра ближней атаки в аниматоре")] [FoldoutGroup("Animations tech names")]
         [SerializeField] private string _meleeAttackParameterName;
         [Tooltip("Название параметра дальней атаки в аниматоре")] [FoldoutGroup("Animations tech names")]
