@@ -16,9 +16,6 @@ namespace Infrastructure
         // Roots
         public const string UNITS_PARENT_NAME = "Units";
         
-        // Math
-        public const float ALMOST_ONE = 1 - float.Epsilon;
-        
         // UI
         public const string WIN_END_BATTLE_LABLE = "Win!";
         public const string DEFEAT_END_BATTLE_LABLE = "Defeat";

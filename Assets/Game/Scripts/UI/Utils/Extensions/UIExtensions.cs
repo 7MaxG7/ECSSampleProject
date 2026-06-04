@@ -1,8 +1,8 @@
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
-using Infrastructure;
 using UnityEngine;
+using Utils;
 
 namespace UI.Utils
 {
@@ -36,6 +36,6 @@ namespace UI.Utils
         }
 
         public static bool IsVisible(this CanvasGroup canvasGroup)
-            => canvasGroup.gameObject.activeSelf && canvasGroup.alpha > Constants.ALMOST_ONE;
+            => canvasGroup.gameObject.activeSelf && canvasGroup.alpha.IsAlmostOne();
     }
 }

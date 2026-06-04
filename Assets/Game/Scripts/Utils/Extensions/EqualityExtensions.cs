@@ -20,5 +20,8 @@ namespace Utils
 
         public static bool IsEqual<T>(this T first, T second) where T : struct
             => EqualityComparer<T>.Default.Equals(first, second);
+
+        public static bool IsAlmostOne(this float value)
+            => value.IsEqual(1);
     }
 }
